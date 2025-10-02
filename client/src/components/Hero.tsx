@@ -1,5 +1,6 @@
 import { Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import logoImage from "@assets/549364704_122179318094547349_828276851018343606_n_1759441251850.jpg";
 
 export default function Hero() {
   const handleBookClick = () => {
@@ -13,13 +14,17 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/20 via-accent/20 to-primary/10">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(155,135,188,0.1),transparent_50%),radial-gradient(circle_at_bottom_left,rgba(228,170,165,0.1),transparent_50%)]" />
+    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/15 via-accent/10 to-background">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(165,210,235,0.08),transparent_50%),radial-gradient(circle_at_bottom_left,rgba(165,210,235,0.05),transparent_50%)]" />
       
       <div className="relative max-w-5xl mx-auto px-6 text-center">
         <div className="mb-8 inline-block">
-          <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 flex items-center justify-center">
-            <div className="font-serif text-4xl text-foreground">MR</div>
+          <div className="w-48 h-48 mx-auto mb-6 flex items-center justify-center">
+            <img 
+              src={logoImage} 
+              alt="MR Nail & Laser Studio" 
+              className="w-full h-full object-contain"
+            />
           </div>
         </div>
         

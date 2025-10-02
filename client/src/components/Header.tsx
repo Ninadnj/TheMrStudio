@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Menu, X, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import logoImage from "@assets/549364704_122179318094547349_828276851018343606_n_1759441251850.jpg";
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -40,10 +41,15 @@ export default function Header() {
         <div className="flex items-center justify-between h-16 md:h-20">
           <button 
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="font-serif text-xl md:text-2xl text-foreground hover-elevate px-2 py-1 rounded-md"
+            className="flex items-center gap-2 hover-elevate px-2 py-1 rounded-md"
             data-testid="button-logo"
           >
-            MR Studio
+            <img 
+              src={logoImage} 
+              alt="MR Studio" 
+              className="h-10 w-10 object-contain"
+            />
+            <span className="font-serif text-xl md:text-2xl text-foreground">MR Studio</span>
           </button>
 
           <nav className="hidden md:flex items-center gap-8">

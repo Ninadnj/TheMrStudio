@@ -20,11 +20,11 @@ export default function Hero() {
       <div className="relative max-w-5xl mx-auto px-6 text-center">
         <div className="mb-10 inline-block">
           <div className="w-56 h-56 mx-auto mb-8 flex items-center justify-center relative">
-            <div className="w-full h-full rounded-full bg-white shadow-lg flex items-center justify-center p-4">
+            <div className="w-full h-full rounded-full bg-white shadow-lg flex items-center justify-center overflow-hidden">
               <img 
                 src={logoImage} 
                 alt="MR Nail & Laser Studio" 
-                className="w-full h-full object-contain"
+                className="w-[120%] h-[120%] object-cover"
               />
             </div>
           </div>

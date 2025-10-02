@@ -14,18 +14,19 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/12 via-accent/8 to-background">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(130,200,160,0.1),transparent_50%),radial-gradient(circle_at_bottom_left,rgba(150,210,180,0.08),transparent_50%)]" />
+    <section className="relative min-h-screen flex items-center justify-center" style={{ backgroundColor: '#E8E6E3' }}>
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-transparent to-accent/6" />
       
       <div className="relative max-w-5xl mx-auto px-6 text-center">
         <div className="mb-10 inline-block">
           <div className="w-56 h-56 mx-auto mb-8 flex items-center justify-center relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/15 rounded-full blur-2xl"></div>
-            <img 
-              src={logoImage} 
-              alt="MR Nail & Laser Studio" 
-              className="w-full h-full object-contain relative z-10"
-            />
+            <div className="w-full h-full rounded-full bg-white shadow-lg flex items-center justify-center p-4">
+              <img 
+                src={logoImage} 
+                alt="MR Nail & Laser Studio" 
+                className="w-full h-full object-contain"
+              />
+            </div>
           </div>
         </div>
         

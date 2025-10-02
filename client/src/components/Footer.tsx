@@ -7,8 +7,8 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           <div>
-            <h3 className="font-serif text-2xl text-card-foreground mb-4 font-normal">
-              THE MR Studio
+            <h3 className="font-sans text-2xl text-card-foreground mb-4" style={{ letterSpacing: '0.05em' }}>
+              <span className="font-light">THE</span> <span className="font-medium">MR</span> Studio
             </h3>
             <p className="text-sm text-muted-foreground leading-relaxed tracking-wide">
               Expert beauty and wellness treatments in an elegant, modern setting. We're dedicated to helping you look and feel your best.

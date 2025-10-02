@@ -30,8 +30,8 @@ export default function Hero() {
           </div>
         </div>
         
-        <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl mb-6 text-foreground tracking-tight font-normal">
-          THE MR NAIL & LASER STUDIO
+        <h1 className="font-sans text-4xl md:text-5xl lg:text-6xl mb-6 text-foreground font-light" style={{ letterSpacing: '0.05em' }}>
+          <span className="font-light">THE</span> <span className="font-medium">MR</span> NAIL & LASER STUDIO
         </h1>
         
         <p className="text-xl md:text-2xl text-muted-foreground mb-4 tracking-wide uppercase text-sm md:text-base font-light">

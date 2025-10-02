@@ -1,0 +1,35 @@
+You are my front-end assistant. Build a minimal, editorial landing for a beauty salon using Neue Haas Grotesk (fallback: "Inter", "Helvetica Neue", Arial, sans-serif). 
+Implement 3 switchable color themes via CSS variables (no hard-coded hex in components). Default = Ivory Noir. 
+Provide index.html + styles.css + a tiny theme switcher (data-theme on <html>).
+
+### Color Themes (set as :root[data-theme="…"] variables)
+1) Ivory Noir
+--bg:#F8F7F5; --text:#111111; --muted1:#D9D5CF; --muted2:#B8B3AD; 
+--accent:#0E3A4A; --accentHover:#124E61; --surface:#FFFFFF; --line:#EAE7E3;
+
+2) Nude Minimal
+--bg:#FAF8F6; --text:#161616; --muted1:#E8DFD6; --muted2:#C9C4BD; 
+--accent:#E7C3B2; --accentHover:#EFD9D2; --surface:#FFFFFF; --line:#E3E0DC;
+
+3) Cool Spa
+--bg:#F6F9F8; --text:#0F1010; --muted1:#DDE3E1; --muted2:#BFC7C4; 
+--accent:#2F6F73; --accentHover:#5A8A90; --surface:#FFFFFF; --line:#E5ECEA;
+
+### Design rules
+- Typography: H1 48–56px (-0.02em tracking), H2 28–32px, body 16–18px. Use Regular + Medium only. 
+- Layout: max-width 1160px, 24px grid gutters, generous white space. 
+- Buttons: use --accent background, white text; hover = --accentHover. Outline button = transparent bg, 1px --accent border; hover fills accent.
+- Cards: background --surface, 16px radius, shadow: 0 2px 10px rgba(0,0,0,.04), 1px border in --line.
+- Links: underline on hover only. 
+- Use one accent per section; keep contrast ≥ 4.5:1 for text on bg.
+
+### Deliverables
+- index.html sections: Header (logo text), Hero (title, subtitle, “Book Now”), Services (3 cards), Pricing (simple list), Testimonials (1–2 quotes), Footer. 
+- styles.css: define base tokens in :root, then theme blocks under :root[data-theme="ivory-noir"|"nude-minimal"|"cool-spa"]. 
+- A tiny JS snippet to toggle data-theme on <html> with three buttons.
+- No external UI libs; just semantic HTML + CSS variables.
+
+### Acceptance
+- Changing data-theme updates colors everywhere without editing components.
+- Buttons/links follow the accent/hover rules.
+- Clean, stylish, minimal look matching Vogue-ish aesthetic.

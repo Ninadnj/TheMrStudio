@@ -59,8 +59,11 @@ export default function Services() {
                 data-testid={`card-service-${service.id}`}
               >
                 <CardContent className="p-6 space-y-4">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Icon className="w-6 h-6 text-primary" />
+                  <div 
+                    className="w-12 h-12 rounded-full flex items-center justify-center" 
+                    style={{ backgroundColor: 'var(--theme-accent)', opacity: 0.1 }}
+                  >
+                    <Icon className="w-6 h-6" style={{ color: 'var(--theme-accent)', opacity: 1 }} />
                   </div>
                   
                   <h3 className="font-serif text-xl text-foreground">
@@ -72,7 +75,7 @@ export default function Services() {
                   </p>
                   
                   <div className="flex items-center justify-between pt-2 border-t border-border">
-                    <span className="text-sm font-medium text-primary">
+                    <span className="text-sm font-medium" style={{ color: 'var(--theme-accent)' }}>
                       From ${service.price}
                     </span>
                     <span className="text-xs text-muted-foreground">

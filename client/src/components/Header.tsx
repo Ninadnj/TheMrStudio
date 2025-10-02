@@ -47,21 +47,28 @@ export default function Header() {
           <nav className="hidden md:flex items-center gap-8">
             <button
               onClick={() => scrollToSection('services')}
-              className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+              className="text-sm font-medium text-foreground transition-colors"
+              style={{ color: 'inherit' }}
+              onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
+              onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
               data-testid="nav-services"
             >
               Services
             </button>
             <button
               onClick={() => scrollToSection('booking')}
-              className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+              className="text-sm font-medium text-foreground transition-colors"
+              onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
+              onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
               data-testid="nav-booking"
             >
               Book Now
             </button>
             <button
               onClick={() => scrollToSection('contact')}
-              className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+              className="text-sm font-medium text-foreground transition-colors"
+              onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
+              onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
               data-testid="nav-contact"
             >
               Contact
@@ -89,19 +96,25 @@ export default function Header() {
           <nav className="flex flex-col p-6 gap-4">
             <button
               onClick={() => scrollToSection('services')}
-              className="text-left text-sm font-medium text-foreground hover:text-primary transition-colors py-2"
+              className="text-left text-sm font-medium text-foreground transition-colors py-2"
+              onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
+              onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
             >
               Services
             </button>
             <button
               onClick={() => scrollToSection('booking')}
-              className="text-left text-sm font-medium text-foreground hover:text-primary transition-colors py-2"
+              className="text-left text-sm font-medium text-foreground transition-colors py-2"
+              onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
+              onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
             >
               Book Now
             </button>
             <button
               onClick={() => scrollToSection('contact')}
-              className="text-left text-sm font-medium text-foreground hover:text-primary transition-colors py-2"
+              className="text-left text-sm font-medium text-foreground transition-colors py-2"
+              onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
+              onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
             >
               Contact
             </button>

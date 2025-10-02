@@ -174,7 +174,7 @@ export default function BookingForm() {
           <Button
             type="submit"
             size="lg"
-            className="w-full bg-gradient-to-r from-primary to-accent border-primary-border text-primary-foreground font-medium tracking-wide"
+            className="w-full bg-theme-accent font-medium tracking-wide"
             data-testid="button-submit-booking"
           >
             Submit Booking Request

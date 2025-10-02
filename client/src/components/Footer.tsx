@@ -18,16 +18,36 @@ export default function Footer() {
           <div>
             <h4 className="font-medium text-card-foreground mb-4">Quick Links</h4>
             <div className="space-y-2">
-              <button className="block text-sm text-muted-foreground hover:text-primary transition-colors" data-testid="footer-link-about">
+              <button 
+                className="block text-sm text-muted-foreground transition-colors" 
+                data-testid="footer-link-about"
+                onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
+                onMouseLeave={(e) => e.currentTarget.style.color = ''}
+              >
                 About Us
               </button>
-              <button className="block text-sm text-muted-foreground hover:text-primary transition-colors" data-testid="footer-link-services">
+              <button 
+                className="block text-sm text-muted-foreground transition-colors" 
+                data-testid="footer-link-services"
+                onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
+                onMouseLeave={(e) => e.currentTarget.style.color = ''}
+              >
                 Our Services
               </button>
-              <button className="block text-sm text-muted-foreground hover:text-primary transition-colors" data-testid="footer-link-gallery">
+              <button 
+                className="block text-sm text-muted-foreground transition-colors" 
+                data-testid="footer-link-gallery"
+                onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
+                onMouseLeave={(e) => e.currentTarget.style.color = ''}
+              >
                 Gallery
               </button>
-              <button className="block text-sm text-muted-foreground hover:text-primary transition-colors" data-testid="footer-link-booking">
+              <button 
+                className="block text-sm text-muted-foreground transition-colors" 
+                data-testid="footer-link-booking"
+                onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
+                onMouseLeave={(e) => e.currentTarget.style.color = ''}
+              >
                 Book Appointment
               </button>
             </div>

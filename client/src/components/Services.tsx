@@ -41,10 +41,10 @@ export default function Services() {
     <section id="services" className="py-20 lg:py-32 bg-background">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl mb-4 text-foreground">
+          <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl mb-4 text-foreground font-normal">
             Our Services
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base text-muted-foreground max-w-2xl mx-auto tracking-wide">
             Indulge in our carefully curated selection of beauty and wellness treatments
           </p>
         </div>

@@ -63,10 +63,10 @@ export default function BookingForm() {
     <section id="booking" className="py-20 lg:py-32 bg-card">
       <div className="max-w-3xl mx-auto px-6">
         <div className="text-center mb-12">
-          <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl mb-4 text-card-foreground">
+          <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl mb-4 text-card-foreground font-normal">
             Book Your Experience
           </h2>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-base text-muted-foreground tracking-wide">
             Reserve your preferred treatment and let us take care of the rest
           </p>
         </div>

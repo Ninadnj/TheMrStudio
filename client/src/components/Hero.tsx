@@ -23,15 +23,15 @@ export default function Hero() {
             <div className="w-full h-full rounded-full bg-white shadow-lg flex items-center justify-center overflow-hidden">
               <img 
                 src={logoImage} 
-                alt="MR Nail & Laser Studio" 
+                alt="THE MR Nail & Laser Studio" 
                 className="w-[120%] h-[120%] object-cover"
               />
             </div>
           </div>
         </div>
         
-        <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl mb-6 text-foreground tracking-tight font-normal">
-          MR NAIL & LASER STUDIO
+        <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl mb-6 text-foreground tracking-tight font-normal">
+          THE MR NAIL & LASER STUDIO
         </h1>
         
         <p className="text-xl md:text-2xl text-muted-foreground mb-4 tracking-wide uppercase text-sm md:text-base font-light">

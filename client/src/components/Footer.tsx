@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           <div>
             <h3 className="font-serif text-2xl text-card-foreground mb-4 font-normal">
-              MR Studio
+              THE MR Studio
             </h3>
             <p className="text-sm text-muted-foreground leading-relaxed tracking-wide">
               Expert beauty and wellness treatments in an elegant, modern setting. We're dedicated to helping you look and feel your best.
@@ -60,7 +60,7 @@ export default function Footer() {
 
         <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-card-border gap-4">
           <p className="text-sm text-muted-foreground">
-            © 2025 MR Nail & Laser Studio. All rights reserved.
+            © 2025 THE MR Nail & Laser Studio. All rights reserved.
           </p>
           
           <div className="flex items-center gap-2">

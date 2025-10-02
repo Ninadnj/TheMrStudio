@@ -14,8 +14,8 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center" style={{ backgroundColor: '#E8E6E3' }}>
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-transparent to-accent/6" />
+    <section className="relative min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--theme-bg)' }}>
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(0,0,0,0.03) 0%, transparent 50%, rgba(0,0,0,0.02) 100%)' }} />
       
       <div className="relative max-w-5xl mx-auto px-6 text-center">
         <div className="mb-10 inline-block">
@@ -30,22 +30,22 @@ export default function Hero() {
           </div>
         </div>
         
-        <h1 className="font-sans text-4xl md:text-5xl lg:text-6xl mb-6 text-foreground font-light" style={{ letterSpacing: '0.05em' }}>
+        <h1 className="font-sans text-4xl md:text-5xl lg:text-6xl mb-6 font-light text-theme" style={{ letterSpacing: '0.05em' }}>
           <span style={{ opacity: 0.6 }}>The</span> <span className="font-medium">MR</span> NAIL & LASER STUDIO
         </h1>
         
-        <p className="text-xl md:text-2xl text-muted-foreground mb-4 tracking-wide uppercase text-sm md:text-base font-light">
+        <p className="text-xl md:text-2xl mb-4 tracking-wide uppercase text-sm md:text-base font-light text-theme-muted">
           Where Beauty Meets Precision
         </p>
         
-        <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed">
+        <p className="text-base md:text-lg max-w-2xl mx-auto mb-12 leading-relaxed text-theme-muted">
           Expert nail artistry and advanced laser treatments in an elegant, modern setting
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <Button 
             size="lg"
-            className="bg-gradient-to-r from-primary to-accent border-primary-border text-primary-foreground min-w-[200px] font-medium tracking-wide"
+            className="bg-theme-accent min-w-[200px] font-medium tracking-wide"
             onClick={handleBookClick}
             data-testid="button-book-appointment"
           >
@@ -56,9 +56,10 @@ export default function Hero() {
           <Button 
             size="lg"
             variant="outline"
-            className="min-w-[200px] font-medium tracking-wide backdrop-blur-sm"
+            className="min-w-[200px] font-medium tracking-wide backdrop-blur-sm border-theme-accent"
             onClick={handleServicesClick}
             data-testid="button-view-services"
+            style={{ color: 'var(--theme-accent)' }}
           >
             View Services
           </Button>

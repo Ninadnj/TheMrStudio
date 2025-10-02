@@ -5,6 +5,43 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Theme System - Ivory Noir (Default) */
+:root,
+:root[data-theme="ivory-noir"] {
+  --theme-bg: #F8F7F5;
+  --theme-text: #111111;
+  --theme-muted1: #D9D5CF;
+  --theme-muted2: #B8B3AD;
+  --theme-accent: #0E3A4A;
+  --theme-accent-hover: #124E61;
+  --theme-surface: #FFFFFF;
+  --theme-line: #EAE7E3;
+}
+
+/* Theme - Nude Minimal */
+:root[data-theme="nude-minimal"] {
+  --theme-bg: #FAF8F6;
+  --theme-text: #161616;
+  --theme-muted1: #E8DFD6;
+  --theme-muted2: #C9C4BD;
+  --theme-accent: #E7C3B2;
+  --theme-accent-hover: #EFD9D2;
+  --theme-surface: #FFFFFF;
+  --theme-line: #E3E0DC;
+}
+
+/* Theme - Cool Spa */
+:root[data-theme="cool-spa"] {
+  --theme-bg: #F6F9F8;
+  --theme-text: #0F1010;
+  --theme-muted1: #DDE3E1;
+  --theme-muted2: #BFC7C4;
+  --theme-accent: #2F6F73;
+  --theme-accent-hover: #5A8A90;
+  --theme-surface: #FFFFFF;
+  --theme-line: #E5ECEA;
+}
+
 /* LIGHT MODE */
 :root {
   --button-outline: rgba(0,0,0, .10);
@@ -241,7 +278,44 @@
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply font-sans antialiased;
+    background-color: var(--theme-bg);
+    color: var(--theme-text);
+  }
+}
+
+@layer utilities {
+  .bg-theme {
+    background-color: var(--theme-bg);
+  }
+  
+  .bg-theme-surface {
+    background-color: var(--theme-surface);
+  }
+  
+  .text-theme {
+    color: var(--theme-text);
+  }
+  
+  .text-theme-muted {
+    color: var(--theme-muted2);
+  }
+  
+  .bg-theme-accent {
+    background-color: var(--theme-accent);
+    color: white;
+  }
+  
+  .bg-theme-accent:hover {
+    background-color: var(--theme-accent-hover);
+  }
+  
+  .border-theme-line {
+    border-color: var(--theme-line);
+  }
+  
+  .border-theme-accent {
+    border-color: var(--theme-accent);
   }
 }
 

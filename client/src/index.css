@@ -5,9 +5,8 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Theme System - Ivory Noir (Default) */
-:root,
-:root[data-theme="ivory-noir"] {
+/* Ivory Noir Theme - Light Mode */
+:root {
   --theme-bg: #F8F7F5;
   --theme-text: #111111;
   --theme-muted1: #D9D5CF;
@@ -18,28 +17,16 @@
   --theme-line: #EAE7E3;
 }
 
-/* Theme - Nude Minimal */
-:root[data-theme="nude-minimal"] {
-  --theme-bg: #FAF8F6;
-  --theme-text: #161616;
-  --theme-muted1: #E8DFD6;
-  --theme-muted2: #C9C4BD;
-  --theme-accent: #E7C3B2;
-  --theme-accent-hover: #EFD9D2;
-  --theme-surface: #FFFFFF;
-  --theme-line: #E3E0DC;
-}
-
-/* Theme - Cool Spa */
-:root[data-theme="cool-spa"] {
-  --theme-bg: #F6F9F8;
-  --theme-text: #0F1010;
-  --theme-muted1: #DDE3E1;
-  --theme-muted2: #BFC7C4;
-  --theme-accent: #2F6F73;
-  --theme-accent-hover: #5A8A90;
-  --theme-surface: #FFFFFF;
-  --theme-line: #E5ECEA;
+/* Ivory Noir Theme - Dark Mode */
+.dark {
+  --theme-bg: #1A1A1A;
+  --theme-text: #F8F7F5;
+  --theme-muted1: #3A3A3A;
+  --theme-muted2: #5A5A5A;
+  --theme-accent: #0E3A4A;
+  --theme-accent-hover: #124E61;
+  --theme-surface: #2A2A2A;
+  --theme-line: #3A3A3A;
 }
 
 /* LIGHT MODE */

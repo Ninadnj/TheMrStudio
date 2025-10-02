@@ -75,6 +75,12 @@ export default function Footer() {
             </Button>
           </div>
         </div>
+        
+        <div className="text-center pt-6 border-t border-card-border mt-6">
+          <p className="text-sm text-muted-foreground" style={{ fontFamily: 'Raleway, sans-serif', fontWeight: 300 }}>
+            Created by DNJ™ with 🤍 &☕
+          </p>
+        </div>
       </div>
     </footer>
   );

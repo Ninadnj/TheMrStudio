@@ -1,38 +1,36 @@
-import { Sparkles, Heart, Hand, Scissors } from "lucide-react";
+import { Sparkles, User, Syringe, Package, Hand } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 const services = [
   {
     id: 1,
     icon: Sparkles,
-    title: "Signature Facials",
-    description: "Rejuvenate your skin with our customized facial treatments using premium organic products",
-    price: 120,
-    duration: "60-90 min"
+    title: "Laser Epilation – Women",
+    description: "Face, body, bikini, armpits, full body"
   },
   {
     id: 2,
-    icon: Heart,
-    title: "Therapeutic Massage",
-    description: "Release tension and restore balance with our expert massage therapies",
-    price: 150,
-    duration: "60-120 min"
+    icon: User,
+    title: "Laser Epilation – Men",
+    description: "Face, neck, chest, back, shoulders"
   },
   {
     id: 3,
-    icon: Hand,
-    title: "Manicure & Pedicure",
-    description: "Pamper your hands and feet with our luxurious nail care services",
-    price: 80,
-    duration: "45-90 min"
+    icon: Syringe,
+    title: "Cosmetology / Injectables",
+    description: "Fillers, meso, biorevitalization, tox"
   },
   {
     id: 4,
-    icon: Scissors,
-    title: "Hair Styling",
-    description: "Transform your look with our professional hair care and styling services",
-    price: 100,
-    duration: "60-180 min"
+    icon: Package,
+    title: "Packages",
+    description: "Full legs + bikini, combo sets"
+  },
+  {
+    id: 5,
+    icon: Hand,
+    title: "Nail Services",
+    description: "Professional manicure and pedicure treatments"
   }
 ];
 
@@ -49,7 +47,7 @@ export default function Services() {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {services.map((service) => {
             const Icon = service.icon;
             return (
@@ -73,15 +71,6 @@ export default function Services() {
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     {service.description}
                   </p>
-                  
-                  <div className="flex items-center justify-between pt-2 border-t border-border">
-                    <span className="text-sm font-medium" style={{ color: 'var(--theme-accent)' }}>
-                      From ${service.price}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {service.duration}
-                    </span>
-                  </div>
                 </CardContent>
               </Card>
             );

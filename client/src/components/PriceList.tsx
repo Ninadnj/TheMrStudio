@@ -7,7 +7,7 @@ const priceLists = [
   {
     id: 1,
     category: "Nail Services",
-    imageUrl: "https://images.unsplash.com/photo-1610992015732-2449b76344bc?w=800&h=600&fit=crop&q=80",
+    color: "bg-gradient-to-br from-rose-100 to-pink-50 dark:from-rose-950/40 dark:to-pink-950/20",
     items: [
       { name: "Manicure", price: 45 },
       { name: "Pedicure", price: 65 },
@@ -18,7 +18,7 @@ const priceLists = [
   {
     id: 2,
     category: "Laser Epilation – Women",
-    imageUrl: "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=800&h=600&fit=crop&q=80",
+    color: "bg-gradient-to-br from-violet-100 to-purple-50 dark:from-violet-950/40 dark:to-purple-950/20",
     items: [
       { name: "Face", price: 80 },
       { name: "Body", price: 150 },
@@ -30,7 +30,7 @@ const priceLists = [
   {
     id: 3,
     category: "Laser Epilation – Men",
-    imageUrl: "https://images.unsplash.com/photo-1629904853893-c2c8981a1dc5?w=800&h=600&fit=crop&q=80",
+    color: "bg-gradient-to-br from-blue-100 to-cyan-50 dark:from-blue-950/40 dark:to-cyan-950/20",
     items: [
       { name: "Face", price: 90 },
       { name: "Neck", price: 70 },
@@ -42,7 +42,7 @@ const priceLists = [
   {
     id: 4,
     category: "Cosmetology / Injectables",
-    imageUrl: "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=800&h=600&fit=crop&q=80",
+    color: "bg-gradient-to-br from-amber-100 to-yellow-50 dark:from-amber-950/40 dark:to-yellow-950/20",
     items: [
       { name: "Fillers", price: 450 },
       { name: "Meso", price: 180 },
@@ -53,7 +53,7 @@ const priceLists = [
   {
     id: 5,
     category: "Packages",
-    imageUrl: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&h=600&fit=crop&q=80",
+    color: "bg-gradient-to-br from-emerald-100 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/20",
     items: [
       { name: "Full legs + bikini", price: 195 },
       { name: "Combo sets", price: 299 }
@@ -153,18 +153,12 @@ export default function PriceList() {
                   data-testid={`card-price-${list.id}`}
                   onClick={() => setExpandedCard(expandedCard === list.id ? null : list.id)}
                 >
-                  <div className="aspect-[4/3] bg-muted relative overflow-hidden">
-                    <img
-                      src={list.imageUrl}
-                      alt={list.category}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-6">
-                      <h3 className="font-serif text-2xl text-foreground mb-2">
+                  <div className={`aspect-[4/3] relative overflow-hidden flex items-center justify-center ${list.color}`}>
+                    <div className="text-center px-6">
+                      <h3 className="font-serif text-3xl text-foreground/90 mb-3">
                         {list.category}
                       </h3>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-sm text-foreground/60 tracking-wide">
                         Click to view pricing
                       </p>
                     </div>

@@ -41,7 +41,11 @@ export default function Header() {
               alt="MR Studio" 
               className="h-10 w-10 object-contain"
             />
-            <span className="font-serif text-xl md:text-2xl text-foreground">MR Studio</span>
+            <span className="font-serif text-xl md:text-2xl text-foreground">
+              <span style={{ opacity: 0.3 }}>THE </span>
+              <span className="font-bold">MR</span>
+              <span style={{ opacity: 0.3 }}> Studio</span>
+            </span>
           </button>
 
           <nav className="hidden md:flex items-center gap-8">

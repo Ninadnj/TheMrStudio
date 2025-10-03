@@ -90,8 +90,10 @@ export default function ChatWidget() {
         <div className="flex items-center justify-between px-4 py-3 border-b border-border backdrop-blur-sm bg-background/95 rounded-t-lg">
           <div className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
-            <span className="font-semibold text-base text-foreground">
-              {language === "ka" ? "MR ასისტენტი" : "MR Assistant"}
+            <span className="font-semibold text-base">
+              <span className="text-foreground/40">THE</span>{" "}
+              <span className="text-foreground font-bold">MR</span>{" "}
+              <span className="text-foreground/40">Studio</span>
             </span>
           </div>
           <Button

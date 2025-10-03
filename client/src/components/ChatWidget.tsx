@@ -66,6 +66,12 @@ export default function ChatWidget() {
     setLanguage(prev => prev === "ka" ? "en" : "ka");
   };
 
+  const handleClose = () => {
+    setIsOpen(false);
+    setMessages([]);
+    setInput("");
+  };
+
   return (
     <>
       {/* Toggle Button - Right Side */}
@@ -99,7 +105,7 @@ export default function ChatWidget() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setIsOpen(false)}
+            onClick={handleClose}
             className="h-8 w-8 hover-elevate"
             data-testid="button-close-chat"
           >

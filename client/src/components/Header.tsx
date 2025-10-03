@@ -44,7 +44,7 @@ export default function Header() {
             <span className="font-serif text-xl md:text-2xl text-foreground">
               <span style={{ opacity: 0.3 }}>THE </span>
               <span className="font-bold">MR</span>
-              <span style={{ opacity: 0.3 }}> NAIL & LASER STUDIO</span>
+              <span style={{ opacity: 0.3 }}> Studio</span>
             </span>
           </button>
 

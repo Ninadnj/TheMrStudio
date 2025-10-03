@@ -31,7 +31,9 @@ export default function Hero() {
         </div>
         
         <h1 className="font-sans text-4xl md:text-5xl lg:text-6xl mb-6 font-light text-theme" style={{ letterSpacing: '0.05em' }}>
-          <span style={{ opacity: 0.6 }}>The</span> <span className="font-medium">MR</span> NAIL & LASER STUDIO
+          <span style={{ opacity: 0.3 }}>The </span>
+          <span className="font-bold">MR</span>
+          <span style={{ opacity: 0.3 }}> NAIL & LASER STUDIO</span>
         </h1>
         
         <p className="text-xl md:text-2xl mb-4 tracking-wide uppercase text-sm md:text-base font-light text-theme-muted">

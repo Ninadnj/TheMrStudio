@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { MessageCircle, X, Send, Languages, AlertCircle } from "lucide-react";
+import { MessageCircle, X, Send, Languages } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -66,108 +66,124 @@ export default function ChatWidget() {
     setLanguage(prev => prev === "ka" ? "en" : "ka");
   };
 
-  if (!isOpen) {
-    return (
-      <Button
-        onClick={() => setIsOpen(true)}
-        size="icon"
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg bg-theme-accent hover:bg-theme-accent-hover z-50"
+  return (
+    <>
+      {/* Toggle Button - Right Side */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="fixed top-1/2 right-0 -translate-y-1/2 bg-theme-accent hover:bg-theme-accent-hover text-white px-3 py-6 rounded-l-lg shadow-lg transition-all duration-300 z-50 flex flex-col items-center gap-2 writing-mode-vertical"
         data-testid="button-open-chat"
       >
-        <MessageCircle className="h-6 w-6 text-white" />
-      </Button>
-    );
-  }
+        <MessageCircle className="h-5 w-5" />
+        <span className="text-sm font-medium rotate-180" style={{ writingMode: 'vertical-rl' }}>
+          {language === "ka" ? "ჩატი" : "Chat"}
+        </span>
+      </button>
 
-  return (
-    <div className="fixed bottom-6 right-6 w-96 h-[32rem] bg-theme-surface border border-theme-line rounded-lg shadow-2xl flex flex-col z-50">
-      <div className="flex items-center justify-between p-4 border-b border-theme-line">
-        <div className="flex items-center gap-2">
-          <div className="h-2 w-2 rounded-full bg-green-500"></div>
-          <span className="font-medium text-theme">
-            {language === "ka" ? "დახმარების ასისტენტი" : "Chat Assistant"}
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleLanguage}
-            className="h-8 w-8"
-            data-testid="button-toggle-language"
-          >
-            <Languages className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsOpen(false)}
-            className="h-8 w-8"
-            data-testid="button-close-chat"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-
-      <ScrollArea className="flex-1 p-4">
-        <div ref={scrollRef} className="space-y-4">
-          {messages.length === 0 && (
-            <div className="text-center text-theme-muted py-8">
-              {language === "ka" 
-                ? "გამარჯობა! როგორ შემიძლია დაგეხმაროთ?"
-                : "Hello! How can I help you today?"}
-            </div>
-          )}
-          {messages.map((message, idx) => (
-            <div
-              key={idx}
-              className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+      {/* Slide-in Panel */}
+      <div
+        className={`fixed top-0 right-0 h-screen w-96 bg-background border-l border-border shadow-2xl transform transition-transform duration-300 ease-in-out z-40 flex flex-col ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border backdrop-blur-sm bg-background/95">
+          <div className="flex items-center gap-3">
+            <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
+            <span className="font-semibold text-lg text-foreground">
+              {language === "ka" ? "დახმარების ასისტენტი" : "Chat Assistant"}
+            </span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleLanguage}
+              className="h-9 w-9 hover-elevate"
+              data-testid="button-toggle-language"
             >
-              <div
-                className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                  message.role === "user"
-                    ? "bg-theme-accent text-white"
-                    : "bg-muted text-theme"
-                }`}
-                data-testid={`message-${message.role}-${idx}`}
-              >
-                {message.content}
-              </div>
-            </div>
-          ))}
-          {chatMutation.isPending && (
-            <div className="flex justify-start">
-              <div className="bg-muted text-theme-muted rounded-lg px-4 py-2">
-                <span className="animate-pulse">...</span>
-              </div>
-            </div>
-          )}
+              <Languages className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsOpen(false)}
+              className="h-9 w-9 hover-elevate"
+              data-testid="button-close-chat"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
-      </ScrollArea>
 
-      <div className="p-4 border-t border-theme-line">
-        <div className="flex gap-2">
-          <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder={language === "ka" ? "შეიყვანეთ შეტყობინება..." : "Type a message..."}
-            disabled={chatMutation.isPending}
-            className="flex-1"
-            data-testid="input-chat-message"
-          />
-          <Button
-            onClick={handleSend}
-            disabled={!input.trim() || chatMutation.isPending}
-            size="icon"
-            className="bg-theme-accent hover:bg-theme-accent-hover"
-            data-testid="button-send-message"
-          >
-            <Send className="h-4 w-4 text-white" />
-          </Button>
+        {/* Messages */}
+        <ScrollArea className="flex-1 px-6 py-4">
+          <div ref={scrollRef} className="space-y-4">
+            {messages.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <MessageCircle className="h-12 w-12 text-muted-foreground mb-4 opacity-50" />
+                <p className="text-muted-foreground text-sm">
+                  {language === "ka" 
+                    ? "გამარჯობა! როგორ შემიძლია დაგეხმაროთ?"
+                    : "Hello! How can I help you today?"}
+                </p>
+              </div>
+            )}
+            {messages.map((message, idx) => (
+              <div
+                key={idx}
+                className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+              >
+                <div
+                  className={`max-w-[85%] rounded-2xl px-4 py-3 ${
+                    message.role === "user"
+                      ? "bg-theme-accent text-white shadow-sm"
+                      : "bg-muted/50 text-foreground border border-border/50"
+                  }`}
+                  data-testid={`message-${message.role}-${idx}`}
+                >
+                  <p className="text-sm leading-relaxed">{message.content}</p>
+                </div>
+              </div>
+            ))}
+            {chatMutation.isPending && (
+              <div className="flex justify-start">
+                <div className="bg-muted/50 border border-border/50 rounded-2xl px-4 py-3">
+                  <div className="flex gap-1">
+                    <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"></span>
+                    <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></span>
+                    <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "0.4s" }}></span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </ScrollArea>
+
+        {/* Input */}
+        <div className="px-6 py-4 border-t border-border bg-background/95 backdrop-blur-sm">
+          <div className="flex gap-2">
+            <Input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder={language === "ka" ? "შეიყვანეთ შეტყობინება..." : "Type a message..."}
+              disabled={chatMutation.isPending}
+              className="flex-1 rounded-full"
+              data-testid="input-chat-message"
+            />
+            <Button
+              onClick={handleSend}
+              disabled={!input.trim() || chatMutation.isPending}
+              size="icon"
+              className="bg-theme-accent hover:bg-theme-accent-hover rounded-full h-10 w-10 shrink-0"
+              data-testid="button-send-message"
+            >
+              <Send className="h-4 w-4 text-white" />
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

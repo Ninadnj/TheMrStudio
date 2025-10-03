@@ -1,6 +1,5 @@
 import { Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import logoImage from "@assets/549364704_122179318094547349_828276851018343606_n_1759441251850.jpg";
 import heroBackground from "@assets/dnj0209_Stylized_illustration_of_a_fashionable_woman_wearing__c8336757-5e7e-4c3b-8d06-de464e7c4e40_1_1759491029908.png";
 
 export default function Hero() {
@@ -29,23 +28,18 @@ export default function Hero() {
       <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(0,0,0,0.03) 0%, transparent 50%, rgba(0,0,0,0.02) 100%)' }} />
       
       <div className="relative max-w-5xl mx-auto px-6 text-center">
-        <div className="mb-10 inline-block">
-          <div className="w-56 h-56 mx-auto mb-8 flex items-center justify-center relative">
-            <div className="w-full h-full rounded-full bg-white shadow-lg flex items-center justify-center overflow-hidden">
-              <img 
-                src={logoImage} 
-                alt="THE MR Nail & Laser Studio" 
-                className="w-[120%] h-[120%] object-cover"
-              />
-            </div>
+        <div className="mb-12 inline-block">
+          <div className="mb-8">
+            <h1 className="font-sans text-6xl md:text-7xl lg:text-8xl font-light text-theme" style={{ letterSpacing: '0.08em' }}>
+              <span style={{ opacity: 0.3, fontWeight: 300 }}>THE </span>
+              <span className="font-bold">MR</span>
+            </h1>
           </div>
         </div>
         
-        <h1 className="font-sans text-4xl md:text-5xl lg:text-6xl mb-6 font-light text-theme" style={{ letterSpacing: '0.05em' }}>
-          <span style={{ opacity: 0.3 }}>The </span>
-          <span className="font-bold">MR</span>
-          <span style={{ opacity: 0.3 }}> NAIL & LASER STUDIO</span>
-        </h1>
+        <h2 className="font-sans text-xl md:text-2xl mb-6 font-light text-theme tracking-widest uppercase" style={{ opacity: 0.5 }}>
+          Nail & Laser Studio
+        </h2>
         
         <p className="text-xl md:text-2xl mb-4 tracking-wide uppercase text-sm md:text-base font-light text-theme-muted">
           Where Beauty Meets Precision

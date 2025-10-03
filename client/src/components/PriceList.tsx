@@ -3,11 +3,23 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
+import priceImage1 from "@assets/1a440797-39f6-431a-a76a-9e1b68847e45_1759482191061.jpeg";
+import priceImage2 from "@assets/8f73a5f6-561e-4a79-a72c-74c6302f638d_1759482191062.jpeg";
+import priceImage3 from "@assets/8cc8ea7d-b26e-47b1-b7cf-5339bb9bec05_1759482191062.jpeg";
+import priceImage4 from "@assets/78b69246-cabd-4fcc-9d1a-f6c9a431ad8c_1759482191063.jpeg";
+import priceImage5 from "@assets/82dc3095-1932-488b-ab54-0d17e25fba9b_1759482191063.jpeg";
+import priceImage6 from "@assets/82dc3095-1932-488b-ab54-0d17e25fba9b (1)_1759482191063.jpeg";
+import priceImage7 from "@assets/2615c70a-78ce-4323-a82d-299160d84a1f_1759482191064.jpeg";
+import priceImage8 from "@assets/321610ae-b9e8-416b-8b60-8dfca4376534_1759482191064.jpeg";
+import priceImage9 from "@assets/c8e4d02a-0024-4dea-a9f2-1ef3498ecb02_1759482191064.jpeg";
+import priceImage10 from "@assets/d2146980-6e6b-4e45-8101-d74e5c0c54e9_1759482191065.jpeg";
+import priceImage11 from "@assets/e853b42f-4d08-46de-bf06-f380ac6db89b_1759482191065.jpeg";
+
 const priceLists = [
   {
     id: 1,
     category: "Laser Epilation – Women",
-    imageUrl: "https://images.unsplash.com/photo-1560750588-73207b1ef5b8?w=800&h=600&fit=crop",
+    imageUrl: priceImage1,
     items: [
       { name: "Face", price: null },
       { name: "Body", price: null },
@@ -19,7 +31,7 @@ const priceLists = [
   {
     id: 2,
     category: "Laser Epilation – Men",
-    imageUrl: "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=800&h=600&fit=crop",
+    imageUrl: priceImage2,
     items: [
       { name: "Face", price: null },
       { name: "Neck", price: null },
@@ -31,7 +43,7 @@ const priceLists = [
   {
     id: 3,
     category: "Cosmetology / Injectables",
-    imageUrl: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&h=600&fit=crop",
+    imageUrl: priceImage3,
     items: [
       { name: "Fillers", price: null },
       { name: "Meso", price: null },
@@ -42,7 +54,7 @@ const priceLists = [
   {
     id: 4,
     category: "Packages",
-    imageUrl: "https://images.unsplash.com/photo-1519415387722-a1c3bbef716c?w=800&h=600&fit=crop",
+    imageUrl: priceImage4,
     items: [
       { name: "Full legs + bikini", price: null },
       { name: "Combo sets", price: null }
@@ -51,7 +63,7 @@ const priceLists = [
   {
     id: 5,
     category: "Nail Services",
-    imageUrl: "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=800&h=600&fit=crop",
+    imageUrl: priceImage5,
     items: [
       { name: "Manicure", price: null },
       { name: "Pedicure", price: null },

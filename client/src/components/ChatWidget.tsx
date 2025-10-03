@@ -82,7 +82,7 @@ export default function ChatWidget() {
 
       {/* Compact Slide-in Panel */}
       <div
-        className={`fixed bottom-6 right-6 h-[600px] w-[400px] bg-background border border-border rounded-lg shadow-2xl transform transition-transform duration-300 ease-in-out z-40 flex flex-col ${
+        className={`fixed bottom-6 right-6 h-[480px] w-[340px] bg-background border border-border rounded-lg shadow-2xl transform transition-transform duration-300 ease-in-out z-40 flex flex-col ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >

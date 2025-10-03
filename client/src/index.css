@@ -11,8 +11,16 @@
   --theme-text: #111111;
   --theme-muted1: #D9D5CF;
   --theme-muted2: #B8B3AD;
+  
+  /* Option 1: Deep Charcoal (Currently Active) - Timeless, Editorial, Maximum Luxury */
   --theme-accent: #2A2A2A;
   --theme-accent-hover: #3A3A3A;
+  
+  /* Option 2: Warm Taupe/Greige - Soft Parisian Luxury, Warm & Inviting */
+  /* Uncomment these two lines and comment out the charcoal ones above to switch */
+  /* --theme-accent: #8B7E74; */
+  /* --theme-accent-hover: #9B8E84; */
+  
   --theme-surface: #FFFFFF;
   --theme-line: #EAE7E3;
 }
@@ -23,8 +31,16 @@
   --theme-text: #F8F7F5;
   --theme-muted1: #3A3A3A;
   --theme-muted2: #5A5A5A;
+  
+  /* Option 1: Deep Charcoal (Currently Active) */
   --theme-accent: #2A2A2A;
   --theme-accent-hover: #3A3A3A;
+  
+  /* Option 2: Warm Taupe/Greige */
+  /* Uncomment these two lines and comment out the charcoal ones above to switch */
+  /* --theme-accent: #8B7E74; */
+  /* --theme-accent-hover: #9B8E84; */
+  
   --theme-surface: #2A2A2A;
   --theme-line: #3A3A3A;
 }

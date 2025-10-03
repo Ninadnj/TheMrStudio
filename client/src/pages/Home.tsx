@@ -4,6 +4,7 @@ import Services from "@/components/Services";
 import BookingForm from "@/components/BookingForm";
 import PriceList from "@/components/PriceList";
 import Footer from "@/components/Footer";
+import ChatWidget from "@/components/ChatWidget";
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
       <PriceList />
       <BookingForm />
       <Footer />
+      <ChatWidget />
     </div>
   );
 }

@@ -34,3 +34,16 @@ export const insertBookingSchema = createInsertSchema(bookings).omit({
 
 export type InsertBooking = z.infer<typeof insertBookingSchema>;
 export type Booking = typeof bookings.$inferSelect;
+
+export const chatMessageSchema = z.object({
+  role: z.enum(["user", "assistant"]),
+  content: z.string().min(1),
+});
+
+export const chatRequestSchema = z.object({
+  messages: z.array(chatMessageSchema).min(1),
+  language: z.enum(["ka", "en"]).default("ka"),
+});
+
+export type ChatMessage = z.infer<typeof chatMessageSchema>;
+export type ChatRequest = z.infer<typeof chatRequestSchema>;

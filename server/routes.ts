@@ -1,8 +1,9 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertBookingSchema } from "@shared/schema";
+import { insertBookingSchema, chatRequestSchema } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
+import { chatWithGemini } from "./gemini-chat";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Create a new booking
@@ -46,6 +47,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(bookings);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch bookings" });
+    }
+  });
+
+  // Chat with Gemini assistant
+  app.post("/api/chat", async (req, res) => {
+    try {
+      const validatedData = chatRequestSchema.parse(req.body);
+      const response = await chatWithGemini(validatedData.messages, validatedData.language);
+      res.json({ response });
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        const validationError = fromZodError(error);
+        res.status(400).json({ error: validationError.message });
+      } else {
+        console.error("Chat error:", error);
+        res.status(500).json({ error: "Failed to get chat response" });
+      }
     }
   });
 

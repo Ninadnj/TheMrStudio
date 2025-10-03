@@ -4,7 +4,7 @@
 
 A modern beauty salon booking website built with React, Express, and PostgreSQL. The application features an elegant, editorial-style landing page inspired by premium beauty brands like Glossier and MR Nail & Laser Studio, with a focus on sophisticated minimalism and effortless booking experiences.
 
-The application showcases services, pricing through gallery-style presentation, and provides an integrated booking form for appointment scheduling. The design emphasizes trust-building, breathing room, and clear visual hierarchy guiding users toward booking actions.
+The application showcases services, pricing through gallery-style presentation, and provides an integrated booking form for appointment scheduling. A Gemini AI-powered chatbot offers bilingual (Georgian/English) customer support for service inquiries, pricing questions, and booking assistance. The design emphasizes trust-building, breathing room, and clear visual hierarchy guiding users toward booking actions.
 
 ## User Preferences
 
@@ -168,7 +168,25 @@ Preferred communication style: Simple, everyday language.
 - Inter - Clean sans-serif for body text
 - Neue Haas Grotesk - Editorial display font
 
+### AI Integration
+- **@google/genai**: Google Gemini AI SDK for chatbot functionality
+- **Gemini 2.0 Flash Exp**: Latest Gemini model with Georgian language support
+- Bilingual chatbot (Georgian/English) for customer assistance
+- Configured with studio information, services, pricing, and booking details
+
 ### External Services (Prepared/Future)
 - **Neon Database**: Serverless PostgreSQL hosting (connection ready)
+- **Google Gemini AI**: Chatbot service (active, requires GEMINI_API_KEY)
 - **Image CDN**: Unsplash URLs currently used for placeholder images (to be replaced with actual service photos)
 - **Session Store**: PostgreSQL-backed sessions via connect-pg-simple (configured but not actively used)
+
+## Features
+
+### AI-Powered Chat Assistant
+- **Bilingual Support**: Seamlessly switches between Georgian (ქართული) and English
+- **Service Information**: Answers questions about nail services, laser treatments, facials, and body care
+- **Booking Assistance**: Helps customers understand booking process and requirements
+- **Location & Contact**: Provides studio address and contact information
+- **Smart Responses**: Powered by Google Gemini AI with context-aware answers
+- **Error Handling**: Localized error messages with toast notifications
+- **Validation**: Zod schema validation for message structure and language constraints

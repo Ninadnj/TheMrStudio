@@ -18,7 +18,7 @@ export default function Hero() {
       {/* Background Image with Wash */}
       <div className="absolute inset-0">
         <img 
-          src="https://images.unsplash.com/photo-1560750588-73207b1ef5b8?w=1920&h=1080&fit=crop&q=80"
+          src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=1920&h=1080&fit=crop&q=80"
           alt="Beauty Studio"
           className="w-full h-full object-cover"
         />

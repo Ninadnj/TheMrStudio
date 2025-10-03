@@ -7,7 +7,6 @@ const priceLists = [
   {
     id: 1,
     category: "Nail Services",
-    color: "bg-gradient-to-br from-stone-100 to-neutral-50 dark:from-stone-900/30 dark:to-neutral-900/20",
     items: [
       { name: "Manicure", price: 45 },
       { name: "Pedicure", price: 65 },
@@ -18,7 +17,6 @@ const priceLists = [
   {
     id: 2,
     category: "Laser Epilation – Women",
-    color: "bg-gradient-to-br from-neutral-200/80 to-stone-100/60 dark:from-neutral-800/30 dark:to-stone-800/20",
     items: [
       { name: "Face", price: 80 },
       { name: "Body", price: 150 },
@@ -30,7 +28,6 @@ const priceLists = [
   {
     id: 3,
     category: "Laser Epilation – Men",
-    color: "bg-gradient-to-br from-zinc-100 to-gray-50 dark:from-zinc-900/30 dark:to-gray-900/20",
     items: [
       { name: "Face", price: 90 },
       { name: "Neck", price: 70 },
@@ -42,7 +39,6 @@ const priceLists = [
   {
     id: 4,
     category: "Cosmetology / Injectables",
-    color: "bg-gradient-to-br from-warmGray-100 to-stone-50 dark:from-warmGray-900/30 dark:to-stone-900/20",
     items: [
       { name: "Fillers", price: 450 },
       { name: "Meso", price: 180 },
@@ -53,7 +49,6 @@ const priceLists = [
   {
     id: 5,
     category: "Packages",
-    color: "bg-gradient-to-br from-slate-100/80 to-neutral-100/60 dark:from-slate-900/30 dark:to-neutral-900/20",
     items: [
       { name: "Full legs + bikini", price: 195 },
       { name: "Combo sets", price: 299 }
@@ -149,16 +144,17 @@ export default function PriceList() {
                 <Card 
                   key={list.id}
                   data-price-card
-                  className="flex-shrink-0 w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] overflow-hidden hover-elevate transition-all duration-300 cursor-pointer snap-start"
+                  className="flex-shrink-0 w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] overflow-hidden hover-elevate transition-all duration-300 cursor-pointer snap-start border-2 border-theme-accent/20"
                   data-testid={`card-price-${list.id}`}
                   onClick={() => setExpandedCard(expandedCard === list.id ? null : list.id)}
                 >
-                  <div className={`aspect-[4/3] relative overflow-hidden flex items-center justify-center ${list.color}`}>
+                  <div className="aspect-[4/3] relative overflow-hidden flex items-center justify-center bg-card">
+                    <div className="absolute top-0 left-0 w-12 h-1 bg-theme-accent"></div>
                     <div className="text-center px-6">
-                      <h3 className="font-serif text-3xl text-foreground/90 mb-3">
+                      <h3 className="font-serif text-3xl text-foreground mb-3">
                         {list.category}
                       </h3>
-                      <p className="text-sm text-foreground/60 tracking-wide">
+                      <p className="text-sm text-muted-foreground tracking-wide">
                         Click to view pricing
                       </p>
                     </div>

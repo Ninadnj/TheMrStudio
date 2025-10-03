@@ -7,7 +7,7 @@ const priceLists = [
   {
     id: 1,
     category: "Nail Services",
-    imageUrl: "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=800&h=600&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1610992015732-2449b76344bc?w=800&h=600&fit=crop&q=80",
     items: [
       { name: "Manicure", price: 45 },
       { name: "Pedicure", price: 65 },
@@ -18,7 +18,7 @@ const priceLists = [
   {
     id: 2,
     category: "Laser Epilation – Women",
-    imageUrl: "https://images.unsplash.com/photo-1560750588-73207b1ef5b8?w=800&h=600&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=800&h=600&fit=crop&q=80",
     items: [
       { name: "Face", price: 80 },
       { name: "Body", price: 150 },
@@ -30,7 +30,7 @@ const priceLists = [
   {
     id: 3,
     category: "Laser Epilation – Men",
-    imageUrl: "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=800&h=600&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1629904853893-c2c8981a1dc5?w=800&h=600&fit=crop&q=80",
     items: [
       { name: "Face", price: 90 },
       { name: "Neck", price: 70 },
@@ -42,7 +42,7 @@ const priceLists = [
   {
     id: 4,
     category: "Cosmetology / Injectables",
-    imageUrl: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&h=600&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=800&h=600&fit=crop&q=80",
     items: [
       { name: "Fillers", price: 450 },
       { name: "Meso", price: 180 },
@@ -53,7 +53,7 @@ const priceLists = [
   {
     id: 5,
     category: "Packages",
-    imageUrl: "https://images.unsplash.com/photo-1519415387722-a1c3bbef716c?w=800&h=600&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&h=600&fit=crop&q=80",
     items: [
       { name: "Full legs + bikini", price: 195 },
       { name: "Combo sets", price: 299 }

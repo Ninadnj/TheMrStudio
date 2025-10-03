@@ -1,7 +1,7 @@
 import { Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoImage from "@assets/549364704_122179318094547349_828276851018343606_n_1759441251850.jpg";
-import heroBackground from "@assets/dnj0209_Stylized_illustration_of_a_fashionable_woman_wearing__c8336757-5e7e-4c3b-8d06-de464e7c4e40_1_1759491029908.png";
+import heroBackground from "@assets/dnj0209_Stylized_illustration_of_a_fashionable_woman_wearing__c8336757-5e7e-4c3b-8d06-de464e7c4e40_3_1759491145992.png";
 
 export default function Hero() {
   const handleBookClick = () => {

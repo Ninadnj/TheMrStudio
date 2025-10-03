@@ -7,6 +7,7 @@ const priceLists = [
   {
     id: 1,
     category: "Nail Services",
+    accentOpacity: "opacity-100",
     items: [
       { name: "Manicure", price: 45 },
       { name: "Pedicure", price: 65 },
@@ -17,6 +18,7 @@ const priceLists = [
   {
     id: 2,
     category: "Laser Epilation – Women",
+    accentOpacity: "opacity-80",
     items: [
       { name: "Face", price: 80 },
       { name: "Body", price: 150 },
@@ -28,6 +30,7 @@ const priceLists = [
   {
     id: 3,
     category: "Laser Epilation – Men",
+    accentOpacity: "opacity-90",
     items: [
       { name: "Face", price: 90 },
       { name: "Neck", price: 70 },
@@ -39,6 +42,7 @@ const priceLists = [
   {
     id: 4,
     category: "Cosmetology / Injectables",
+    accentOpacity: "opacity-70",
     items: [
       { name: "Fillers", price: 450 },
       { name: "Meso", price: 180 },
@@ -49,6 +53,7 @@ const priceLists = [
   {
     id: 5,
     category: "Packages",
+    accentOpacity: "opacity-85",
     items: [
       { name: "Full legs + bikini", price: 195 },
       { name: "Combo sets", price: 299 }
@@ -149,7 +154,7 @@ export default function PriceList() {
                   onClick={() => setExpandedCard(expandedCard === list.id ? null : list.id)}
                 >
                   <div className="aspect-[4/3] relative overflow-hidden flex items-center justify-center bg-card">
-                    <div className="absolute top-0 left-0 w-12 h-1 bg-theme-accent"></div>
+                    <div className={`absolute top-0 left-0 w-12 h-1 bg-theme-accent ${list.accentOpacity}`}></div>
                     <div className="text-center px-6">
                       <h3 className="font-serif text-3xl text-foreground mb-3">
                         {list.category}

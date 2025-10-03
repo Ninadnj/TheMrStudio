@@ -127,7 +127,7 @@ export default function PriceList() {
   };
 
   return (
-    <section className="py-20 lg:py-32 bg-background">
+    <section id="prices" className="py-20 lg:py-32 bg-background">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl mb-4 text-foreground font-normal">

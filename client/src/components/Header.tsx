@@ -60,6 +60,16 @@ export default function Header() {
               Services
             </button>
             <button
+              onClick={() => scrollToSection('prices')}
+              className="text-sm font-medium text-foreground transition-colors"
+              style={{ color: 'inherit' }}
+              onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
+              onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
+              data-testid="nav-prices"
+            >
+              Price Lists
+            </button>
+            <button
               onClick={() => scrollToSection('booking')}
               className="text-sm font-medium text-foreground transition-colors"
               onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
@@ -105,6 +115,14 @@ export default function Header() {
               onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
             >
               Services
+            </button>
+            <button
+              onClick={() => scrollToSection('prices')}
+              className="text-left text-sm font-medium text-foreground transition-colors py-2"
+              onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
+              onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
+            >
+              Price Lists
             </button>
             <button
               onClick={() => scrollToSection('booking')}

@@ -80,48 +80,63 @@ export default function ChatWidget() {
         </span>
       </button>
 
-      {/* Slide-in Panel */}
+      {/* Compact Slide-in Panel */}
       <div
-        className={`fixed top-0 right-0 h-screen w-96 bg-background border-l border-border shadow-2xl transform transition-transform duration-300 ease-in-out z-40 flex flex-col ${
+        className={`fixed bottom-6 right-6 h-[600px] w-[400px] bg-background border border-border rounded-lg shadow-2xl transform transition-transform duration-300 ease-in-out z-40 flex flex-col ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border backdrop-blur-sm bg-background/95">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border backdrop-blur-sm bg-background/95 rounded-t-lg">
+          <div className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
-            <span className="font-semibold text-lg text-foreground">
+            <span className="font-semibold text-base text-foreground">
               {language === "ka" ? "დახმარების ასისტენტი" : "Chat Assistant"}
             </span>
           </div>
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleLanguage}
-              className="h-9 w-9 hover-elevate"
-              data-testid="button-toggle-language"
-            >
-              <Languages className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsOpen(false)}
-              className="h-9 w-9 hover-elevate"
-              data-testid="button-close-chat"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsOpen(false)}
+            className="h-8 w-8 hover-elevate"
+            data-testid="button-close-chat"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+
+        {/* Language Selection */}
+        <div className="flex gap-2 px-4 py-3 bg-muted/30 border-b border-border">
+          <button
+            onClick={() => setLanguage("ka")}
+            className={`flex-1 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+              language === "ka"
+                ? "bg-theme-accent text-white"
+                : "bg-background text-muted-foreground hover:bg-muted"
+            }`}
+            data-testid="button-language-ka"
+          >
+            ქართული
+          </button>
+          <button
+            onClick={() => setLanguage("en")}
+            className={`flex-1 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+              language === "en"
+                ? "bg-theme-accent text-white"
+                : "bg-background text-muted-foreground hover:bg-muted"
+            }`}
+            data-testid="button-language-en"
+          >
+            English
+          </button>
         </div>
 
         {/* Messages */}
-        <ScrollArea className="flex-1 px-6 py-4">
-          <div ref={scrollRef} className="space-y-4">
+        <ScrollArea className="flex-1 px-4 py-3">
+          <div ref={scrollRef} className="space-y-3">
             {messages.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <MessageCircle className="h-12 w-12 text-muted-foreground mb-4 opacity-50" />
+              <div className="flex flex-col items-center justify-center py-8 text-center">
+                <MessageCircle className="h-10 w-10 text-muted-foreground mb-3 opacity-50" />
                 <p className="text-muted-foreground text-sm">
                   {language === "ka" 
                     ? "გამარჯობა! როგორ შემიძლია დაგეხმაროთ?"
@@ -161,7 +176,7 @@ export default function ChatWidget() {
         </ScrollArea>
 
         {/* Input */}
-        <div className="px-6 py-4 border-t border-border bg-background/95 backdrop-blur-sm">
+        <div className="px-4 py-3 border-t border-border bg-background/95 backdrop-blur-sm rounded-b-lg">
           <div className="flex gap-2">
             <Input
               value={input}

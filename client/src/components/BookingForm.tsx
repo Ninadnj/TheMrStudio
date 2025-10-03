@@ -29,6 +29,12 @@ const services = [
   "Body Treatments"
 ];
 
+const timeSlots = [
+  "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM",
+  "12:00 PM", "12:30 PM", "01:00 PM", "01:30 PM", "02:00 PM", "02:30 PM",
+  "03:00 PM", "03:30 PM", "04:00 PM", "04:30 PM", "05:00 PM", "05:30 PM"
+];
+
 export default function BookingForm() {
   const [date, setDate] = useState<Date>();
   const [formData, setFormData] = useState({
@@ -36,6 +42,7 @@ export default function BookingForm() {
     email: "",
     phone: "",
     service: "",
+    time: "",
     notes: ""
   });
   const { toast } = useToast();
@@ -54,6 +61,7 @@ export default function BookingForm() {
       email: "",
       phone: "",
       service: "",
+      time: "",
       notes: ""
     });
     setDate(undefined);
@@ -134,29 +142,52 @@ export default function BookingForm() {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label>Preferred Date *</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-left font-normal"
-                  data-testid="button-date-picker"
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP") : "Pick a date"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  initialFocus
-                  disabled={(date) => date < new Date()}
-                />
-              </PopoverContent>
-            </Popover>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label>Preferred Date *</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left font-normal"
+                    data-testid="button-date-picker"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {date ? format(date, "PPP") : "Pick a date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={setDate}
+                    initialFocus
+                    disabled={(date) => date < new Date()}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="time">Preferred Time *</Label>
+              <Select
+                value={formData.time}
+                onValueChange={(value) => setFormData({ ...formData, time: value })}
+                disabled={!date}
+                required
+              >
+                <SelectTrigger id="time" data-testid="select-time">
+                  <SelectValue placeholder={date ? "Select a time" : "Select date first"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {timeSlots.map((time) => (
+                    <SelectItem key={time} value={time}>
+                      {time}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className="space-y-2">

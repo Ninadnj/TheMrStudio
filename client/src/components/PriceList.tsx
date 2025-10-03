@@ -7,7 +7,7 @@ const priceLists = [
   {
     id: 1,
     category: "Nail Services",
-    color: "bg-gradient-to-br from-rose-100 to-pink-50 dark:from-rose-950/40 dark:to-pink-950/20",
+    color: "bg-gradient-to-br from-stone-100 to-neutral-50 dark:from-stone-900/30 dark:to-neutral-900/20",
     items: [
       { name: "Manicure", price: 45 },
       { name: "Pedicure", price: 65 },
@@ -18,7 +18,7 @@ const priceLists = [
   {
     id: 2,
     category: "Laser Epilation – Women",
-    color: "bg-gradient-to-br from-violet-100 to-purple-50 dark:from-violet-950/40 dark:to-purple-950/20",
+    color: "bg-gradient-to-br from-neutral-200/80 to-stone-100/60 dark:from-neutral-800/30 dark:to-stone-800/20",
     items: [
       { name: "Face", price: 80 },
       { name: "Body", price: 150 },
@@ -30,7 +30,7 @@ const priceLists = [
   {
     id: 3,
     category: "Laser Epilation – Men",
-    color: "bg-gradient-to-br from-blue-100 to-cyan-50 dark:from-blue-950/40 dark:to-cyan-950/20",
+    color: "bg-gradient-to-br from-zinc-100 to-gray-50 dark:from-zinc-900/30 dark:to-gray-900/20",
     items: [
       { name: "Face", price: 90 },
       { name: "Neck", price: 70 },
@@ -42,7 +42,7 @@ const priceLists = [
   {
     id: 4,
     category: "Cosmetology / Injectables",
-    color: "bg-gradient-to-br from-amber-100 to-yellow-50 dark:from-amber-950/40 dark:to-yellow-950/20",
+    color: "bg-gradient-to-br from-warmGray-100 to-stone-50 dark:from-warmGray-900/30 dark:to-stone-900/20",
     items: [
       { name: "Fillers", price: 450 },
       { name: "Meso", price: 180 },
@@ -53,7 +53,7 @@ const priceLists = [
   {
     id: 5,
     category: "Packages",
-    color: "bg-gradient-to-br from-emerald-100 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/20",
+    color: "bg-gradient-to-br from-slate-100/80 to-neutral-100/60 dark:from-slate-900/30 dark:to-neutral-900/20",
     items: [
       { name: "Full legs + bikini", price: 195 },
       { name: "Combo sets", price: 299 }

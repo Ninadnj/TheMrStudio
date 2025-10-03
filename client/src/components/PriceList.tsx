@@ -6,6 +6,17 @@ import { Card } from "@/components/ui/card";
 const priceLists = [
   {
     id: 1,
+    category: "Nail Services",
+    imageUrl: "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=800&h=600&fit=crop",
+    items: [
+      { name: "Manicure", price: null },
+      { name: "Pedicure", price: null },
+      { name: "Gel Polish", price: null },
+      { name: "Nail Art", price: null }
+    ]
+  },
+  {
+    id: 2,
     category: "Laser Epilation – Women",
     imageUrl: "https://images.unsplash.com/photo-1560750588-73207b1ef5b8?w=800&h=600&fit=crop",
     items: [
@@ -17,7 +28,7 @@ const priceLists = [
     ]
   },
   {
-    id: 2,
+    id: 3,
     category: "Laser Epilation – Men",
     imageUrl: "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=800&h=600&fit=crop",
     items: [
@@ -29,7 +40,7 @@ const priceLists = [
     ]
   },
   {
-    id: 3,
+    id: 4,
     category: "Cosmetology / Injectables",
     imageUrl: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&h=600&fit=crop",
     items: [
@@ -40,23 +51,12 @@ const priceLists = [
     ]
   },
   {
-    id: 4,
+    id: 5,
     category: "Packages",
     imageUrl: "https://images.unsplash.com/photo-1519415387722-a1c3bbef716c?w=800&h=600&fit=crop",
     items: [
       { name: "Full legs + bikini", price: null },
       { name: "Combo sets", price: null }
-    ]
-  },
-  {
-    id: 5,
-    category: "Nail Services",
-    imageUrl: "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=800&h=600&fit=crop",
-    items: [
-      { name: "Manicure", price: null },
-      { name: "Pedicure", price: null },
-      { name: "Gel Polish", price: null },
-      { name: "Nail Art", price: null }
     ]
   }
 ];

@@ -3,33 +3,33 @@ import { Sparkles, User, Syringe, Package, Hand } from "lucide-react";
 const services = [
   {
     id: 1,
+    icon: Hand,
+    title: "Nail Services",
+    description: "Professional manicure and pedicure treatments"
+  },
+  {
+    id: 2,
     icon: Sparkles,
     title: "Laser Epilation – Women",
     description: "Face, body, bikini, armpits, full body"
   },
   {
-    id: 2,
+    id: 3,
     icon: User,
     title: "Laser Epilation – Men",
     description: "Face, neck, chest, back, shoulders"
   },
   {
-    id: 3,
+    id: 4,
     icon: Syringe,
     title: "Cosmetology / Injectables",
     description: "Fillers, meso, biorevitalization, tox"
   },
   {
-    id: 4,
+    id: 5,
     icon: Package,
     title: "Packages",
     description: "Full legs + bikini, combo sets"
-  },
-  {
-    id: 5,
-    icon: Hand,
-    title: "Nail Services",
-    description: "Professional manicure and pedicure treatments"
   }
 ];
 

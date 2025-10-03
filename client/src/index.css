@@ -28,7 +28,7 @@
   --opaque-button-border-intensity: -8;
   --elevate-1: rgba(0,0,0, .03);
   --elevate-2: rgba(0,0,0, .08);
-  --background: 0deg 14.29% 84.9%;
+  --background: 0deg 0% 87.84%;
   --foreground: 0 0% 8%;
   --border: 160 10% 92%;
   --card: 0 0% 99%;
@@ -49,7 +49,7 @@
   --primary-foreground: 0 0% 100%;
   --secondary: 0 0% 94%;
   --secondary-foreground: 0 0% 8%;
-  --muted: 240deg 9.59% 71.37%;
+  --muted: 0deg 4.65% 83.14%;
   --muted-foreground: 0 0% 42%;
   --accent: 0 0% 88%;
   --accent-foreground: 0 0% 8%;
@@ -112,7 +112,7 @@
   --elevate-1: rgba(0,0,0, .03);
   --elevate-2: rgba(0,0,0, .08);
 
-  --background: 0deg 14.29% 84.9%;
+  --background: 0deg 0% 87.84%;
 
   --foreground: 0 0% 8%;
 
@@ -154,7 +154,7 @@
 
   --secondary-foreground: 0 0% 8%;
 
-  --muted: 240deg 9.59% 71.37%;
+  --muted: 0deg 4.65% 83.14%;
 
   --muted-foreground: 0 0% 42%;
 

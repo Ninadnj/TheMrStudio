@@ -9,10 +9,10 @@ const priceLists = [
     category: "Nail Services",
     imageUrl: "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=800&h=600&fit=crop",
     items: [
-      { name: "Manicure", price: null },
-      { name: "Pedicure", price: null },
-      { name: "Gel Polish", price: null },
-      { name: "Nail Art", price: null }
+      { name: "Manicure", price: 45 },
+      { name: "Pedicure", price: 65 },
+      { name: "Gel Polish", price: 35 },
+      { name: "Nail Art", price: 55 }
     ]
   },
   {
@@ -20,11 +20,11 @@ const priceLists = [
     category: "Laser Epilation – Women",
     imageUrl: "https://images.unsplash.com/photo-1560750588-73207b1ef5b8?w=800&h=600&fit=crop",
     items: [
-      { name: "Face", price: null },
-      { name: "Body", price: null },
-      { name: "Bikini", price: null },
-      { name: "Armpits", price: null },
-      { name: "Full Body", price: null }
+      { name: "Face", price: 80 },
+      { name: "Body", price: 150 },
+      { name: "Bikini", price: 95 },
+      { name: "Armpits", price: 60 },
+      { name: "Full Body", price: 350 }
     ]
   },
   {
@@ -32,11 +32,11 @@ const priceLists = [
     category: "Laser Epilation – Men",
     imageUrl: "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=800&h=600&fit=crop",
     items: [
-      { name: "Face", price: null },
-      { name: "Neck", price: null },
-      { name: "Chest", price: null },
-      { name: "Back", price: null },
-      { name: "Shoulders", price: null }
+      { name: "Face", price: 90 },
+      { name: "Neck", price: 70 },
+      { name: "Chest", price: 120 },
+      { name: "Back", price: 130 },
+      { name: "Shoulders", price: 85 }
     ]
   },
   {
@@ -44,10 +44,10 @@ const priceLists = [
     category: "Cosmetology / Injectables",
     imageUrl: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&h=600&fit=crop",
     items: [
-      { name: "Fillers", price: null },
-      { name: "Meso", price: null },
-      { name: "Biorevitalization", price: null },
-      { name: "Tox", price: null }
+      { name: "Fillers", price: 450 },
+      { name: "Meso", price: 180 },
+      { name: "Biorevitalization", price: 220 },
+      { name: "Tox", price: 280 }
     ]
   },
   {
@@ -55,8 +55,8 @@ const priceLists = [
     category: "Packages",
     imageUrl: "https://images.unsplash.com/photo-1519415387722-a1c3bbef716c?w=800&h=600&fit=crop",
     items: [
-      { name: "Full legs + bikini", price: null },
-      { name: "Combo sets", price: null }
+      { name: "Full legs + bikini", price: 195 },
+      { name: "Combo sets", price: 299 }
     ]
   }
 ];

@@ -1,5 +1,4 @@
 import { Sparkles, User, Syringe, Package, Hand } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 
 const services = [
   {
@@ -38,7 +37,7 @@ export default function Services() {
   return (
     <section id="services" className="py-20 lg:py-32 bg-background">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16">
+        <div className="text-center mb-20">
           <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl mb-4 text-foreground font-normal">
             Our Services
           </h2>
@@ -47,32 +46,34 @@ export default function Services() {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {services.map((service) => {
             const Icon = service.icon;
             return (
-              <Card 
-                key={service.id} 
-                className="hover-elevate transition-all duration-300 overflow-visible"
+              <div
+                key={service.id}
+                className="group relative p-8 rounded-md border border-border bg-card/30 hover-elevate active-elevate-2 hover:shadow-md transition-all duration-300 overflow-visible"
                 data-testid={`card-service-${service.id}`}
               >
-                <CardContent className="p-6 space-y-4">
+                <div className="flex flex-col items-center text-center space-y-6">
                   <div 
-                    className="w-12 h-12 rounded-full flex items-center justify-center" 
-                    style={{ backgroundColor: 'var(--theme-accent)', opacity: 0.1 }}
+                    className="w-16 h-16 rounded-md flex items-center justify-center transition-all duration-300 group-hover:scale-110" 
+                    style={{ backgroundColor: 'var(--theme-accent)', opacity: 0.15 }}
                   >
-                    <Icon className="w-6 h-6" style={{ color: 'var(--theme-accent)', opacity: 1 }} />
+                    <Icon className="w-8 h-8 transition-transform duration-300" style={{ color: 'var(--theme-accent)' }} />
                   </div>
                   
-                  <h3 className="font-serif text-xl text-foreground">
-                    {service.title}
-                  </h3>
-                  
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {service.description}
-                  </p>
-                </CardContent>
-              </Card>
+                  <div className="space-y-3">
+                    <h3 className="font-serif text-2xl text-foreground tracking-tight">
+                      {service.title}
+                    </h3>
+                    
+                    <p className="text-sm text-muted-foreground leading-relaxed tracking-wide">
+                      {service.description}
+                    </p>
+                  </div>
+                </div>
+              </div>
             );
           })}
         </div>

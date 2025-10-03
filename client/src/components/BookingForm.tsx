@@ -19,6 +19,8 @@ import {
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 const services = [
   "Signature Facials",
@@ -47,24 +49,72 @@ export default function BookingForm() {
   });
   const { toast } = useToast();
 
+  const formattedDate = date ? format(date, "yyyy-MM-dd") : null;
+
+  const { data: availabilityData } = useQuery<{ bookedTimes: string[] }>({
+    queryKey: ["/api/bookings/availability", formattedDate],
+    enabled: !!formattedDate,
+    refetchOnMount: 'always',
+    staleTime: 0,
+  });
+
+  const bookedTimes = availabilityData?.bookedTimes || [];
+  const availableTimes = timeSlots.filter((time) => !bookedTimes.includes(time));
+
+  const createBookingMutation = useMutation({
+    mutationFn: async (bookingData: any) => {
+      const res = await apiRequest("POST", "/api/bookings", bookingData);
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ 
+        queryKey: ["/api/bookings/availability"],
+        exact: false 
+      });
+      toast({
+        title: "Booking Request Submitted",
+        description: "We'll contact you shortly to confirm your appointment.",
+      });
+      setFormData({
+        fullName: "",
+        email: "",
+        phone: "",
+        service: "",
+        time: "",
+        notes: ""
+      });
+      setDate(undefined);
+    },
+    onError: () => {
+      toast({
+        title: "Booking Failed",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Booking submitted:', { ...formData, date });
     
-    toast({
-      title: "Booking Request Submitted",
-      description: "We'll contact you shortly to confirm your appointment.",
-    });
+    if (!date || !formData.time) {
+      toast({
+        title: "Missing Information",
+        description: "Please select both a date and time for your appointment.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    setFormData({
-      fullName: "",
-      email: "",
-      phone: "",
-      service: "",
-      time: "",
-      notes: ""
+    createBookingMutation.mutate({
+      fullName: formData.fullName,
+      email: formData.email,
+      phone: formData.phone,
+      service: formData.service,
+      date: formattedDate,
+      time: formData.time,
+      notes: formData.notes || null,
     });
-    setDate(undefined);
   };
 
   return (
@@ -180,11 +230,17 @@ export default function BookingForm() {
                   <SelectValue placeholder={date ? "Select a time" : "Select date first"} />
                 </SelectTrigger>
                 <SelectContent>
-                  {timeSlots.map((time) => (
-                    <SelectItem key={time} value={time}>
-                      {time}
-                    </SelectItem>
-                  ))}
+                  {availableTimes.length === 0 && date ? (
+                    <div className="px-2 py-6 text-center text-sm text-muted-foreground">
+                      All time slots are booked for this date
+                    </div>
+                  ) : (
+                    availableTimes.map((time) => (
+                      <SelectItem key={time} value={time}>
+                        {time}
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -206,9 +262,10 @@ export default function BookingForm() {
             type="submit"
             size="lg"
             className="w-full bg-theme-accent font-medium tracking-wide"
+            disabled={createBookingMutation.isPending}
             data-testid="button-submit-booking"
           >
-            Submit Booking Request
+            {createBookingMutation.isPending ? "Submitting..." : "Submit Booking Request"}
           </Button>
         </form>
       </div>

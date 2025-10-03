@@ -91,7 +91,7 @@ export default function ChatWidget() {
           <div className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
             <span className="font-semibold text-base text-foreground">
-              {language === "ka" ? "დახმარების ასისტენტი" : "Chat Assistant"}
+              {language === "ka" ? "MR ასისტენტი" : "MR Assistant"}
             </span>
           </div>
           <Button

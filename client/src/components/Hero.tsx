@@ -1,6 +1,7 @@
 import { Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoImage from "@assets/549364704_122179318094547349_828276851018343606_n_1759441251850.jpg";
+import heroBackground from "@assets/dnj0209_Stylized_illustration_of_a_fashionable_woman_wearing__c8336757-5e7e-4c3b-8d06-de464e7c4e40_2_1759490780267.png";
 
 export default function Hero() {
   const handleBookClick = () => {
@@ -18,11 +19,11 @@ export default function Hero() {
       {/* Background Image with Wash */}
       <div className="absolute inset-0">
         <img 
-          src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=1920&h=1080&fit=crop&q=80"
-          alt="Beauty Studio"
-          className="w-full h-full object-cover"
+          src={heroBackground}
+          alt="Elegant Fashion"
+          className="w-full h-full object-cover opacity-60"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/95 via-background/90 to-background/95"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/85 to-background/90"></div>
       </div>
       
       <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(0,0,0,0.03) 0%, transparent 50%, rgba(0,0,0,0.02) 100%)' }} />

@@ -14,7 +14,17 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--theme-bg)' }}>
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Background Image with Wash */}
+      <div className="absolute inset-0">
+        <img 
+          src="https://images.unsplash.com/photo-1560750588-73207b1ef5b8?w=1920&h=1080&fit=crop&q=80"
+          alt="Beauty Studio"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/95 via-background/90 to-background/95"></div>
+      </div>
+      
       <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(0,0,0,0.03) 0%, transparent 50%, rgba(0,0,0,0.02) 100%)' }} />
       
       <div className="relative max-w-5xl mx-auto px-6 text-center">

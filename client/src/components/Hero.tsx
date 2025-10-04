@@ -63,10 +63,9 @@ export default function Hero() {
           <Button 
             size="lg"
             variant="outline"
-            className="min-w-[200px] font-medium tracking-wide backdrop-blur-sm border-theme-accent"
+            className="min-w-[200px] font-medium tracking-wide backdrop-blur-sm border-white/80 text-white hover:bg-white/10"
             onClick={handleServicesClick}
             data-testid="button-view-services"
-            style={{ color: 'var(--theme-accent)' }}
           >
             სერვისები
           </Button>

@@ -15,17 +15,17 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image with Wash */}
+      {/* Background Image with Dark Wash */}
       <div className="absolute inset-0">
         <img 
           src={heroBackground}
           alt="Elegant Fashion"
           className="w-full h-full object-cover opacity-75"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/85 via-background/80 to-background/85"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/80 to-black/85"></div>
       </div>
       
-      <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(0,0,0,0.03) 0%, transparent 50%, rgba(0,0,0,0.02) 100%)' }} />
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(0,0,0,0.1) 0%, transparent 50%, rgba(0,0,0,0.05) 100%)' }} />
       
       <div className="relative max-w-5xl mx-auto px-6 text-center">
         <div className="mb-12 inline-block">

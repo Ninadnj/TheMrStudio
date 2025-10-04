@@ -30,22 +30,22 @@ export default function Hero() {
       <div className="relative max-w-5xl mx-auto px-6 text-center">
         <div className="mb-12 inline-block">
           <div className="mb-8">
-            <h1 className="font-sans text-6xl md:text-7xl lg:text-8xl font-light text-theme" style={{ letterSpacing: '0.08em' }}>
+            <h1 className="font-sans text-6xl md:text-7xl lg:text-8xl font-light text-white" style={{ letterSpacing: '0.08em' }}>
               <span style={{ opacity: 0.3, fontWeight: 300 }}>THE </span>
               <span className="font-bold">MR</span>
             </h1>
           </div>
         </div>
         
-        <h2 className="font-sans text-xl md:text-2xl mb-6 font-light text-theme tracking-widest uppercase" style={{ opacity: 0.5 }}>
+        <h2 className="font-sans text-xl md:text-2xl mb-6 font-light text-white tracking-widest uppercase" style={{ opacity: 0.7 }}>
           Nail & Laser Studio
         </h2>
         
-        <p className="text-xl md:text-2xl mb-4 tracking-wide uppercase text-sm md:text-base font-light text-theme-muted">
+        <p className="text-xl md:text-2xl mb-4 tracking-wide uppercase text-sm md:text-base font-light text-white" style={{ opacity: 0.85 }}>
           Where Beauty Meets Precision
         </p>
         
-        <p className="text-base md:text-lg max-w-2xl mx-auto mb-12 leading-relaxed text-theme-muted">
+        <p className="text-base md:text-lg max-w-2xl mx-auto mb-12 leading-relaxed text-white" style={{ opacity: 0.85 }}>
           პროფესიონალური ფრჩხილების ხელოვნება და თანამედროვე ლაზერული პროცედურები
         </p>
         

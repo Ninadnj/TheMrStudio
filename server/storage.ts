@@ -79,30 +79,30 @@ export class MemStorage implements IStorage {
     
     const staff1 = {
       id: randomUUID(),
-      name: "Mari",
+      name: "მარიამი",
       serviceCategory: "Nail",
       calendarId: "mari@themrstudio.ge",
       order: "1"
     };
     const staff2 = {
       id: randomUUID(),
-      name: "Rita",
+      name: "რიტა",
       serviceCategory: "Nail",
       calendarId: "rita@themrstudio.ge",
       order: "2"
     };
     const staff3 = {
       id: randomUUID(),
-      name: "User 2",
-      serviceCategory: "Cosmetology",
-      calendarId: null,
+      name: "სალომე",
+      serviceCategory: "Epilation",
+      calendarId: "salome@themrstudio.ge",
       order: "3"
     };
     const staff4 = {
       id: randomUUID(),
-      name: "Laser",
-      serviceCategory: "Epilation",
-      calendarId: "laser@themrstudio.ge",
+      name: "ComingSoon",
+      serviceCategory: "Cosmetology",
+      calendarId: null,
       order: "4"
     };
     

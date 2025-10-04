@@ -162,7 +162,7 @@ export default function BookingForm() {
               <Label htmlFor="fullName">სრული სახელი *</Label>
               <Input
                 id="fullName"
-                placeholder="მაგ: ნინო გელაშვილი"
+                placeholder="მაგ: მარიამ ესებუა"
                 value={formData.fullName}
                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                 required
@@ -307,7 +307,7 @@ export default function BookingForm() {
             <Label htmlFor="notes">დამატებითი შენიშვნები</Label>
             <Textarea
               id="notes"
-              placeholder="სპეციალური სურვილები ან მოთხოვნები..."
+              placeholder="პერსონალური შენიშვნა"
               className="min-h-[120px] resize-none"
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}

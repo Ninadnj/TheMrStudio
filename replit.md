@@ -4,7 +4,7 @@
 
 A modern beauty salon booking website built with React, Express, and PostgreSQL. The application features an elegant, editorial-style landing page inspired by premium beauty brands like Glossier and MR Nail & Laser Studio, with a focus on sophisticated minimalism and effortless booking experiences.
 
-The application showcases services, pricing through gallery-style presentation, and provides an integrated booking form for appointment scheduling. A Gemini AI-powered chatbot offers bilingual (Georgian/English) customer support for service inquiries, pricing questions, and booking assistance. The design emphasizes trust-building, breathing room, and clear visual hierarchy guiding users toward booking actions.
+The application showcases 60+ real services with Georgian/English bilingual pricing organized by category (Nail, Epilation). Features include a multi-staff booking system where clients can select services and preferred staff members, an expandable services gallery with real pricing, and an integrated booking form. A Gemini AI-powered chatbot offers bilingual customer support. The admin panel enables management of hero content, services, staff assignments, and site settings. The design emphasizes trust-building, breathing room, and clear visual hierarchy guiding users toward booking actions.
 
 ## User Preferences
 
@@ -181,6 +181,34 @@ Preferred communication style: Simple, everyday language.
 - **Session Store**: PostgreSQL-backed sessions via connect-pg-simple (configured but not actively used)
 
 ## Features
+
+### Multi-Staff Booking System
+- **Service Categories**: Nail (manicure, pedicure, design - 17 services) and Epilation (laser hair removal - 45 services)
+- **Staff Assignments**: 4 staff members with service category specializations
+  - Mari (Nail - order 1)
+  - User 1 (Nail - order 2)
+  - User 2 (Cosmetology - order 3, no services yet)
+  - User 3 (Epilation - order 4)
+- **Smart Staff Filtering**: When a service is selected, only staff members qualified for that service category are shown
+- **Category Alignment**: Service categories exactly match staff categories (Nail, Epilation, Cosmetology)
+- **Booking Data**: Each booking includes staffId, staffName, service name, date, time, and customer details
+
+### Services Display
+- **Real Pricing**: 62 real services with bilingual Georgian/English names and prices in ₾ (Georgian Lari)
+- **Expandable Categories**: Accordion-style layout with category headers showing icons and descriptions
+- **Organized by Category**: Services grouped and sorted by order within Nail and Epilation categories
+- **2-Column Grid**: Service items displayed in responsive grid with service name and price
+- **Bilingual**: Section header "სერვისები და ფასები / Services & Pricing"
+
+### Admin Panel
+- **Secure Authentication**: Bcrypt password hashing (10 rounds) with session-based auth
+- **4 Management Tabs**:
+  1. **Hero Content**: Edit hero title, subtitle, and CTA
+  2. **Services**: CRUD operations for services (currently 62 loaded)
+  3. **Staff**: CRUD operations for staff with service category assignments
+  4. **Settings**: Site-wide configuration
+- **Staff Management**: Add/edit/delete staff, assign to service categories, set display order, prepare Google Calendar IDs
+- **Default Credentials**: username=admin, password=admin123 (⚠️ change in production)
 
 ### AI-Powered Chat Assistant
 - **Bilingual Support**: Seamlessly switches between Georgian (ქართული) and English

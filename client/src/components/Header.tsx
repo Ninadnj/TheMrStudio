@@ -41,7 +41,7 @@ export default function Header() {
               alt="MR Studio" 
               className="h-10 w-10 object-contain"
             />
-            <span className="font-serif text-xl md:text-2xl text-foreground">
+            <span className={`font-serif text-xl md:text-2xl transition-colors ${isScrolled ? 'text-foreground' : 'text-white'}`}>
               <span style={{ opacity: 0.3 }}>THE </span>
               <span className="font-bold">MR</span>
               <span style={{ opacity: 0.3 }}> Studio</span>
@@ -51,7 +51,7 @@ export default function Header() {
           <nav className="hidden md:flex items-center gap-8">
             <button
               onClick={() => scrollToSection('services')}
-              className="text-sm font-medium text-foreground transition-colors"
+              className={`text-sm font-medium transition-colors ${isScrolled ? 'text-foreground' : 'text-white'}`}
               style={{ color: 'inherit' }}
               onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
               onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
@@ -61,7 +61,7 @@ export default function Header() {
             </button>
             <button
               onClick={() => scrollToSection('prices')}
-              className="text-sm font-medium text-foreground transition-colors"
+              className={`text-sm font-medium transition-colors ${isScrolled ? 'text-foreground' : 'text-white'}`}
               style={{ color: 'inherit' }}
               onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
               onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
@@ -71,7 +71,7 @@ export default function Header() {
             </button>
             <button
               onClick={() => scrollToSection('gallery')}
-              className="text-sm font-medium text-foreground transition-colors"
+              className={`text-sm font-medium transition-colors ${isScrolled ? 'text-foreground' : 'text-white'}`}
               style={{ color: 'inherit' }}
               onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
               onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
@@ -81,7 +81,7 @@ export default function Header() {
             </button>
             <button
               onClick={() => scrollToSection('booking')}
-              className="text-sm font-medium text-foreground transition-colors"
+              className={`text-sm font-medium transition-colors ${isScrolled ? 'text-foreground' : 'text-white'}`}
               onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
               onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
               data-testid="nav-booking"
@@ -90,7 +90,7 @@ export default function Header() {
             </button>
             <button
               onClick={() => scrollToSection('contact')}
-              className="text-sm font-medium text-foreground transition-colors"
+              className={`text-sm font-medium transition-colors ${isScrolled ? 'text-foreground' : 'text-white'}`}
               onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
               onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
               data-testid="nav-contact"
@@ -99,7 +99,7 @@ export default function Header() {
             </button>
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className={`flex items-center gap-2 ${isScrolled ? '' : 'text-white'}`}>
             <ThemeSwitch />
 
             <Button

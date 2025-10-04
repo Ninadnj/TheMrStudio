@@ -110,3 +110,17 @@ export const insertSiteSettingsSchema = createInsertSchema(siteSettings).omit({
 
 export type InsertSiteSettings = z.infer<typeof insertSiteSettingsSchema>;
 export type SiteSettings = typeof siteSettings.$inferSelect;
+
+export const galleryImages = pgTable("gallery_images", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  category: text("category").notNull(),
+  imageUrl: text("image_url").notNull(),
+  order: text("order").notNull(),
+});
+
+export const insertGalleryImageSchema = createInsertSchema(galleryImages).omit({
+  id: true,
+});
+
+export type InsertGalleryImage = z.infer<typeof insertGalleryImageSchema>;
+export type GalleryImage = typeof galleryImages.$inferSelect;

@@ -62,6 +62,12 @@ export default function BookingForm() {
 
   const { data: availabilityData } = useQuery<{ bookedTimes: string[] }>({
     queryKey: ["/api/bookings/availability", formattedDate],
+    queryFn: async () => {
+      if (!formattedDate) return { bookedTimes: [] };
+      const response = await fetch(`/api/bookings/availability?date=${formattedDate}`);
+      if (!response.ok) throw new Error("Failed to fetch availability");
+      return response.json();
+    },
     enabled: !!formattedDate,
     refetchOnMount: 'always',
     staleTime: 0,
@@ -331,9 +337,9 @@ export default function BookingForm() {
             size="lg"
             className="w-full bg-theme-accent font-medium tracking-wide"
             disabled={createBookingMutation.isPending}
-            data-testid="button-submit-booking"
+            data-testid="button-book-appointment"
           >
-            {createBookingMutation.isPending ? "იგზავნება..." : "დაჯავშნის მოთხოვნა"}
+            {createBookingMutation.isPending ? "იგზავნება..." : "დაჯავშნა"}
           </Button>
         </form>
       </div>

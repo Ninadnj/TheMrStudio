@@ -226,16 +226,16 @@ export default function PriceList() {
                   <div className="aspect-[4/3] relative overflow-hidden flex items-center justify-center bg-card">
                     <div className={`absolute top-0 left-0 w-12 h-1 bg-theme-accent ${list.accentOpacity}`}></div>
                     <div className="text-center px-6">
-                      <h3 className="font-serif text-3xl text-foreground mb-2">
+                      <h3 className="font-serif text-2xl text-foreground mb-2">
                         {list.category}
                       </h3>
                       {list.subtitle && (
-                        <p className="text-xs text-muted-foreground/70 mb-3 tracking-wide">
+                        <p className="text-sm text-muted-foreground/80 mb-3 tracking-wide">
                           {list.subtitle}
                         </p>
                       )}
                       <p className="text-sm text-muted-foreground tracking-wide">
-                        Click to view pricing
+                        დააჭირეთ ფასების სანახავად
                       </p>
                     </div>
                   </div>

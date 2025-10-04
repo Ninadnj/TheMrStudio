@@ -6,13 +6,26 @@ import { Card } from "@/components/ui/card";
 const priceLists = [
   {
     id: 1,
-    category: "Nail Services",
+    category: "მანიკური / პედიკური",
     accentOpacity: "opacity-100",
     items: [
-      { name: "Manicure", price: 45 },
-      { name: "Pedicure", price: 65 },
-      { name: "Gel Polish", price: 35 },
-      { name: "Nail Art", price: 55 }
+      { name: "გელ-ლაქი ნუნების მოწესრიგებით", price: 35 },
+      { name: "გელ ლაქი ნუნების აწევით", price: 25 },
+      { name: "გამაგრება", price: 45 },
+      { name: "გამაგრების მოხსნა, გამაგრება", price: 55 },
+      { name: "დაგრძელება", price: 80 },
+      { name: "დაგრძელების კორექცია", price: 70 },
+      { name: "გელ-ლაქის მოხსნა", price: 5 },
+      { name: "გამაგრების მოხსნა", price: 10 },
+      { name: "1 ფრჩხილის გამაგრება", price: 4 },
+      { name: "1 ფრჩხილის დაგრძელება", price: 7 },
+      { name: "პედიკური კლასიკური", price: 40 },
+      { name: "პედიკური გელ-ლაქით", price: 55 },
+      { name: "გელ-ლაქის მოხსნა და ფორმის მოცემა", price: 10 },
+      { name: "გელ-ლაქის გადასმა ნუნების აწევით", price: 30 },
+      { name: "ფრენჩი", price: 5 },
+      { name: "ქრომი", price: 10 },
+      { name: "სტიკრები", price: "1 ლარიდან" }
     ]
   },
   {
@@ -176,7 +189,7 @@ export default function PriceList() {
                           >
                             <span className="text-sm text-foreground">{item.name}</span>
                             <span className="text-sm font-medium" style={{ color: 'var(--theme-accent)' }}>
-                              {item.price ? `$${item.price}` : '—'}
+                              {item.price ? (typeof item.price === 'number' ? `${item.price} ₾` : item.price) : '—'}
                             </span>
                           </div>
                         ))}

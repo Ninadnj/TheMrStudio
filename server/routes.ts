@@ -41,31 +41,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const [year, month, day] = booking.date.split('-');
             const [hours, minutes] = booking.time.split(':');
             
-            // User provides Tbilisi local time (e.g., "08:00")
-            // Create Date object to handle day rollover when adding 2 hours
-            const startDate = new Date(
+            // Convert Tbilisi local time to UTC instant
+            // Tbilisi is UTC+4, so subtract 4 hours to get UTC
+            const offsetMinutes = 4 * 60;
+            const startUtc = Date.UTC(
               parseInt(year),
               parseInt(month) - 1,
               parseInt(day),
               parseInt(hours),
               parseInt(minutes)
-            );
+            ) - offsetMinutes * 60 * 1000;
             
             // Add 2 hours for end time
-            const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000);
+            const endUtc = startUtc + 2 * 60 * 60 * 1000;
             
-            // Format as ISO strings with Tbilisi timezone offset (+04:00)
-            const formatWithTbilisiTZ = (date: Date) => {
-              const y = date.getFullYear();
-              const m = String(date.getMonth() + 1).padStart(2, '0');
-              const d = String(date.getDate()).padStart(2, '0');
-              const h = String(date.getHours()).padStart(2, '0');
-              const min = String(date.getMinutes()).padStart(2, '0');
-              return `${y}-${m}-${d}T${h}:${min}:00+04:00`;
-            };
-            
-            const startDateTime = formatWithTbilisiTZ(startDate);
-            const endDateTime = formatWithTbilisiTZ(endDate);
+            // Convert to ISO strings - Google Calendar will display in Asia/Tbilisi timezone
+            const startDateTime = new Date(startUtc).toISOString();
+            const endDateTime = new Date(endUtc).toISOString();
             
             const summary = `${booking.service} - ${booking.fullName}`;
             const description = `

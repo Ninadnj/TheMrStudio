@@ -24,7 +24,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { Service, Staff } from "@shared/schema";
 
 const timeSlots = [
-  "08:00 AM", "10:00 AM", "12:00 PM", "02:00 PM", "04:00 PM", "06:00 PM"
+  "08:00", "10:00", "12:00", "14:00", "16:00", "18:00"
 ];
 
 const serviceCategories = [

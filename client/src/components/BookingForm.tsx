@@ -72,7 +72,7 @@ export default function BookingForm() {
 
   const createBookingMutation = useMutation({
     mutationFn: async (bookingData: any) => {
-      const res = await apiRequest("/api/bookings", "POST", bookingData);
+      const res = await apiRequest("POST", "/api/bookings", bookingData);
       return await res.json();
     },
     onSuccess: () => {
@@ -201,7 +201,6 @@ export default function BookingForm() {
               <Select
                 value={formData.serviceCategory}
                 onValueChange={(value) => setFormData({ ...formData, serviceCategory: value, staffId: "" })}
-                required
               >
                 <SelectTrigger id="serviceCategory" data-testid="select-service-category">
                   <SelectValue placeholder="აირჩიეთ კატეგორია" />
@@ -214,6 +213,7 @@ export default function BookingForm() {
                   ))}
                 </SelectContent>
               </Select>
+              <input type="hidden" name="serviceCategory" value={formData.serviceCategory} required />
             </div>
           </div>
 
@@ -236,7 +236,6 @@ export default function BookingForm() {
               value={formData.staffId}
               onValueChange={(value) => setFormData({ ...formData, staffId: value })}
               disabled={!formData.serviceCategory || staffLoading}
-              required
             >
               <SelectTrigger id="staff" data-testid="select-staff">
                 <SelectValue placeholder={
@@ -257,6 +256,7 @@ export default function BookingForm() {
                 ))}
               </SelectContent>
             </Select>
+            <input type="hidden" name="staffId" value={formData.staffId} required />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -283,6 +283,7 @@ export default function BookingForm() {
                   />
                 </PopoverContent>
               </Popover>
+              <input type="hidden" name="date" value={date ? format(date, "yyyy-MM-dd") : ""} required />
             </div>
 
             <div className="space-y-2">
@@ -291,7 +292,6 @@ export default function BookingForm() {
                 value={formData.time}
                 onValueChange={(value) => setFormData({ ...formData, time: value })}
                 disabled={!date}
-                required
               >
                 <SelectTrigger id="time" data-testid="select-time">
                   <SelectValue placeholder={date ? "აირჩიეთ დრო" : "ჯერ აირჩიეთ თარიღი"} />
@@ -310,6 +310,7 @@ export default function BookingForm() {
                   )}
                 </SelectContent>
               </Select>
+              <input type="hidden" name="time" value={formData.time} required />
             </div>
           </div>
 

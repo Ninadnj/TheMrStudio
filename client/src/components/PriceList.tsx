@@ -122,11 +122,13 @@ const priceLists: PriceListItem[] = [
   },
   {
     id: 5,
-    category: "Packages",
+    category: "ეკონომ პაკეტი",
+    subtitle: "Economy Package",
     accentOpacity: "opacity-85",
     items: [
-      { name: "Full legs + bikini", price: 195 },
-      { name: "Combo sets", price: 299 }
+      { name: "მთლიანი სხეული / Full Body", price: 75 },
+      { name: "მთლიანი სხეული + სახე / Full Body + Face", price: 85 },
+      { name: "4 ძირითადი ზონა: ხელი, ფეხი, სრული ბიკინი, იღლია / 4 Main Zones: Hands, Legs, Full Bikini, Armpits", price: 55 }
     ]
   }
 ];

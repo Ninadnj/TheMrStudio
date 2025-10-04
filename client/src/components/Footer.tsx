@@ -11,7 +11,7 @@ export default function Footer() {
               <span style={{ opacity: 0.6 }}>The</span> <span className="font-medium">MR</span> Studio
             </h3>
             <p className="text-sm leading-relaxed tracking-wide" style={{ color: 'rgba(255,255,255,0.8)' }}>
-              ექსპერტული სილამაზისა და კეთილდღეობის მკურნალობა ელეგანტურ, თანამედროვე გარემოში. ჩვენ ვზრუნავთ თქვენს კეთილდღეობასა და სილამაზეზე.
+              Where timeless elegance meets modern precision. Your destination for expert nail artistry and advanced laser treatments.
             </p>
           </div>
 

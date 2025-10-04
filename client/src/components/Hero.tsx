@@ -46,7 +46,7 @@ export default function Hero() {
         </p>
         
         <p className="text-base md:text-lg max-w-2xl mx-auto mb-12 leading-relaxed text-white" style={{ opacity: 0.85 }}>
-          Timeless Elegance, Modern Excellence
+          პროფესიონალური ფრჩხილების ხელოვნება და თანამედროვე ლაზერული პროცედურები
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">

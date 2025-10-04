@@ -100,13 +100,24 @@ const priceLists: PriceListItem[] = [
   },
   {
     id: 4,
-    category: "Cosmetology / Injectables",
+    category: "კოსმეტოლოგია / ინექციები",
+    subtitle: "Cosmetology / Injectables",
     accentOpacity: "opacity-70",
     items: [
-      { name: "Fillers", price: 450 },
-      { name: "Meso", price: 180 },
-      { name: "Biorevitalization", price: 220 },
-      { name: "Tox", price: 280 }
+      { name: "ფილერი Juvederm", price: 500 },
+      { name: "ფილერი ReMedium", price: 250 },
+      { name: "ფილერი Replengen", price: 250 },
+      { name: "ბოტოქსი NABOTA", price: 250 },
+      { name: "ბოტოქსი Metox", price: 250 },
+      { name: "ბუსტერი Karisma", price: 500 },
+      { name: "ბუსტერი Revitrane", price: 500 },
+      { name: "ბუსტერი Profhilo", price: 500 },
+      { name: "ბიორევიტალიზაცია RRC", price: 100 },
+      { name: "ბიორევიტალიზაცია ჰეარონი", price: 250 },
+      { name: "მეზოთერაპია / Mesotherapy", price: 100 },
+      { name: "პილინგი / Peeling", price: 100 },
+      { name: "პლაზმო / Plasmo", price: 70 },
+      { name: "პაპილომის მოწვა / Papilloma Removal", price: 15 }
     ]
   },
   {

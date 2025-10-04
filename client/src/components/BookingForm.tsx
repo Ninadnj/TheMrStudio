@@ -152,7 +152,7 @@ export default function BookingForm() {
     <section id="booking" className="py-20 lg:py-32 bg-card">
       <div className="max-w-3xl mx-auto px-6">
         <div className="text-center mb-12">
-          <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl mb-4 text-card-foreground font-normal">
+          <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl mb-4 text-card-foreground font-normal">
             დაჯავშნეთ თქვენი ვიზიტი
           </h2>
           <p className="text-base text-muted-foreground tracking-wide">

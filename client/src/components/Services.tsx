@@ -48,7 +48,7 @@ export default function Services() {
     <section id="services" className="py-20 lg:py-32 bg-background">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-20">
-          <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl mb-3 text-foreground font-normal">
+          <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl mb-3 text-foreground font-normal">
             ჩვენი სერვისები
           </h2>
           <p className="text-lg text-muted-foreground/80 max-w-2xl mx-auto tracking-wide">

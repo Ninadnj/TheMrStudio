@@ -4,7 +4,8 @@ import {
   type HeroContent, type InsertHeroContent,
   type Service, type InsertService,
   type SiteSettings, type InsertSiteSettings,
-  type Staff, type InsertStaff
+  type Staff, type InsertStaff,
+  type GalleryImage, type InsertGalleryImage
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 
@@ -36,6 +37,12 @@ export interface IStorage {
   createStaff(staff: InsertStaff): Promise<Staff>;
   updateStaff(id: string, staff: Partial<InsertStaff>): Promise<Staff | undefined>;
   deleteStaff(id: string): Promise<boolean>;
+  
+  getAllGalleryImages(): Promise<GalleryImage[]>;
+  getGalleryImagesByCategory(category: string): Promise<GalleryImage[]>;
+  createGalleryImage(image: InsertGalleryImage): Promise<GalleryImage>;
+  updateGalleryImage(id: string, updates: Partial<InsertGalleryImage>): Promise<GalleryImage | undefined>;
+  deleteGalleryImage(id: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -45,12 +52,14 @@ export class MemStorage implements IStorage {
   private services: Map<string, Service>;
   private siteSettings: SiteSettings | undefined;
   private staff: Map<string, Staff>;
+  private galleryImages: Map<string, GalleryImage>;
 
   constructor() {
     this.users = new Map();
     this.bookings = new Map();
     this.services = new Map();
     this.staff = new Map();
+    this.galleryImages = new Map();
     
     this.heroContent = {
       id: randomUUID(),
@@ -365,6 +374,38 @@ export class MemStorage implements IStorage {
 
   async deleteStaff(id: string): Promise<boolean> {
     return this.staff.delete(id);
+  }
+
+  async getAllGalleryImages(): Promise<GalleryImage[]> {
+    return Array.from(this.galleryImages.values()).sort((a, b) => 
+      a.order.localeCompare(b.order)
+    );
+  }
+
+  async getGalleryImagesByCategory(category: string): Promise<GalleryImage[]> {
+    return Array.from(this.galleryImages.values())
+      .filter(img => img.category === category)
+      .sort((a, b) => a.order.localeCompare(b.order));
+  }
+
+  async createGalleryImage(insertImage: InsertGalleryImage): Promise<GalleryImage> {
+    const id = randomUUID();
+    const image: GalleryImage = { ...insertImage, id };
+    this.galleryImages.set(id, image);
+    return image;
+  }
+
+  async updateGalleryImage(id: string, updates: Partial<InsertGalleryImage>): Promise<GalleryImage | undefined> {
+    const existing = this.galleryImages.get(id);
+    if (!existing) return undefined;
+    
+    const updated: GalleryImage = { ...existing, ...updates };
+    this.galleryImages.set(id, updated);
+    return updated;
+  }
+
+  async deleteGalleryImage(id: string): Promise<boolean> {
+    return this.galleryImages.delete(id);
   }
 }
 

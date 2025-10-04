@@ -125,14 +125,14 @@ export default function Footer() {
         </div>
         
         <div className="text-center pt-6 mt-6" style={{ borderTop: '1px solid rgba(255,255,255,0.2)' }}>
-          <p className="text-sm flex items-center justify-center gap-1.5" style={{ fontFamily: 'Raleway, sans-serif', color: 'rgba(255,255,255,0.8)' }}>
+          <p className="text-base flex items-center justify-center gap-1.5" style={{ fontFamily: 'Raleway, sans-serif', color: 'rgba(255,255,255,0.8)' }}>
             <span style={{ opacity: 0.3 }}>Created by</span>{' '}
             <span className="font-bold">The</span>{' '}
             <span className="font-bold">DNJ™</span>{' '}
             <span style={{ opacity: 0.3 }}>with</span>{' '}
             🤍{' '}
             <span style={{ opacity: 0.3 }}>&</span>{' '}
-            <Coffee className="w-3.5 h-3.5" style={{ color: 'rgba(255,255,255,0.8)' }} />
+            <Coffee className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.8)' }} />
           </p>
         </div>
       </div>

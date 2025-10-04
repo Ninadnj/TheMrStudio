@@ -17,12 +17,29 @@ export const insertUserSchema = createInsertSchema(users).pick({
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 
+export const staff = pgTable("staff", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  serviceCategory: text("service_category").notNull(),
+  calendarId: text("calendar_id"),
+  order: text("order").notNull(),
+});
+
+export const insertStaffSchema = createInsertSchema(staff).omit({
+  id: true,
+});
+
+export type InsertStaff = z.infer<typeof insertStaffSchema>;
+export type Staff = typeof staff.$inferSelect;
+
 export const bookings = pgTable("bookings", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   fullName: text("full_name").notNull(),
   email: text("email").notNull(),
   phone: text("phone").notNull(),
   service: text("service").notNull(),
+  staffId: varchar("staff_id"),
+  staffName: text("staff_name"),
   date: date("date").notNull(),
   time: text("time").notNull(),
   notes: text("notes"),

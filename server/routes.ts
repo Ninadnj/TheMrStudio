@@ -6,7 +6,8 @@ import {
   chatRequestSchema,
   insertHeroContentSchema,
   insertServiceSchema,
-  insertSiteSettingsSchema
+  insertSiteSettingsSchema,
+  insertStaffSchema
 } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import { chatWithGemini } from "./gemini-chat";
@@ -183,6 +184,76 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else {
         res.status(500).json({ error: "Failed to update settings" });
       }
+    }
+  });
+
+  // Staff management
+  app.get("/api/admin/staff", requireAuth, async (req, res) => {
+    try {
+      const staff = await storage.getAllStaff();
+      res.json(staff);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch staff" });
+    }
+  });
+
+  app.get("/api/staff", async (req, res) => {
+    try {
+      const staff = await storage.getAllStaff();
+      res.json(staff);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch staff" });
+    }
+  });
+
+  app.get("/api/staff/category/:category", async (req, res) => {
+    try {
+      const { category } = req.params;
+      const staff = await storage.getStaffByCategory(category);
+      res.json(staff);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch staff by category" });
+    }
+  });
+
+  app.post("/api/admin/staff", requireAuth, async (req, res) => {
+    try {
+      const validatedData = insertStaffSchema.parse(req.body);
+      const staffMember = await storage.createStaff(validatedData);
+      res.status(201).json(staffMember);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        const validationError = fromZodError(error);
+        res.status(400).json({ error: validationError.message });
+      } else {
+        res.status(500).json({ error: "Failed to create staff member" });
+      }
+    }
+  });
+
+  app.put("/api/admin/staff/:id", requireAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const staffMember = await storage.updateStaff(id, req.body);
+      if (!staffMember) {
+        return res.status(404).json({ error: "Staff member not found" });
+      }
+      res.json(staffMember);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update staff member" });
+    }
+  });
+
+  app.delete("/api/admin/staff/:id", requireAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deleted = await storage.deleteStaff(id);
+      if (!deleted) {
+        return res.status(404).json({ error: "Staff member not found" });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete staff member" });
     }
   });
 

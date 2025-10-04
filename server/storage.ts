@@ -3,7 +3,8 @@ import {
   type Booking, type InsertBooking,
   type HeroContent, type InsertHeroContent,
   type Service, type InsertService,
-  type SiteSettings, type InsertSiteSettings
+  type SiteSettings, type InsertSiteSettings,
+  type Staff, type InsertStaff
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 
@@ -28,6 +29,13 @@ export interface IStorage {
   
   getSiteSettings(): Promise<SiteSettings | undefined>;
   updateSiteSettings(settings: InsertSiteSettings): Promise<SiteSettings>;
+  
+  getAllStaff(): Promise<Staff[]>;
+  getStaffById(id: string): Promise<Staff | undefined>;
+  getStaffByCategory(category: string): Promise<Staff[]>;
+  createStaff(staff: InsertStaff): Promise<Staff>;
+  updateStaff(id: string, staff: Partial<InsertStaff>): Promise<Staff | undefined>;
+  deleteStaff(id: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -36,11 +44,13 @@ export class MemStorage implements IStorage {
   private heroContent: HeroContent | undefined;
   private services: Map<string, Service>;
   private siteSettings: SiteSettings | undefined;
+  private staff: Map<string, Staff>;
 
   constructor() {
     this.users = new Map();
     this.bookings = new Map();
     this.services = new Map();
+    this.staff = new Map();
     
     this.heroContent = {
       id: randomUUID(),
@@ -52,11 +62,45 @@ export class MemStorage implements IStorage {
     
     this.siteSettings = {
       id: randomUUID(),
-      address: "123 Elegant Street, Tbilisi, Georgia",
-      phone: "+995 555 123 456",
+      address: "თბილისი, დიდი დიღომი, ასმათის ქუჩა",
+      phone: "+995 599 999 999",
       email: "info@themrstudio.ge",
       hours: "Mon-Sat: 10:00 AM - 8:00 PM",
     };
+    
+    const staff1 = {
+      id: randomUUID(),
+      name: "Mari",
+      serviceCategory: "Nail",
+      calendarId: null,
+      order: "1"
+    };
+    const staff2 = {
+      id: randomUUID(),
+      name: "User 1",
+      serviceCategory: "Nail",
+      calendarId: null,
+      order: "2"
+    };
+    const staff3 = {
+      id: randomUUID(),
+      name: "User 2",
+      serviceCategory: "Cosmetology",
+      calendarId: null,
+      order: "3"
+    };
+    const staff4 = {
+      id: randomUUID(),
+      name: "User 3",
+      serviceCategory: "Epilation",
+      calendarId: null,
+      order: "4"
+    };
+    
+    this.staff.set(staff1.id, staff1);
+    this.staff.set(staff2.id, staff2);
+    this.staff.set(staff3.id, staff3);
+    this.staff.set(staff4.id, staff4);
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -81,7 +125,9 @@ export class MemStorage implements IStorage {
     const booking: Booking = { 
       ...insertBooking, 
       id,
-      notes: insertBooking.notes ?? null 
+      notes: insertBooking.notes ?? null,
+      staffId: insertBooking.staffId ?? null,
+      staffName: insertBooking.staffName ?? null
     };
     this.bookings.set(id, booking);
     return booking;
@@ -141,6 +187,46 @@ export class MemStorage implements IStorage {
     const id = this.siteSettings?.id || randomUUID();
     this.siteSettings = { ...settings, id };
     return this.siteSettings;
+  }
+
+  async getAllStaff(): Promise<Staff[]> {
+    return Array.from(this.staff.values()).sort((a, b) => 
+      a.order.localeCompare(b.order)
+    );
+  }
+
+  async getStaffById(id: string): Promise<Staff | undefined> {
+    return this.staff.get(id);
+  }
+
+  async getStaffByCategory(category: string): Promise<Staff[]> {
+    return Array.from(this.staff.values())
+      .filter(s => s.serviceCategory === category)
+      .sort((a, b) => a.order.localeCompare(b.order));
+  }
+
+  async createStaff(insertStaff: InsertStaff): Promise<Staff> {
+    const id = randomUUID();
+    const staffMember: Staff = { 
+      ...insertStaff, 
+      id,
+      calendarId: insertStaff.calendarId ?? null 
+    };
+    this.staff.set(id, staffMember);
+    return staffMember;
+  }
+
+  async updateStaff(id: string, updates: Partial<InsertStaff>): Promise<Staff | undefined> {
+    const existing = this.staff.get(id);
+    if (!existing) return undefined;
+    
+    const updated: Staff = { ...existing, ...updates };
+    this.staff.set(id, updated);
+    return updated;
+  }
+
+  async deleteStaff(id: string): Promise<boolean> {
+    return this.staff.delete(id);
   }
 }
 

@@ -89,11 +89,8 @@ export default function Services() {
           <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl mb-4 text-foreground font-normal">
             ჩვენი სერვისები
           </h2>
-          <p className="text-lg text-foreground/80 max-w-2xl mx-auto mb-2">
-            მანიკური /პედიკური , ლაზერული ეპილაცია , კოსმეტოლოგია
-          </p>
           <p className="text-base text-muted-foreground max-w-2xl mx-auto tracking-wide">
-            სერვისები და ფასები / Services & Pricing
+            Our Services
           </p>
         </div>
         
@@ -147,19 +144,14 @@ export default function Services() {
                   {isExpanded && (
                     <div className="border-t border-border bg-background/50">
                       <div className="p-8 pt-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                           {categoryServices.map((service) => (
                             <div
                               key={service.id}
-                              className="flex justify-between items-baseline gap-4 py-3 px-4 rounded-md hover-elevate active-elevate-2"
+                              className="py-2 px-4 text-sm text-foreground/80 leading-relaxed"
                               data-testid={`service-${service.id}`}
                             >
-                              <span className="text-sm text-foreground leading-relaxed flex-1">
-                                {service.name}
-                              </span>
-                              <span className="text-sm font-medium text-foreground whitespace-nowrap">
-                                {service.price}
-                              </span>
+                              {service.name}
                             </div>
                           ))}
                         </div>

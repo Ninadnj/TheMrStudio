@@ -2,12 +2,29 @@ import { Sparkles, Hand, Star, X, ChevronLeft, ChevronRight } from "lucide-react
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { GalleryImage } from "@shared/schema";
-import { Button } from "@/components/ui/button";
 
 const categoryIcons: Record<string, any> = {
   "ფრჩხილები": Hand,
   "ლაზერი": Sparkles,
   "კოსმეტოლოგია": Star,
+};
+
+// Bento grid pattern - defines which images should be larger
+const getBentoPattern = (index: number): string => {
+  const patterns = [
+    "col-span-2 row-span-2", // Large square (0)
+    "col-span-1 row-span-1", // Small (1)
+    "col-span-1 row-span-1", // Small (2)
+    "col-span-1 row-span-2", // Tall (3)
+    "col-span-1 row-span-1", // Small (4)
+    "col-span-2 row-span-1", // Wide (5)
+    "col-span-1 row-span-1", // Small (6)
+    "col-span-1 row-span-1", // Small (7)
+    "col-span-1 row-span-2", // Tall (8)
+    "col-span-2 row-span-1", // Wide (9)
+  ];
+  
+  return patterns[index % patterns.length];
 };
 
 export default function Gallery() {
@@ -166,40 +183,46 @@ export default function Gallery() {
                 ფოტოები ჯერ არ დაემატა / No images added yet
               </p>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {displayedImages.map((image, index) => (
-                  <div
-                    key={image.id}
-                    ref={el => cardRefs.current[index] = el}
-                    className={`group relative aspect-square rounded-lg overflow-hidden bg-muted cursor-pointer transition-all duration-500 ${
-                      visibleCards.includes(index)
-                        ? 'opacity-100 scale-100'
-                        : 'opacity-0 scale-95'
-                    }`}
-                    style={{ transitionDelay: `${index * 50}ms` }}
-                    onClick={() => openLightbox(index)}
-                    data-testid={`gallery-image-${image.id}`}
-                  >
-                    <img
-                      src={image.imageUrl}
-                      alt={`${image.category} ${image.order}`}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center">
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">
-                          <Sparkles className="w-5 h-5 text-white" />
+              <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[200px] gap-4">
+                {displayedImages.map((image, index) => {
+                  const pattern = getBentoPattern(index);
+                  
+                  return (
+                    <div
+                      key={image.id}
+                      ref={el => cardRefs.current[index] = el}
+                      className={`group relative rounded-xl overflow-hidden bg-muted cursor-pointer transition-all duration-500 ${pattern} ${
+                        visibleCards.includes(index)
+                          ? 'opacity-100 scale-100'
+                          : 'opacity-0 scale-95'
+                      }`}
+                      style={{ transitionDelay: `${index * 50}ms` }}
+                      onClick={() => openLightbox(index)}
+                      data-testid={`gallery-image-${image.id}`}
+                    >
+                      <img
+                        src={image.imageUrl}
+                        alt={`${image.category} ${image.order}`}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                        <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-medium text-white bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                              {image.category}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="bg-white/20 backdrop-blur-sm rounded-full p-2">
+                          <Sparkles className="w-4 h-4 text-white" />
                         </div>
                       </div>
                     </div>
-                    <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <span className="text-xs font-medium text-white bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full">
-                        {image.category}
-                      </span>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>

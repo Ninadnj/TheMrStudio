@@ -57,7 +57,7 @@ export default function Header() {
               onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
               data-testid="nav-services"
             >
-              Services
+              სერვისები
             </button>
             <button
               onClick={() => scrollToSection('prices')}
@@ -67,7 +67,17 @@ export default function Header() {
               onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
               data-testid="nav-prices"
             >
-              Price Lists
+              ფასები
+            </button>
+            <button
+              onClick={() => scrollToSection('gallery')}
+              className="text-sm font-medium text-foreground transition-colors"
+              style={{ color: 'inherit' }}
+              onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
+              onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
+              data-testid="nav-gallery"
+            >
+              გალერეა
             </button>
             <button
               onClick={() => scrollToSection('booking')}
@@ -76,7 +86,7 @@ export default function Header() {
               onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
               data-testid="nav-booking"
             >
-              Book Now
+              დაჯავშნა
             </button>
             <button
               onClick={() => scrollToSection('contact')}
@@ -85,7 +95,7 @@ export default function Header() {
               onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
               data-testid="nav-contact"
             >
-              Contact
+              კონტაქტი
             </button>
           </nav>
 
@@ -114,7 +124,7 @@ export default function Header() {
               onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
               onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
             >
-              Services
+              სერვისები
             </button>
             <button
               onClick={() => scrollToSection('prices')}
@@ -122,7 +132,15 @@ export default function Header() {
               onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
               onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
             >
-              Price Lists
+              ფასები
+            </button>
+            <button
+              onClick={() => scrollToSection('gallery')}
+              className="text-left text-sm font-medium text-foreground transition-colors py-2"
+              onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
+              onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
+            >
+              გალერეა
             </button>
             <button
               onClick={() => scrollToSection('booking')}
@@ -130,7 +148,7 @@ export default function Header() {
               onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
               onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
             >
-              Book Now
+              დაჯავშნა
             </button>
             <button
               onClick={() => scrollToSection('contact')}
@@ -138,7 +156,7 @@ export default function Header() {
               onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
               onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
             >
-              Contact
+              კონტაქტი
             </button>
           </nav>
         </div>

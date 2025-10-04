@@ -42,7 +42,7 @@ export default function Hero() {
         </h2>
         
         <p className="text-xl md:text-2xl mb-4 tracking-wide uppercase text-sm md:text-base font-light text-theme-muted">
-          სადაც სილამაზე პრეციზიულობას ხვდება
+          Where Beauty Meets Precision
         </p>
         
         <p className="text-base md:text-lg max-w-2xl mx-auto mb-12 leading-relaxed text-theme-muted">

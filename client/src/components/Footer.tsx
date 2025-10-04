@@ -69,7 +69,7 @@ export default function Footer() {
               <div className="flex items-center gap-3">
                 <Phone className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.6)' }} />
                 <span className="text-sm" style={{ color: 'rgba(255,255,255,0.8)' }}>
-                  +995 555 123 456
+                  +995 551 287 555
                 </span>
               </div>
               <div className="flex items-center gap-3">
@@ -88,14 +88,38 @@ export default function Footer() {
           </p>
           
           <div className="flex items-center gap-2">
-            <Button size="icon" variant="ghost" data-testid="button-instagram" style={{ color: 'white' }}>
-              <Instagram className="w-4 h-4" />
+            <Button 
+              size="icon" 
+              variant="ghost" 
+              data-testid="button-instagram" 
+              style={{ color: 'white' }}
+              asChild
+            >
+              <a href="https://www.instagram.com/studiomariamisnail?igsh=N3RvYTE3dXBnZ29v&utm_source=qr" target="_blank" rel="noopener noreferrer">
+                <Instagram className="w-4 h-4" />
+              </a>
             </Button>
-            <Button size="icon" variant="ghost" data-testid="button-facebook" style={{ color: 'white' }}>
-              <Facebook className="w-4 h-4" />
+            <Button 
+              size="icon" 
+              variant="ghost" 
+              data-testid="button-facebook" 
+              style={{ color: 'white' }}
+              asChild
+            >
+              <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer">
+                <Facebook className="w-4 h-4" />
+              </a>
             </Button>
-            <Button size="icon" variant="ghost" data-testid="button-email" style={{ color: 'white' }}>
-              <Mail className="w-4 h-4" />
+            <Button 
+              size="icon" 
+              variant="ghost" 
+              data-testid="button-email" 
+              style={{ color: 'white' }}
+              asChild
+            >
+              <a href="mailto:Studiomrmr1@gmail.com">
+                <Mail className="w-4 h-4" />
+              </a>
             </Button>
           </div>
         </div>

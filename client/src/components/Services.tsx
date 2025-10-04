@@ -1,42 +1,43 @@
-import { Sparkles, User, Syringe, Package, Hand } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Sparkles, Hand, ChevronDown, ChevronUp } from "lucide-react";
+import { useEffect, useRef, useState, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import type { Service } from "@shared/schema";
 
-const services = [
-  {
-    id: 1,
-    icon: Hand,
-    title: "Nail Services",
-    description: "Professional manicure and pedicure treatments"
-  },
-  {
-    id: 2,
-    icon: Sparkles,
-    title: "Laser Epilation – Women",
-    description: "Face, body, bikini, armpits, full body"
-  },
-  {
-    id: 3,
-    icon: User,
-    title: "Laser Epilation – Men",
-    description: "Face, neck, chest, back, shoulders"
-  },
-  {
-    id: 4,
-    icon: Syringe,
-    title: "Cosmetology / Injectables",
-    description: "Fillers, meso, biorevitalization, tox"
-  },
-  {
-    id: 5,
-    icon: Package,
-    title: "Packages",
-    description: "Full legs + bikini, combo sets"
-  }
-];
+const categoryIcons: Record<string, any> = {
+  "Nail": Hand,
+  "Epilation": Sparkles,
+};
+
+const categoryDescriptions: Record<string, string> = {
+  "Nail": "მანიკიური, პედიკიური და დიზაინი / Manicure, Pedicure & Design",
+  "Epilation": "ლაზერული ეპილაცია / Laser Hair Removal",
+};
 
 export default function Services() {
   const [visibleCards, setVisibleCards] = useState<number[]>([]);
+  const [expandedCategories, setExpandedCategories] = useState<string[]>(["Nail", "Epilation"]);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const { data: services = [], isLoading } = useQuery<Service[]>({
+    queryKey: ["/api/services"],
+  });
+
+  const servicesByCategory = useMemo(() => {
+    const grouped: Record<string, Service[]> = {};
+    services.forEach(service => {
+      if (!grouped[service.category]) {
+        grouped[service.category] = [];
+      }
+      grouped[service.category].push(service);
+    });
+    Object.keys(grouped).forEach(category => {
+      grouped[category].sort((a, b) => parseInt(a.order) - parseInt(b.order));
+    });
+    return grouped;
+  }, [services]);
+
+  const categories = Object.keys(servicesByCategory).sort();
 
   useEffect(() => {
     const observers = cardRefs.current.map((card, index) => {
@@ -61,7 +62,25 @@ export default function Services() {
     return () => {
       observers.forEach(observer => observer?.disconnect());
     };
-  }, []);
+  }, [categories.length]);
+
+  const toggleCategory = (category: string) => {
+    setExpandedCategories(prev =>
+      prev.includes(category)
+        ? prev.filter(c => c !== category)
+        : [...prev, category]
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <section id="services" className="py-20 lg:py-32 bg-background">
+        <div className="max-w-7xl mx-auto px-6 text-center">
+          <p className="text-muted-foreground">Loading services...</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="services" className="py-20 lg:py-32 bg-background">
@@ -71,42 +90,79 @@ export default function Services() {
             Our Services
           </h2>
           <p className="text-base text-muted-foreground max-w-2xl mx-auto tracking-wide">
-            Indulge in our carefully curated selection of beauty and wellness treatments
+            სერვისები და ფასები / Services & Pricing
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {services.map((service, index) => {
-            const Icon = service.icon;
+        <div className="space-y-12 max-w-5xl mx-auto">
+          {categories.map((category, categoryIndex) => {
+            const Icon = categoryIcons[category] || Hand;
+            const categoryServices = servicesByCategory[category];
+            const isExpanded = expandedCategories.includes(category);
+            
             return (
               <div
-                key={service.id}
-                ref={el => cardRefs.current[index] = el}
-                className={`group relative p-8 rounded-md border border-border bg-card/30 hover-elevate active-elevate-2 hover:shadow-md transition-all duration-700 overflow-visible ${
-                  visibleCards.includes(index) 
+                key={category}
+                ref={el => cardRefs.current[categoryIndex] = el}
+                className={`transition-all duration-700 ${
+                  visibleCards.includes(categoryIndex) 
                     ? 'opacity-100 translate-y-0' 
                     : 'opacity-0 translate-y-8'
                 }`}
-                style={{ transitionDelay: `${index * 100}ms` }}
-                data-testid={`card-service-${service.id}`}
+                style={{ transitionDelay: `${categoryIndex * 100}ms` }}
+                data-testid={`category-${category}`}
               >
-                <div className="flex flex-col items-center text-center space-y-6">
-                  <div 
-                    className="w-16 h-16 rounded-md flex items-center justify-center transition-all duration-300 group-hover:scale-110" 
-                    style={{ backgroundColor: 'var(--theme-accent)', opacity: 0.15 }}
+                <div className="border border-border rounded-md bg-card/30 overflow-hidden">
+                  <button
+                    onClick={() => toggleCategory(category)}
+                    className="w-full p-8 flex items-center justify-between hover-elevate active-elevate-2 transition-all"
+                    data-testid={`button-toggle-${category}`}
                   >
-                    <Icon className="w-8 h-8 transition-transform duration-300" style={{ color: 'var(--theme-accent)' }} />
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <h3 className="font-serif text-2xl text-foreground tracking-tight">
-                      {service.title}
-                    </h3>
-                    
-                    <p className="text-sm text-muted-foreground leading-relaxed tracking-wide">
-                      {service.description}
-                    </p>
-                  </div>
+                    <div className="flex items-center gap-6">
+                      <div 
+                        className="w-14 h-14 rounded-md flex items-center justify-center" 
+                        style={{ backgroundColor: 'var(--theme-accent)', opacity: 0.15 }}
+                      >
+                        <Icon className="w-7 h-7" style={{ color: 'var(--theme-accent)' }} />
+                      </div>
+                      <div className="text-left">
+                        <h3 className="font-serif text-3xl text-foreground tracking-tight mb-1">
+                          {category}
+                        </h3>
+                        <p className="text-sm text-muted-foreground tracking-wide">
+                          {categoryDescriptions[category] || ""}
+                        </p>
+                      </div>
+                    </div>
+                    {isExpanded ? (
+                      <ChevronUp className="w-6 h-6 text-muted-foreground" />
+                    ) : (
+                      <ChevronDown className="w-6 h-6 text-muted-foreground" />
+                    )}
+                  </button>
+
+                  {isExpanded && (
+                    <div className="border-t border-border bg-background/50">
+                      <div className="p-8 pt-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {categoryServices.map((service) => (
+                            <div
+                              key={service.id}
+                              className="flex justify-between items-baseline gap-4 py-3 px-4 rounded-md hover-elevate active-elevate-2"
+                              data-testid={`service-${service.id}`}
+                            >
+                              <span className="text-sm text-foreground leading-relaxed flex-1">
+                                {service.name}
+                              </span>
+                              <span className="text-sm font-medium text-foreground whitespace-nowrap">
+                                {service.price}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             );

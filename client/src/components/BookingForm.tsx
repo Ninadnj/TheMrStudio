@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,15 +21,7 @@ import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-
-const services = [
-  "Signature Facials",
-  "Therapeutic Massage",
-  "Manicure & Pedicure",
-  "Hair Styling",
-  "Laser Treatments",
-  "Body Treatments"
-];
+import type { Service, Staff } from "@shared/schema";
 
 const timeSlots = [
   "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM",
@@ -43,11 +35,32 @@ export default function BookingForm() {
     fullName: "",
     email: "",
     phone: "",
-    service: "",
+    serviceId: "",
+    staffId: "",
     time: "",
     notes: ""
   });
   const { toast } = useToast();
+
+  const { data: services = [], isLoading: servicesLoading } = useQuery<Service[]>({
+    queryKey: ["/api/services"],
+  });
+
+  const selectedService = useMemo(() => 
+    services.find(s => s.id === formData.serviceId),
+    [services, formData.serviceId]
+  );
+
+  const { data: availableStaff = [], isLoading: staffLoading } = useQuery<Staff[]>({
+    queryKey: ["/api/staff/category", selectedService?.category],
+    queryFn: async () => {
+      if (!selectedService?.category) return [];
+      const response = await fetch(`/api/staff/category/${selectedService.category}`);
+      if (!response.ok) throw new Error("Failed to fetch staff");
+      return response.json();
+    },
+    enabled: !!selectedService?.category,
+  });
 
   const formattedDate = date ? format(date, "yyyy-MM-dd") : null;
 
@@ -63,7 +76,7 @@ export default function BookingForm() {
 
   const createBookingMutation = useMutation({
     mutationFn: async (bookingData: any) => {
-      const res = await apiRequest("POST", "/api/bookings", bookingData);
+      const res = await apiRequest("/api/bookings", "POST", bookingData);
       return await res.json();
     },
     onSuccess: () => {
@@ -79,7 +92,8 @@ export default function BookingForm() {
         fullName: "",
         email: "",
         phone: "",
-        service: "",
+        serviceId: "",
+        staffId: "",
         time: "",
         notes: ""
       });
@@ -106,11 +120,24 @@ export default function BookingForm() {
       return;
     }
 
+    if (!formData.staffId) {
+      toast({
+        title: "Missing Information",
+        description: "Please select a staff member for your appointment.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const selectedStaff = availableStaff.find(s => s.id === formData.staffId);
+
     createBookingMutation.mutate({
       fullName: formData.fullName,
       email: formData.email,
       phone: formData.phone,
-      service: formData.service,
+      service: selectedService?.name || "",
+      staffId: formData.staffId,
+      staffName: selectedStaff?.name || "",
       date: formattedDate,
       time: formData.time,
       notes: formData.notes || null,
@@ -174,22 +201,52 @@ export default function BookingForm() {
             <div className="space-y-2">
               <Label htmlFor="service">Service *</Label>
               <Select
-                value={formData.service}
-                onValueChange={(value) => setFormData({ ...formData, service: value })}
+                value={formData.serviceId}
+                onValueChange={(value) => setFormData({ ...formData, serviceId: value, staffId: "" })}
+                disabled={servicesLoading}
                 required
               >
                 <SelectTrigger id="service" data-testid="select-service">
-                  <SelectValue placeholder="Select a service" />
+                  <SelectValue placeholder={servicesLoading ? "Loading services..." : "Select a service"} />
                 </SelectTrigger>
                 <SelectContent>
                   {services.map((service) => (
-                    <SelectItem key={service} value={service}>
-                      {service}
+                    <SelectItem key={service.id} value={service.id}>
+                      {service.name} - {service.price}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="staff">Select Staff Member *</Label>
+            <Select
+              value={formData.staffId}
+              onValueChange={(value) => setFormData({ ...formData, staffId: value })}
+              disabled={!selectedService || staffLoading}
+              required
+            >
+              <SelectTrigger id="staff" data-testid="select-staff">
+                <SelectValue placeholder={
+                  !selectedService 
+                    ? "Select a service first" 
+                    : staffLoading 
+                    ? "Loading staff..." 
+                    : availableStaff.length === 0 
+                    ? "No staff available" 
+                    : "Select a staff member"
+                } />
+              </SelectTrigger>
+              <SelectContent>
+                {availableStaff.map((staff) => (
+                  <SelectItem key={staff.id} value={staff.id}>
+                    {staff.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

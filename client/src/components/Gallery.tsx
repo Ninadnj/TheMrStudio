@@ -1,7 +1,8 @@
-import { Sparkles, Hand, Star, ChevronDown, ChevronUp } from "lucide-react";
+import { Sparkles, Hand, Star, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { GalleryImage } from "@shared/schema";
+import { Button } from "@/components/ui/button";
 
 const categoryIcons: Record<string, any> = {
   "ფრჩხილები": Hand,
@@ -11,7 +12,8 @@ const categoryIcons: Record<string, any> = {
 
 export default function Gallery() {
   const [visibleCards, setVisibleCards] = useState<number[]>([]);
-  const [expandedCategories, setExpandedCategories] = useState<string[]>(["ფრჩხილები", "ლაზერი", "კოსმეტოლოგია"]);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [lightboxImage, setLightboxImage] = useState<number | null>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const { data: images = [], isLoading } = useQuery<GalleryImage[]>({
@@ -33,6 +35,13 @@ export default function Gallery() {
   }, [images]);
 
   const categories = Object.keys(imagesByCategory).sort();
+  
+  const displayedImages = useMemo(() => {
+    if (selectedCategory) {
+      return imagesByCategory[selectedCategory] || [];
+    }
+    return images.sort((a, b) => parseInt(a.order) - parseInt(b.order));
+  }, [selectedCategory, imagesByCategory, images]);
 
   useEffect(() => {
     const observers = cardRefs.current.map((card, index) => {
@@ -57,15 +66,42 @@ export default function Gallery() {
     return () => {
       observers.forEach(observer => observer?.disconnect());
     };
-  }, [categories.length]);
+  }, [displayedImages.length]);
 
-  const toggleCategory = (category: string) => {
-    setExpandedCategories(prev =>
-      prev.includes(category)
-        ? prev.filter(c => c !== category)
-        : [...prev, category]
-    );
+  const openLightbox = (index: number) => {
+    setLightboxImage(index);
+    document.body.style.overflow = 'hidden';
   };
+
+  const closeLightbox = () => {
+    setLightboxImage(null);
+    document.body.style.overflow = 'unset';
+  };
+
+  const goToPrevious = () => {
+    if (lightboxImage !== null && lightboxImage > 0) {
+      setLightboxImage(lightboxImage - 1);
+    }
+  };
+
+  const goToNext = () => {
+    if (lightboxImage !== null && lightboxImage < displayedImages.length - 1) {
+      setLightboxImage(lightboxImage + 1);
+    }
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (lightboxImage === null) return;
+      
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') goToPrevious();
+      if (e.key === 'ArrowRight') goToNext();
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [lightboxImage, displayedImages.length]);
 
   if (isLoading) {
     return (
@@ -78,101 +114,162 @@ export default function Gallery() {
   }
 
   return (
-    <section id="gallery" className="py-20 lg:py-32 bg-background">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-20">
-          <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl mb-4 text-foreground font-normal">
-            გალერეა
-          </h2>
-          <p className="text-lg text-foreground/80 max-w-2xl mx-auto mb-2">
-            ფრჩხილები , ლაზერი , კოსმეტოლოგია
-          </p>
-          <p className="text-base text-muted-foreground max-w-2xl mx-auto tracking-wide">
-            ჩვენი სამუშაოების პორტფოლიო / Our Work Portfolio
-          </p>
-        </div>
-        
-        <div className="space-y-12 max-w-6xl mx-auto">
-          {categories.length === 0 && (
-            <p className="text-center text-muted-foreground">
-              ფოტოები ჯერ არ დაემატა / No images added yet
+    <>
+      <section id="gallery" className="py-20 lg:py-32 bg-background">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl mb-4 text-foreground font-normal">
+              გალერეა
+            </h2>
+            <p className="text-lg text-foreground/80 max-w-2xl mx-auto mb-2">
+              ფრჩხილები , ლაზერი , კოსმეტოლოგია
             </p>
-          )}
-          {categories.map((category, categoryIndex) => {
-            const Icon = categoryIcons[category] || Hand;
-            const categoryImages = imagesByCategory[category];
-            const isExpanded = expandedCategories.includes(category);
-            
-            return (
-              <div
-                key={category}
-                ref={el => cardRefs.current[categoryIndex] = el}
-                className={`transition-all duration-700 ${
-                  visibleCards.includes(categoryIndex) 
-                    ? 'opacity-100 translate-y-0' 
-                    : 'opacity-0 translate-y-8'
+            <p className="text-base text-muted-foreground max-w-2xl mx-auto tracking-wide">
+              ჩვენი სამუშაოების პორტფოლიო / Our Work Portfolio
+            </p>
+          </div>
+
+          {categories.length > 0 && (
+            <div className="flex flex-wrap justify-center gap-3 mb-12">
+              <button
+                onClick={() => setSelectedCategory(null)}
+                className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all ${
+                  selectedCategory === null
+                    ? 'bg-theme-accent text-white'
+                    : 'bg-card hover-elevate border border-border text-foreground'
                 }`}
-                style={{ transitionDelay: `${categoryIndex * 100}ms` }}
-                data-testid={`category-gallery-${category}`}
+                data-testid="filter-all"
               >
-                <div className="border border-border rounded-md bg-card/30 overflow-hidden">
+                ყველა / All
+              </button>
+              {categories.map((category) => {
+                const Icon = categoryIcons[category] || Hand;
+                return (
                   <button
-                    onClick={() => toggleCategory(category)}
-                    className="w-full p-8 flex items-center justify-between hover-elevate active-elevate-2 transition-all"
-                    data-testid={`button-toggle-gallery-${category}`}
+                    key={category}
+                    onClick={() => setSelectedCategory(category)}
+                    className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${
+                      selectedCategory === category
+                        ? 'bg-theme-accent text-white'
+                        : 'bg-card hover-elevate border border-border text-foreground'
+                    }`}
+                    data-testid={`filter-${category}`}
                   >
-                    <div className="flex items-center gap-6">
-                      <div 
-                        className="w-14 h-14 rounded-md flex items-center justify-center" 
-                        style={{ backgroundColor: 'var(--theme-accent)', opacity: 0.15 }}
-                      >
-                        <Icon 
-                          className="w-6 h-6" 
-                          style={{ color: 'var(--theme-accent)' }}
-                        />
-                      </div>
-                      <div className="text-left">
-                        <h3 className="text-2xl font-serif text-foreground font-normal mb-1">
-                          {category}
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                          {categoryImages.length} {categoryImages.length === 1 ? 'ფოტო' : 'ფოტო'}
-                        </p>
-                      </div>
-                    </div>
-                    {isExpanded ? (
-                      <ChevronUp className="w-5 h-5 text-muted-foreground" />
-                    ) : (
-                      <ChevronDown className="w-5 h-5 text-muted-foreground" />
-                    )}
+                    <Icon className="w-4 h-4" />
+                    {category}
                   </button>
-                  
-                  {isExpanded && (
-                    <div className="px-8 pb-8">
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {categoryImages.map((image) => (
-                          <div
-                            key={image.id}
-                            className="aspect-square rounded-md overflow-hidden bg-muted hover-elevate transition-all cursor-pointer"
-                            data-testid={`gallery-image-${image.id}`}
-                          >
-                            <img
-                              src={image.imageUrl}
-                              alt={`${category} ${image.order}`}
-                              className="w-full h-full object-cover"
-                              loading="lazy"
-                            />
-                          </div>
-                        ))}
+                );
+              })}
+            </div>
+          )}
+
+          <div className="max-w-7xl mx-auto">
+            {displayedImages.length === 0 ? (
+              <p className="text-center text-muted-foreground">
+                ფოტოები ჯერ არ დაემატა / No images added yet
+              </p>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {displayedImages.map((image, index) => (
+                  <div
+                    key={image.id}
+                    ref={el => cardRefs.current[index] = el}
+                    className={`group relative aspect-square rounded-lg overflow-hidden bg-muted cursor-pointer transition-all duration-500 ${
+                      visibleCards.includes(index)
+                        ? 'opacity-100 scale-100'
+                        : 'opacity-0 scale-95'
+                    }`}
+                    style={{ transitionDelay: `${index * 50}ms` }}
+                    onClick={() => openLightbox(index)}
+                    data-testid={`gallery-image-${image.id}`}
+                  >
+                    <img
+                      src={image.imageUrl}
+                      alt={`${image.category} ${image.order}`}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">
+                          <Sparkles className="w-5 h-5 text-white" />
+                        </div>
                       </div>
                     </div>
-                  )}
-                </div>
+                    <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <span className="text-xs font-medium text-white bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full">
+                        {image.category}
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
-            );
-          })}
+            )}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* Lightbox Modal */}
+      {lightboxImage !== null && displayedImages[lightboxImage] && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex items-center justify-center"
+          onClick={closeLightbox}
+        >
+          <button
+            onClick={closeLightbox}
+            className="absolute top-4 right-4 z-10 text-white hover:bg-white/10 rounded-full p-2 transition-colors"
+            data-testid="button-close-lightbox"
+          >
+            <X className="w-6 h-6" />
+          </button>
+
+          <div className="absolute top-4 left-4 z-10 text-white text-sm font-medium bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
+            {lightboxImage + 1} / {displayedImages.length}
+          </div>
+
+          {lightboxImage > 0 && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                goToPrevious();
+              }}
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/10 rounded-full p-3 transition-colors"
+              data-testid="button-previous-image"
+            >
+              <ChevronLeft className="w-8 h-8" />
+            </button>
+          )}
+
+          {lightboxImage < displayedImages.length - 1 && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                goToNext();
+              }}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/10 rounded-full p-3 transition-colors"
+              data-testid="button-next-image"
+            >
+              <ChevronRight className="w-8 h-8" />
+            </button>
+          )}
+
+          <div
+            className="max-w-6xl max-h-[90vh] w-full mx-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={displayedImages[lightboxImage].imageUrl}
+              alt={`${displayedImages[lightboxImage].category} ${displayedImages[lightboxImage].order}`}
+              className="w-full h-full object-contain rounded-lg"
+            />
+            <div className="text-center mt-4">
+              <p className="text-white text-lg font-medium">
+                {displayedImages[lightboxImage].category}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

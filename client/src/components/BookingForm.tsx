@@ -81,8 +81,8 @@ export default function BookingForm() {
         exact: false 
       });
       toast({
-        title: "დაჯავშნის მოთხოვნა გაგზავნილია",
-        description: "მალე დაგიკავშირდებით შეხვედრის დასადასტურებლად",
+        title: "დაჯავშნა დადასტურებულია!",
+        description: "თქვენი ვიზიტი დაემატა კალენდარში. ელ. ფოსტაზე მიიღებთ დადასტურებას",
       });
       setFormData({
         fullName: "",

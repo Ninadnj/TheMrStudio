@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import HeroContentEditor from "@/components/admin/HeroContentEditor";
 import ServicesEditor from "@/components/admin/ServicesEditor";
 import SiteSettingsEditor from "@/components/admin/SiteSettingsEditor";
+import { StaffEditor } from "@/components/admin/StaffEditor";
 
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
@@ -77,9 +78,10 @@ export default function AdminDashboard() {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="hero" className="space-y-6">
-          <TabsList className="grid w-full max-w-md grid-cols-3">
-            <TabsTrigger value="hero" data-testid="tab-hero">Hero Content</TabsTrigger>
+          <TabsList className="grid w-full max-w-xl grid-cols-4">
+            <TabsTrigger value="hero" data-testid="tab-hero">Hero</TabsTrigger>
             <TabsTrigger value="services" data-testid="tab-services">Services</TabsTrigger>
+            <TabsTrigger value="staff" data-testid="tab-staff">Staff</TabsTrigger>
             <TabsTrigger value="settings" data-testid="tab-settings">Settings</TabsTrigger>
           </TabsList>
 
@@ -89,6 +91,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="services">
             <ServicesEditor />
+          </TabsContent>
+
+          <TabsContent value="staff">
+            <StaffEditor />
           </TabsContent>
 
           <TabsContent value="settings">

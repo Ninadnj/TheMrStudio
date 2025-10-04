@@ -196,7 +196,7 @@ export class MemStorage implements IStorage {
       const id = randomUUID();
       this.services.set(id, {
         id,
-        category: "Epilation - Men",
+        category: "Epilation",
         name: service.name,
         description: "ლაზერული ეპილაცია მამაკაცებისთვის / Laser Hair Removal for Men",
         price: service.price,
@@ -208,9 +208,9 @@ export class MemStorage implements IStorage {
       const id = randomUUID();
       this.services.set(id, {
         id,
-        category: "Manicure",
+        category: "Nail",
         name: service.name,
-        description: "პროფესიონალური მანიკიურის სერვისი / Professional Manicure Service",
+        description: "მანიკიური / Manicure",
         price: service.price,
         order: service.order,
       });
@@ -220,9 +220,9 @@ export class MemStorage implements IStorage {
       const id = randomUUID();
       this.services.set(id, {
         id,
-        category: "Pedicure",
+        category: "Nail",
         name: service.name,
-        description: "პროფესიონალური პედიკიურის სერვისი / Professional Pedicure Service",
+        description: "პედიკიური / Pedicure",
         price: service.price,
         order: service.order,
       });
@@ -232,7 +232,7 @@ export class MemStorage implements IStorage {
       const id = randomUUID();
       this.services.set(id, {
         id,
-        category: "Nail Design",
+        category: "Nail",
         name: service.name,
         description: "ფრჩხილების დიზაინი / Nail Design",
         price: service.price,

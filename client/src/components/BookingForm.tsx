@@ -29,37 +29,35 @@ const timeSlots = [
   "03:00 PM", "03:30 PM", "04:00 PM", "04:30 PM", "05:00 PM", "05:30 PM"
 ];
 
+const serviceCategories = [
+  { value: "Nail", label: "მანიკური / პედიკური" },
+  { value: "Epilation", label: "ლაზერული ეპილაცია" },
+  { value: "Cosmetology", label: "კოსმეტოლოგია" }
+];
+
 export default function BookingForm() {
   const [date, setDate] = useState<Date>();
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     phone: "",
-    serviceId: "",
+    serviceCategory: "",
+    serviceDetails: "",
     staffId: "",
     time: "",
     notes: ""
   });
   const { toast } = useToast();
 
-  const { data: services = [], isLoading: servicesLoading } = useQuery<Service[]>({
-    queryKey: ["/api/services"],
-  });
-
-  const selectedService = useMemo(() => 
-    services.find(s => s.id === formData.serviceId),
-    [services, formData.serviceId]
-  );
-
   const { data: availableStaff = [], isLoading: staffLoading } = useQuery<Staff[]>({
-    queryKey: ["/api/staff/category", selectedService?.category],
+    queryKey: ["/api/staff/category", formData.serviceCategory],
     queryFn: async () => {
-      if (!selectedService?.category) return [];
-      const response = await fetch(`/api/staff/category/${selectedService.category}`);
+      if (!formData.serviceCategory) return [];
+      const response = await fetch(`/api/staff/category/${formData.serviceCategory}`);
       if (!response.ok) throw new Error("Failed to fetch staff");
       return response.json();
     },
-    enabled: !!selectedService?.category,
+    enabled: !!formData.serviceCategory,
   });
 
   const formattedDate = date ? format(date, "yyyy-MM-dd") : null;
@@ -92,7 +90,8 @@ export default function BookingForm() {
         fullName: "",
         email: "",
         phone: "",
-        serviceId: "",
+        serviceCategory: "",
+        serviceDetails: "",
         staffId: "",
         time: "",
         notes: ""
@@ -130,12 +129,13 @@ export default function BookingForm() {
     }
 
     const selectedStaff = availableStaff.find(s => s.id === formData.staffId);
+    const selectedCategory = serviceCategories.find(c => c.value === formData.serviceCategory);
 
     createBookingMutation.mutate({
       fullName: formData.fullName,
       email: formData.email,
       phone: formData.phone,
-      service: selectedService?.name || "",
+      service: `${selectedCategory?.label || ""}: ${formData.serviceDetails}`,
       staffId: formData.staffId,
       staffName: selectedStaff?.name || "",
       date: formattedDate,
@@ -199,20 +199,19 @@ export default function BookingForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="service">სერვისი *</Label>
+              <Label htmlFor="serviceCategory">სერვისის კატეგორია *</Label>
               <Select
-                value={formData.serviceId}
-                onValueChange={(value) => setFormData({ ...formData, serviceId: value, staffId: "" })}
-                disabled={servicesLoading}
+                value={formData.serviceCategory}
+                onValueChange={(value) => setFormData({ ...formData, serviceCategory: value, staffId: "" })}
                 required
               >
-                <SelectTrigger id="service" data-testid="select-service">
-                  <SelectValue placeholder={servicesLoading ? "იტვირთება სერვისები..." : "აირჩიეთ სერვისი"} />
+                <SelectTrigger id="serviceCategory" data-testid="select-service-category">
+                  <SelectValue placeholder="აირჩიეთ კატეგორია" />
                 </SelectTrigger>
                 <SelectContent>
-                  {services.map((service) => (
-                    <SelectItem key={service.id} value={service.id}>
-                      {service.name} - {service.price}
+                  {serviceCategories.map((category) => (
+                    <SelectItem key={category.value} value={category.value}>
+                      {category.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -221,17 +220,30 @@ export default function BookingForm() {
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="serviceDetails">რა პროცედურა გსურთ? *</Label>
+            <Textarea
+              id="serviceDetails"
+              placeholder="მაგ: გელ ლაქი ფრჩხილების აწევით, თეთრი ფერი"
+              className="min-h-[100px] resize-none"
+              value={formData.serviceDetails}
+              onChange={(e) => setFormData({ ...formData, serviceDetails: e.target.value })}
+              required
+              data-testid="textarea-service-details"
+            />
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="staff">აირჩიეთ სპეციალისტი *</Label>
             <Select
               value={formData.staffId}
               onValueChange={(value) => setFormData({ ...formData, staffId: value })}
-              disabled={!selectedService || staffLoading}
+              disabled={!formData.serviceCategory || staffLoading}
               required
             >
               <SelectTrigger id="staff" data-testid="select-staff">
                 <SelectValue placeholder={
-                  !selectedService 
-                    ? "ჯერ აირჩიეთ სერვისი" 
+                  !formData.serviceCategory 
+                    ? "ჯერ აირჩიეთ კატეგორია" 
                     : staffLoading 
                     ? "იტვირთება სპეციალისტები..." 
                     : availableStaff.length === 0 

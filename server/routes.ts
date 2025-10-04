@@ -49,8 +49,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
               parseInt(minutes)
             );
             
-            // Assume 1 hour appointment by default
-            const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000);
+            // 2 hour appointment duration
+            const endDateTime = new Date(startDateTime.getTime() + 2 * 60 * 60 * 1000);
             
             const summary = `${booking.service} - ${booking.fullName}`;
             const description = `

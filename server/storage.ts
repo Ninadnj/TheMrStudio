@@ -88,7 +88,7 @@ export class MemStorage implements IStorage {
       id: randomUUID(),
       name: "რიტა",
       serviceCategory: "Nail",
-      calendarId: "rita@themrstudio.ge",
+      calendarId: "be60a59a51dee66edc5846a870e1aa11bd454898854ea78763b704e1e2754b83@group.calendar.google.com",
       order: "2"
     };
     const staff3 = {

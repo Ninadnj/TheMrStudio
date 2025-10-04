@@ -102,7 +102,7 @@ export class MemStorage implements IStorage {
       id: randomUUID(),
       name: "ComingSoon",
       serviceCategory: "Cosmetology",
-      calendarId: null,
+      calendarId: "7b14cf445638512bbfc3cbcbd7eb457be404170b14f605d3646380a4a8b2e033@group.calendar.google.com",
       order: "4"
     };
     

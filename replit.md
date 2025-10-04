@@ -4,7 +4,25 @@
 
 A modern beauty salon booking website built with React, Express, and PostgreSQL. The application features an elegant, editorial-style landing page inspired by premium beauty brands like Glossier and MR Nail & Laser Studio, with a focus on sophisticated minimalism and effortless booking experiences.
 
+**Full Georgian Translation**: The entire public-facing website is now in Georgian language, with only "THE MR studio" branding and footer credits remaining in English as requested. This includes hero content, services, booking forms, footer, and chat assistant UI.
+
 The application showcases 60+ real services with Georgian/English bilingual pricing organized by category (Nail, Epilation). Features include a multi-staff booking system where clients can select services and preferred staff members, an expandable services gallery with real pricing, and an integrated booking form. A Gemini AI-powered chatbot offers bilingual customer support. The admin panel enables management of hero content, services, staff assignments, and site settings. The design emphasizes trust-building, breathing room, and clear visual hierarchy guiding users toward booking actions.
+
+## Recent Changes
+
+### October 4, 2025 - Complete Georgian Translation
+- **Full Georgian Language Implementation**: All public-facing content translated to Georgian
+- **Hero Section**: Title, subtitle, tagline, description, and CTA buttons all in Georgian
+- **Services Section**: Header and all UI text in Georgian (service descriptions remain bilingual)
+- **Booking Form**: All labels, placeholders, validation messages, and toast notifications in Georgian
+- **Footer**: Description, quick links, contact info headings all in Georgian
+- **Chat Widget**: UI already bilingual, defaults to Georgian
+- **English Exceptions Preserved**: 
+  - "THE MR" in hero title and copyright
+  - "THE MR Studio" in chat widget header
+  - "Created by The DNJ™ with 🤍 &" in footer credits
+- **Contact Email Updated**: Changed to Studiomrmr1@gmail.com across the site
+- **Admin Panel**: Kept in English (internal tool for staff use)
 
 ## User Preferences
 

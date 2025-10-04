@@ -101,6 +101,144 @@ export class MemStorage implements IStorage {
     this.staff.set(staff2.id, staff2);
     this.staff.set(staff3.id, staff3);
     this.staff.set(staff4.id, staff4);
+    
+    // Initialize services with real pricing
+    const epilationServices = [
+      { name: "მთლიანი სახე / Full Face", price: "20 ₾", order: "01" },
+      { name: "მთლიანი სახე+ყელი / Full Face+Neck", price: "25 ₾", order: "02" },
+      { name: "შუბლი / Forehead", price: "10 ₾", order: "03" },
+      { name: "ნიკაპი / Chin", price: "5 ₾", order: "04" },
+      { name: "ღაბაბი / Under Chin", price: "5 ₾", order: "05" },
+      { name: "ნიკაპი+ღაბაბი / Chin+Under Chin", price: "8 ₾", order: "06" },
+      { name: "ზედა ტუჩი / Upper Lip", price: "5 ₾", order: "07" },
+      { name: "ბაკები / Sideburns", price: "10 ₾", order: "08" },
+      { name: "ლოყები / Cheeks", price: "10 ₾", order: "09" },
+      { name: "წარბის გადაბმის ზონა / Eyebrow Adhesion", price: "5 ₾", order: "10" },
+      { name: "ცხვირის ნესტო + ყურები / Nose+Ears", price: "10 ₾", order: "11" },
+      { name: "კისერი (უკნიდან) / Neck (back)", price: "10 ₾", order: "12" },
+      { name: "ყელი / Neck (front)", price: "10 ₾", order: "13" },
+      { name: "კეფა / Between Head and Neck", price: "10 ₾", order: "14" },
+      { name: "გულ-მკერდი / Chest", price: "20 ₾", order: "15" },
+      { name: "დვრილები / Breastfeeding part", price: "5 ₾", order: "16" },
+      { name: "მკერდის შუა ხაზი / Middle Line of Breast", price: "10 ₾", order: "17" },
+      { name: "მუცელი / Abdomen", price: "18 ₾", order: "18" },
+      { name: "მუცლის თეთრი ხაზი / Abdomen Line", price: "8 ₾", order: "19" },
+      { name: "ზედაპირული ბიკინი / Bikini", price: "10 ₾", order: "20" },
+      { name: "ღრმა ბიკინი / Full Bikini", price: "25 ₾", order: "21" },
+      { name: "დუნდულები / Buttocks", price: "15 ₾", order: "22" },
+      { name: "უკანა ტანი (ანუსი) / Anus", price: "5 ₾", order: "23" },
+      { name: "მთლიანი ფეხები / Full Legs", price: "30 ₾", order: "24" },
+      { name: "ზურგი / Full Back", price: "25 ₾", order: "25" },
+      { name: "წელი / Lower Back", price: "18 ₾", order: "26" },
+      { name: "ხელები სრულად / Full Hands", price: "25 ₾", order: "27" },
+      { name: "ნახევარი ხელი / Half Hand", price: "15 ₾", order: "28" },
+      { name: "იღლიები / Armpit", price: "10 ₾", order: "29" },
+      { name: "ხელის მტევნები+თითები / Hands+Fingers", price: "8 ₾", order: "30" },
+      { name: "მთლიანი სხეული / Full Body", price: "75 ₾", order: "31" },
+    ];
+    
+    const epilationMenServices = [
+      { name: "მთლიანი ზურგი (კაცები) / Full Back (Men)", price: "50 ₾", order: "40" },
+      { name: "კისერი (კაცები) / Neck (Men)", price: "15 ₾", order: "41" },
+      { name: "ყელი (კაცები) / Throat (Men)", price: "12 ₾", order: "42" },
+      { name: "ღაწვი (კაცები) / Jaw (Men)", price: "15 ₾", order: "43" },
+      { name: "ხელი + იღლია (კაცები) / Hand+Armpit (Men)", price: "40 ₾", order: "44" },
+      { name: "გულ-მკერდი (კაცები) / Chest (Men)", price: "30 ₾", order: "45" },
+      { name: "ბეჭები (კაცები) / Calves (Men)", price: "30 ₾", order: "46" },
+      { name: "მხრები (კაცები) / Shoulders (Men)", price: "20 ₾", order: "47" },
+      { name: "მუცელი (კაცები) / Abdomen (Men)", price: "30 ₾", order: "48" },
+      { name: "წელი (კაცები) / Waist (Men)", price: "30 ₾", order: "49" },
+      { name: "ფეხები (კაცები) / Legs (Men)", price: "50 ₾", order: "50" },
+      { name: "სახე (კაცები) / Face (Men)", price: "30 ₾", order: "51" },
+      { name: "შუბლი (კაცები) / Forehead (Men)", price: "15 ₾", order: "52" },
+      { name: "წარბებს შორის (კაცები) / Between Eyebrows (Men)", price: "5 ₾", order: "53" },
+    ];
+    
+    const manicureServices = [
+      { name: "გელ-ლაქი ნუნების მოწესრიგებით / Gel Polish with Nail Trim", price: "35 ₾", order: "60" },
+      { name: "გელ ლაქი ნუნების აწევით / Gel Polish with Nail Lift", price: "25 ₾", order: "61" },
+      { name: "გამაგრება / Strengthening", price: "45 ₾", order: "62" },
+      { name: "გამაგრების მოხსნა, გამაგრება / Removal+Strengthening", price: "55 ₾", order: "63" },
+      { name: "დაგრძელება / Extension", price: "80 ₾", order: "64" },
+      { name: "დაგრძელების კორექცია / Extension Correction", price: "70 ₾", order: "65" },
+      { name: "გელ-ლაქის მოხსნა / Gel Polish Removal", price: "5 ₾", order: "66" },
+      { name: "გამაგრების მოხსნა / Strengthening Removal", price: "10 ₾", order: "67" },
+      { name: "1 ფრჩხილის გამაგრება / 1 Nail Strengthening", price: "4 ₾", order: "68" },
+      { name: "1 ფრჩხილის დაგრძელება / 1 Nail Extension", price: "7 ₾", order: "69" },
+    ];
+    
+    const pedicureServices = [
+      { name: "პედიკური კლასიკური / Classic Pedicure", price: "40 ₾", order: "70" },
+      { name: "პედიკური გელ-ლაქით / Pedicure with Gel Polish", price: "55 ₾", order: "71" },
+      { name: "გელ-ლაქის მოხსნა და ფორმის მოცემა / Gel Removal+Shape", price: "10 ₾", order: "72" },
+      { name: "გელ-ლაქის გადასმა ნუნების აწევით / Gel Reapplication with Lift", price: "30 ₾", order: "73" },
+    ];
+    
+    const designServices = [
+      { name: "ფრენჩი / French", price: "5 ₾", order: "80" },
+      { name: "ქრომი / Chrome", price: "10 ₾", order: "81" },
+      { name: "სტიკრები / Stickers", price: "1+ ₾", order: "82" },
+    ];
+    
+    epilationServices.forEach((service) => {
+      const id = randomUUID();
+      this.services.set(id, {
+        id,
+        category: "Epilation",
+        name: service.name,
+        description: "ლაზერული ეპილაცია / Laser Hair Removal",
+        price: service.price,
+        order: service.order,
+      });
+    });
+    
+    epilationMenServices.forEach((service) => {
+      const id = randomUUID();
+      this.services.set(id, {
+        id,
+        category: "Epilation - Men",
+        name: service.name,
+        description: "ლაზერული ეპილაცია მამაკაცებისთვის / Laser Hair Removal for Men",
+        price: service.price,
+        order: service.order,
+      });
+    });
+    
+    manicureServices.forEach((service) => {
+      const id = randomUUID();
+      this.services.set(id, {
+        id,
+        category: "Manicure",
+        name: service.name,
+        description: "პროფესიონალური მანიკიურის სერვისი / Professional Manicure Service",
+        price: service.price,
+        order: service.order,
+      });
+    });
+    
+    pedicureServices.forEach((service) => {
+      const id = randomUUID();
+      this.services.set(id, {
+        id,
+        category: "Pedicure",
+        name: service.name,
+        description: "პროფესიონალური პედიკიურის სერვისი / Professional Pedicure Service",
+        price: service.price,
+        order: service.order,
+      });
+    });
+    
+    designServices.forEach((service) => {
+      const id = randomUUID();
+      this.services.set(id, {
+        id,
+        category: "Nail Design",
+        name: service.name,
+        description: "ფრჩხილების დიზაინი / Nail Design",
+        price: service.price,
+        order: service.order,
+      });
+    });
   }
 
   async getUser(id: string): Promise<User | undefined> {

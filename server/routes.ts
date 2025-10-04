@@ -18,6 +18,7 @@ import {
   checkAuthHandler, 
   requireAuth 
 } from "./auth";
+import { createCalendarEvent } from "./google-calendar";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
@@ -29,12 +30,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const validatedData = insertBookingSchema.parse(req.body);
       const booking = await storage.createBooking(validatedData);
+      
+      // Create Google Calendar event if staff has calendar integration
+      if (booking.staffId) {
+        const staff = await storage.getStaffById(booking.staffId);
+        
+        if (staff?.calendarId) {
+          try {
+            // Parse booking date and time
+            const [year, month, day] = booking.date.split('-');
+            const [hours, minutes] = booking.time.split(':');
+            
+            const startDateTime = new Date(
+              parseInt(year),
+              parseInt(month) - 1,
+              parseInt(day),
+              parseInt(hours),
+              parseInt(minutes)
+            );
+            
+            // Assume 1 hour appointment by default
+            const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000);
+            
+            const summary = `${booking.service} - ${booking.fullName}`;
+            const description = `
+Booking Details:
+Client: ${booking.fullName}
+Phone: ${booking.phone}
+Email: ${booking.email}
+Service: ${booking.service}
+Staff: ${booking.staffName}
+${booking.notes ? `Notes: ${booking.notes}` : ''}
+            `.trim();
+            
+            await createCalendarEvent(
+              staff.calendarId,
+              summary,
+              description,
+              startDateTime.toISOString(),
+              endDateTime.toISOString(),
+              booking.email
+            );
+            
+            console.log(`Calendar event created for ${staff.name} (${staff.calendarId})`);
+          } catch (calendarError) {
+            console.error('Failed to create calendar event:', calendarError);
+            // Don't fail the booking if calendar creation fails
+          }
+        }
+      }
+      
       res.status(201).json(booking);
     } catch (error: any) {
       if (error.name === "ZodError") {
         const validationError = fromZodError(error);
         res.status(400).json({ error: validationError.message });
       } else {
+        console.error('Booking creation error:', error);
         res.status(500).json({ error: "Failed to create booking" });
       }
     }

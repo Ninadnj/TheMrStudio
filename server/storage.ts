@@ -81,14 +81,14 @@ export class MemStorage implements IStorage {
       id: randomUUID(),
       name: "Mari",
       serviceCategory: "Nail",
-      calendarId: null,
+      calendarId: "mari@themrstudio.ge",
       order: "1"
     };
     const staff2 = {
       id: randomUUID(),
-      name: "User 1",
+      name: "Rita",
       serviceCategory: "Nail",
-      calendarId: null,
+      calendarId: "rita@themrstudio.ge",
       order: "2"
     };
     const staff3 = {
@@ -100,9 +100,9 @@ export class MemStorage implements IStorage {
     };
     const staff4 = {
       id: randomUUID(),
-      name: "User 3",
+      name: "Laser",
       serviceCategory: "Epilation",
-      calendarId: null,
+      calendarId: "laser@themrstudio.ge",
       order: "4"
     };
     

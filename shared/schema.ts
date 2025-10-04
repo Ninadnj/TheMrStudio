@@ -47,3 +47,49 @@ export const chatRequestSchema = z.object({
 
 export type ChatMessage = z.infer<typeof chatMessageSchema>;
 export type ChatRequest = z.infer<typeof chatRequestSchema>;
+
+export const heroContent = pgTable("hero_content", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  mainTitle: text("main_title").notNull(),
+  subtitle: text("subtitle").notNull(),
+  description: text("description").notNull(),
+  tagline: text("tagline").notNull(),
+});
+
+export const insertHeroContentSchema = createInsertSchema(heroContent).omit({
+  id: true,
+});
+
+export type InsertHeroContent = z.infer<typeof insertHeroContentSchema>;
+export type HeroContent = typeof heroContent.$inferSelect;
+
+export const services = pgTable("services", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  category: text("category").notNull(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  price: text("price").notNull(),
+  order: text("order").notNull(),
+});
+
+export const insertServiceSchema = createInsertSchema(services).omit({
+  id: true,
+});
+
+export type InsertService = z.infer<typeof insertServiceSchema>;
+export type Service = typeof services.$inferSelect;
+
+export const siteSettings = pgTable("site_settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  address: text("address").notNull(),
+  phone: text("phone").notNull(),
+  email: text("email").notNull(),
+  hours: text("hours").notNull(),
+});
+
+export const insertSiteSettingsSchema = createInsertSchema(siteSettings).omit({
+  id: true,
+});
+
+export type InsertSiteSettings = z.infer<typeof insertSiteSettingsSchema>;
+export type SiteSettings = typeof siteSettings.$inferSelect;

@@ -12,13 +12,15 @@ The application showcases 60+ real services with Georgian/English bilingual pric
 
 ### October 4, 2025 - Complete Georgian Translation
 - **Full Georgian Language Implementation**: All public-facing content translated to Georgian
-- **Hero Section**: Title, subtitle, tagline, description, and CTA buttons all in Georgian
+- **Hero Section**: Tagline, description, and CTA buttons in Georgian
 - **Services Section**: Header and all UI text in Georgian (service descriptions remain bilingual)
 - **Booking Form**: All labels, placeholders, validation messages, and toast notifications in Georgian
 - **Footer**: Description, quick links, contact info headings all in Georgian
 - **Chat Widget**: UI already bilingual, defaults to Georgian
 - **English Exceptions Preserved**: 
-  - "THE MR" in hero title and copyright
+  - "THE MR" in hero title
+  - "Nail & Laser Studio" subtitle in hero
+  - "© 2025 THE MR Nail & Laser Studio. All Rights Reserved." in footer
   - "THE MR Studio" in chat widget header
   - "Created by The DNJ™ with 🤍 &" in footer credits
 - **Contact Email Updated**: Changed to Studiomrmr1@gmail.com across the site

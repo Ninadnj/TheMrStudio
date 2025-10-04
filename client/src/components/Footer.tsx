@@ -84,7 +84,7 @@ export default function Footer() {
 
         <div className="flex flex-col md:flex-row justify-between items-center pt-8 gap-4" style={{ borderTop: '1px solid rgba(255,255,255,0.2)' }}>
           <p className="text-sm" style={{ color: 'rgba(255,255,255,0.8)' }}>
-            © 2025 THE MR ფრჩხილებისა და ლაზერული სტუდია. ყველა უფლება დაცულია.
+            © 2025 THE MR Nail & Laser Studio. All Rights Reserved.
           </p>
           
           <div className="flex items-center gap-2">

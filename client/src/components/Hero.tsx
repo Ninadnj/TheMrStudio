@@ -38,7 +38,7 @@ export default function Hero() {
         </div>
         
         <h2 className="font-sans text-xl md:text-2xl mb-6 font-light text-theme tracking-widest uppercase" style={{ opacity: 0.5 }}>
-          ფრჩხილებისა და ლაზერული სტუდია
+          Nail & Laser Studio
         </h2>
         
         <p className="text-xl md:text-2xl mb-4 tracking-wide uppercase text-sm md:text-base font-light text-theme-muted">

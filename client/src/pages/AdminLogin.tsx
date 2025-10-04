@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Lock } from "lucide-react";
+import { queryClient } from "@/lib/queryClient";
 
 export default function AdminLogin() {
   const [, setLocation] = useLocation();
@@ -34,6 +35,8 @@ export default function AdminLogin() {
           title: "Welcome back!",
           description: "You've successfully logged in.",
         });
+        // Invalidate auth check to refresh authentication state
+        await queryClient.invalidateQueries({ queryKey: ["/api/admin/check"] });
         setLocation("/admin/dashboard");
       } else {
         const errorMessage = data.error || "Invalid credentials";

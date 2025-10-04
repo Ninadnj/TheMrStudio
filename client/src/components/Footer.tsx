@@ -106,7 +106,7 @@ export default function Footer() {
               style={{ color: 'white' }}
               asChild
             >
-              <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer">
+              <a href="https://www.facebook.com/profile.php?id=61566420489825" target="_blank" rel="noopener noreferrer">
                 <Facebook className="w-4 h-4" />
               </a>
             </Button>

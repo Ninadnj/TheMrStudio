@@ -5,7 +5,7 @@ import Gallery from "@/components/Gallery";
 import BookingForm from "@/components/BookingForm";
 import PriceList from "@/components/PriceList";
 import Footer from "@/components/Footer";
-import ChatWidget from "@/components/ChatWidget";
+// import ChatWidget from "@/components/ChatWidget";
 
 export default function Home() {
   return (
@@ -17,7 +17,7 @@ export default function Home() {
       <PriceList />
       <BookingForm />
       <Footer />
-      <ChatWidget />
+      {/* <ChatWidget /> */}
     </div>
   );
 }

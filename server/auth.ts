@@ -1,16 +1,19 @@
 import { storage } from "./storage";
 import { Request, Response, NextFunction } from "express";
+import bcrypt from "bcryptjs";
 
 export async function initializeAdmin() {
   const adminUsername = "admin";
   const existingAdmin = await storage.getUserByUsername(adminUsername);
   
   if (!existingAdmin) {
+    const hashedPassword = await bcrypt.hash("admin123", 10);
     await storage.createUser({
       username: adminUsername,
-      password: "admin123",
+      password: hashedPassword,
     });
     console.log("Admin user created: username=admin, password=admin123");
+    console.log("⚠️  IMPORTANT: Change the default admin password after first login!");
   }
 }
 
@@ -24,7 +27,13 @@ export async function loginHandler(req: Request, res: Response) {
 
     const user = await storage.getUserByUsername(username);
     
-    if (!user || user.password !== password) {
+    if (!user) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    
+    if (!passwordMatch) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 

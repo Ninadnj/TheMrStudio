@@ -13,9 +13,11 @@ export default function AdminLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
     setIsLoading(true);
 
     try {
@@ -34,16 +36,20 @@ export default function AdminLogin() {
         });
         setLocation("/admin/dashboard");
       } else {
+        const errorMessage = data.error || "Invalid credentials";
+        setError(errorMessage);
         toast({
           title: "Login failed",
-          description: data.error || "Invalid credentials",
+          description: errorMessage,
           variant: "destructive",
         });
       }
     } catch (error) {
+      const errorMessage = "Failed to login. Please try again.";
+      setError(errorMessage);
       toast({
         title: "Error",
-        description: "Failed to login. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -68,6 +74,11 @@ export default function AdminLogin() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md" data-testid="error-message">
+                {error}
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="username">Username</Label>
               <Input

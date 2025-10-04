@@ -8,9 +8,15 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Ensure SESSION_SECRET is set for security
+if (!process.env.SESSION_SECRET) {
+  console.warn("⚠️  WARNING: SESSION_SECRET not set! Using default (insecure for production)");
+  console.warn("⚠️  Set SESSION_SECRET environment variable for production use");
+}
+
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "your-secret-key-change-this",
+    secret: process.env.SESSION_SECRET || "dev-secret-change-in-production",
     resave: false,
     saveUninitialized: false,
     cookie: {

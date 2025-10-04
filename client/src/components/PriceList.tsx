@@ -76,14 +76,26 @@ const priceLists: PriceListItem[] = [
   },
   {
     id: 3,
-    category: "Laser Epilation – Men",
+    category: "ლაზერული ეპილაცია – მამაკაცებისთვის",
+    subtitle: "Laser Epilation – Men",
     accentOpacity: "opacity-90",
     items: [
-      { name: "Face", price: 90 },
-      { name: "Neck", price: 70 },
-      { name: "Chest", price: 120 },
-      { name: "Back", price: 130 },
-      { name: "Shoulders", price: 85 }
+      { name: "მთლიანი სხეული / Full Body", price: 75 },
+      { name: "მთლიანი ზურგი / Full Back", price: 50 },
+      { name: "კისერი / Neck (from back)", price: 15 },
+      { name: "ყელი / Neck (from front)", price: 12 },
+      { name: "ღაწვი / Beard/Chin", price: 15 },
+      { name: "ღაწვი, ყელი და კისერი / Beard, Neck and Back Neck", price: 35 },
+      { name: "ხელი + იღლია / Hand + Armpit", price: 40 },
+      { name: "გულ-მკერდი / Chest", price: 30 },
+      { name: "ბეჭები / Calves", price: 30 },
+      { name: "მხრები / Shoulders", price: 20 },
+      { name: "მუცელი / Abdomen", price: 30 },
+      { name: "წელი / Lower Back", price: 30 },
+      { name: "ფეხები / Legs", price: 50 },
+      { name: "სახე / Face", price: 30 },
+      { name: "შუბლი / Forehead", price: 15 },
+      { name: "წარბებს შორის / Between Eyebrows", price: 5 }
     ]
   },
   {

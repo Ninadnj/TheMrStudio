@@ -3,7 +3,15 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
-const priceLists = [
+type PriceListItem = {
+  id: number;
+  category: string;
+  subtitle?: string;
+  accentOpacity: string;
+  items: Array<{ name: string; price: number | string }>;
+};
+
+const priceLists: PriceListItem[] = [
   {
     id: 1,
     category: "მანიკური / პედიკური",
@@ -30,14 +38,40 @@ const priceLists = [
   },
   {
     id: 2,
-    category: "Laser Epilation – Women",
+    category: "ლაზერული ეპილაცია – ქალებისთვის",
+    subtitle: "Laser Epilation – Women",
     accentOpacity: "opacity-80",
     items: [
-      { name: "Face", price: 80 },
-      { name: "Body", price: 150 },
-      { name: "Bikini", price: 95 },
-      { name: "Armpits", price: 60 },
-      { name: "Full Body", price: 350 }
+      { name: "მთლიანი სახე / Full Face", price: 20 },
+      { name: "მთლიანი სახე+ყელი / Full Face+Neck", price: 25 },
+      { name: "შუბლი / Forehead", price: 10 },
+      { name: "ნიკაპი / Chin", price: 5 },
+      { name: "ღაბაბი / Under Chin", price: 5 },
+      { name: "ნიკაპი+ღაბაბი / Chin+Under Chin", price: 8 },
+      { name: "ზედა ტუჩი / Upper Lip", price: 5 },
+      { name: "ბაკები / Sideburns", price: 10 },
+      { name: "ლოყები / Cheeks", price: 10 },
+      { name: "წარბის გადაბმის ზონა / Parts of Eyebrow Adhesion", price: 5 },
+      { name: "ცხვირის ნესტო + ყურები", price: 10 },
+      { name: "კისერი (უკნიდან) / Neck (from the back)", price: 10 },
+      { name: "ყელი / Neck (from the front)", price: 10 },
+      { name: "კეფა / Between Head and Neck", price: 10 },
+      { name: "გულ-მკერდი / Chest", price: 20 },
+      { name: "დვრილები / Breastfeeding part", price: 5 },
+      { name: "მკერდის შუა ხაზი / The Middle Line of The Breast", price: 10 },
+      { name: "მუცელი / Abdomen", price: 18 },
+      { name: "მუცლის თეთრი ხაზი / Abdomen Line", price: 8 },
+      { name: "ზედაპირული ბიკინი / Bikini", price: 10 },
+      { name: "ღრმა ბიკინი ანუსით / Full Bikini", price: 25 },
+      { name: "დუნდულები / Buttocks", price: 15 },
+      { name: "უკანა ტანი (ანუსი) / Anus", price: 5 },
+      { name: "მთლიანი ფეხები / Full Legs", price: 30 },
+      { name: "ზურგი / Full Back", price: 25 },
+      { name: "წელი / Lower Back", price: 18 },
+      { name: "ხელები სრულად / Full Hands", price: 25 },
+      { name: "ნახევარი ხელი / Half Hand", price: 15 },
+      { name: "იღლიები / Armpit", price: 10 },
+      { name: "ხელის მტევნები+თითები / Hands+Fingers", price: 8 }
     ]
   },
   {
@@ -169,9 +203,14 @@ export default function PriceList() {
                   <div className="aspect-[4/3] relative overflow-hidden flex items-center justify-center bg-card">
                     <div className={`absolute top-0 left-0 w-12 h-1 bg-theme-accent ${list.accentOpacity}`}></div>
                     <div className="text-center px-6">
-                      <h3 className="font-serif text-3xl text-foreground mb-3">
+                      <h3 className="font-serif text-3xl text-foreground mb-2">
                         {list.category}
                       </h3>
+                      {list.subtitle && (
+                        <p className="text-xs text-muted-foreground/70 mb-3 tracking-wide">
+                          {list.subtitle}
+                        </p>
+                      )}
                       <p className="text-sm text-muted-foreground tracking-wide">
                         Click to view pricing
                       </p>

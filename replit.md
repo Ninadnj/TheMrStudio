@@ -23,7 +23,7 @@ Drizzle ORM is used for type-safe database operations and schema management, wit
 The design emphasizes sophisticated minimalism inspired by premium beauty brands, focusing on trust-building, breathing room, and clear visual hierarchy. It utilizes switchable color themes, elegant typography, and a responsive image gallery. All public-facing content is available in Georgian with selected English branding elements.
 
 ### Feature Specifications
-- **Multi-Staff Booking System**: Allows clients to select services and preferred staff members, with smart filtering based on staff qualifications. Supports 2-hour appointments available daily from 8:00 AM to 8:00 PM at 2-hour intervals. Google Calendar integration creates 2-hour appointments.
+- **Multi-Staff Booking System**: Allows clients to select services and preferred staff members, with smart filtering based on staff qualifications. Supports 2-hour appointments available daily from 8:00 AM to 6:00 PM at 2-hour intervals (last booking at 18:00). Google Calendar integration creates 2-hour appointments.
 - **Services Display**: Displays 60+ real services with bilingual Georgian/English names and prices, organized by expandable categories in a responsive 2-column grid.
 - **Photo Gallery**: Features three categories (Nails, Laser, Cosmetology) with expandable sections and a responsive image grid.
 - **Admin Panel**: Provides secure, session-based authentication (admin/admin123) and offers CRUD operations for hero content, services, gallery images, staff management (including Google Calendar ID preparation), and site settings.

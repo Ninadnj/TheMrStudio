@@ -85,8 +85,8 @@ export default function BookingForm() {
         exact: false 
       });
       toast({
-        title: "Booking Request Submitted",
-        description: "We'll contact you shortly to confirm your appointment.",
+        title: "დაჯავშნის მოთხოვნა გაგზავნილია",
+        description: "მალე დაგიკავშირდებით შეხვედრის დასადასტურებლად",
       });
       setFormData({
         fullName: "",
@@ -101,8 +101,8 @@ export default function BookingForm() {
     },
     onError: () => {
       toast({
-        title: "Booking Failed",
-        description: "Something went wrong. Please try again.",
+        title: "დაჯავშნა ვერ მოხერხდა",
+        description: "რაღაც არასწორად მოხდა. გთხოვთ სცადოთ ხელახლა",
         variant: "destructive",
       });
     },
@@ -113,8 +113,8 @@ export default function BookingForm() {
     
     if (!date || !formData.time) {
       toast({
-        title: "Missing Information",
-        description: "Please select both a date and time for your appointment.",
+        title: "არასრული ინფორმაცია",
+        description: "გთხოვთ აირჩიოთ თარიღი და დრო",
         variant: "destructive",
       });
       return;
@@ -122,8 +122,8 @@ export default function BookingForm() {
 
     if (!formData.staffId) {
       toast({
-        title: "Missing Information",
-        description: "Please select a staff member for your appointment.",
+        title: "არასრული ინფორმაცია",
+        description: "გთხოვთ აირჩიოთ სპეციალისტი",
         variant: "destructive",
       });
       return;
@@ -149,20 +149,20 @@ export default function BookingForm() {
       <div className="max-w-3xl mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl mb-4 text-card-foreground font-normal">
-            Book Your Experience
+            დაჯავშნეთ თქვენი ვიზიტი
           </h2>
           <p className="text-base text-muted-foreground tracking-wide">
-            Reserve your preferred treatment and let us take care of the rest
+            დაჯავშნეთ სასურველი პროცედურა და ჩვენ ყველაფერზე ვიზრუნებთ
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="fullName">Full Name *</Label>
+              <Label htmlFor="fullName">სრული სახელი *</Label>
               <Input
                 id="fullName"
-                placeholder="Jane Doe"
+                placeholder="მაგ: ნინო გელაშვილი"
                 value={formData.fullName}
                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                 required
@@ -171,11 +171,11 @@ export default function BookingForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email *</Label>
+              <Label htmlFor="email">ელ. ფოსტა *</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="jane@example.com"
+                placeholder="example@email.com"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 required
@@ -186,11 +186,11 @@ export default function BookingForm() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number *</Label>
+              <Label htmlFor="phone">ტელეფონის ნომერი *</Label>
               <Input
                 id="phone"
                 type="tel"
-                placeholder="+1 (555) 000-0000"
+                placeholder="+995 555 123 456"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 required
@@ -199,7 +199,7 @@ export default function BookingForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="service">Service *</Label>
+              <Label htmlFor="service">სერვისი *</Label>
               <Select
                 value={formData.serviceId}
                 onValueChange={(value) => setFormData({ ...formData, serviceId: value, staffId: "" })}
@@ -207,7 +207,7 @@ export default function BookingForm() {
                 required
               >
                 <SelectTrigger id="service" data-testid="select-service">
-                  <SelectValue placeholder={servicesLoading ? "Loading services..." : "Select a service"} />
+                  <SelectValue placeholder={servicesLoading ? "იტვირთება სერვისები..." : "აირჩიეთ სერვისი"} />
                 </SelectTrigger>
                 <SelectContent>
                   {services.map((service) => (
@@ -221,7 +221,7 @@ export default function BookingForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="staff">Select Staff Member *</Label>
+            <Label htmlFor="staff">აირჩიეთ სპეციალისტი *</Label>
             <Select
               value={formData.staffId}
               onValueChange={(value) => setFormData({ ...formData, staffId: value })}
@@ -231,12 +231,12 @@ export default function BookingForm() {
               <SelectTrigger id="staff" data-testid="select-staff">
                 <SelectValue placeholder={
                   !selectedService 
-                    ? "Select a service first" 
+                    ? "ჯერ აირჩიეთ სერვისი" 
                     : staffLoading 
-                    ? "Loading staff..." 
+                    ? "იტვირთება სპეციალისტები..." 
                     : availableStaff.length === 0 
-                    ? "No staff available" 
-                    : "Select a staff member"
+                    ? "სპეციალისტი არ მოიძებნა" 
+                    : "აირჩიეთ სპეციალისტი"
                 } />
               </SelectTrigger>
               <SelectContent>
@@ -251,7 +251,7 @@ export default function BookingForm() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label>Preferred Date *</Label>
+              <Label>სასურველი თარიღი *</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -260,7 +260,7 @@ export default function BookingForm() {
                     data-testid="button-date-picker"
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "PPP") : "Pick a date"}
+                    {date ? format(date, "PPP") : "აირჩიეთ თარიღი"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -276,7 +276,7 @@ export default function BookingForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="time">Preferred Time *</Label>
+              <Label htmlFor="time">სასურველი დრო *</Label>
               <Select
                 value={formData.time}
                 onValueChange={(value) => setFormData({ ...formData, time: value })}
@@ -284,12 +284,12 @@ export default function BookingForm() {
                 required
               >
                 <SelectTrigger id="time" data-testid="select-time">
-                  <SelectValue placeholder={date ? "Select a time" : "Select date first"} />
+                  <SelectValue placeholder={date ? "აირჩიეთ დრო" : "ჯერ აირჩიეთ თარიღი"} />
                 </SelectTrigger>
                 <SelectContent>
                   {availableTimes.length === 0 && date ? (
                     <div className="px-2 py-6 text-center text-sm text-muted-foreground">
-                      All time slots are booked for this date
+                      ყველა დრო დაჯავშნილია ამ თარიღისთვის
                     </div>
                   ) : (
                     availableTimes.map((time) => (
@@ -304,10 +304,10 @@ export default function BookingForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes">Additional Notes</Label>
+            <Label htmlFor="notes">დამატებითი შენიშვნები</Label>
             <Textarea
               id="notes"
-              placeholder="Any special requests or preferences..."
+              placeholder="სპეციალური სურვილები ან მოთხოვნები..."
               className="min-h-[120px] resize-none"
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
@@ -322,7 +322,7 @@ export default function BookingForm() {
             disabled={createBookingMutation.isPending}
             data-testid="button-submit-booking"
           >
-            {createBookingMutation.isPending ? "Submitting..." : "Submit Booking Request"}
+            {createBookingMutation.isPending ? "იგზავნება..." : "დაჯავშნის მოთხოვნა"}
           </Button>
         </form>
       </div>

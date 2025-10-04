@@ -76,7 +76,7 @@ export default function Services() {
     return (
       <section id="services" className="py-20 lg:py-32 bg-background">
         <div className="max-w-7xl mx-auto px-6 text-center">
-          <p className="text-muted-foreground">Loading services...</p>
+          <p className="text-muted-foreground">იტვირთება სერვისები...</p>
         </div>
       </section>
     );
@@ -87,7 +87,7 @@ export default function Services() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-20">
           <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl mb-4 text-foreground font-normal">
-            Our Services
+            ჩვენი სერვისები
           </h2>
           <p className="text-base text-muted-foreground max-w-2xl mx-auto tracking-wide">
             სერვისები და ფასები / Services & Pricing

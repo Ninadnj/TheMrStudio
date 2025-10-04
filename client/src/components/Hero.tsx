@@ -38,15 +38,15 @@ export default function Hero() {
         </div>
         
         <h2 className="font-sans text-xl md:text-2xl mb-6 font-light text-theme tracking-widest uppercase" style={{ opacity: 0.5 }}>
-          Nail & Laser Studio
+          ფრჩხილებისა და ლაზერული სტუდია
         </h2>
         
         <p className="text-xl md:text-2xl mb-4 tracking-wide uppercase text-sm md:text-base font-light text-theme-muted">
-          Where Beauty Meets Precision
+          სადაც სილამაზე პრეციზიულობას ხვდება
         </p>
         
         <p className="text-base md:text-lg max-w-2xl mx-auto mb-12 leading-relaxed text-theme-muted">
-          Expert nail artistry and advanced laser treatments in an elegant, modern setting
+          ექსპერტული ფრჩხილების ხელოვნება და თანამედროვე ლაზერული მკურნალობა ელეგანტურ გარემოში
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -57,7 +57,7 @@ export default function Hero() {
             data-testid="button-book-appointment"
           >
             <Calendar className="w-4 h-4 mr-2" />
-            Book Appointment
+            დაჯავშნა
           </Button>
           
           <Button 
@@ -68,7 +68,7 @@ export default function Hero() {
             data-testid="button-view-services"
             style={{ color: 'var(--theme-accent)' }}
           >
-            View Services
+            სერვისები
           </Button>
         </div>
       </div>

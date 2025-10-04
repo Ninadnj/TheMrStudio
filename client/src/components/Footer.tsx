@@ -11,12 +11,12 @@ export default function Footer() {
               <span style={{ opacity: 0.6 }}>The</span> <span className="font-medium">MR</span> Studio
             </h3>
             <p className="text-sm leading-relaxed tracking-wide" style={{ color: 'rgba(255,255,255,0.8)' }}>
-              Expert beauty and wellness treatments in an elegant, modern setting. We're dedicated to helping you look and feel your best.
+              ექსპერტული სილამაზისა და კეთილდღეობის მკურნალობა ელეგანტურ, თანამედროვე გარემოში. ჩვენ ვზრუნავთ თქვენს კეთილდღეობასა და სილამაზეზე.
             </p>
           </div>
 
           <div>
-            <h4 className="font-medium mb-4 text-white">Quick Links</h4>
+            <h4 className="font-medium mb-4 text-white">სწრაფი ბმულები</h4>
             <div className="space-y-2">
               <button 
                 className="block text-sm transition-colors" 
@@ -25,7 +25,7 @@ export default function Footer() {
                 onMouseEnter={(e) => e.currentTarget.style.color = 'white'}
                 onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.8)'}
               >
-                About Us
+                ჩვენს შესახებ
               </button>
               <button 
                 className="block text-sm transition-colors" 
@@ -34,7 +34,7 @@ export default function Footer() {
                 onMouseEnter={(e) => e.currentTarget.style.color = 'white'}
                 onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.8)'}
               >
-                Our Services
+                ჩვენი სერვისები
               </button>
               <button 
                 className="block text-sm transition-colors" 
@@ -43,7 +43,7 @@ export default function Footer() {
                 onMouseEnter={(e) => e.currentTarget.style.color = 'white'}
                 onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.8)'}
               >
-                Gallery
+                გალერეა
               </button>
               <button 
                 className="block text-sm transition-colors" 
@@ -52,13 +52,13 @@ export default function Footer() {
                 onMouseEnter={(e) => e.currentTarget.style.color = 'white'}
                 onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.8)'}
               >
-                Book Appointment
+                დაჯავშნა
               </button>
             </div>
           </div>
 
           <div>
-            <h4 className="font-medium text-white mb-4">Contact Info</h4>
+            <h4 className="font-medium text-white mb-4">საკონტაქტო ინფორმაცია</h4>
             <div className="space-y-3">
               <div className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 mt-0.5" style={{ color: 'rgba(255,255,255,0.6)' }} />
@@ -69,13 +69,13 @@ export default function Footer() {
               <div className="flex items-center gap-3">
                 <Phone className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.6)' }} />
                 <span className="text-sm" style={{ color: 'rgba(255,255,255,0.8)' }}>
-                  +1 (555) 123-4567
+                  +995 555 123 456
                 </span>
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.6)' }} />
                 <span className="text-sm" style={{ color: 'rgba(255,255,255,0.8)' }}>
-                  hello@mrstudio.com
+                  Studiomrmr1@gmail.com
                 </span>
               </div>
             </div>
@@ -84,7 +84,7 @@ export default function Footer() {
 
         <div className="flex flex-col md:flex-row justify-between items-center pt-8 gap-4" style={{ borderTop: '1px solid rgba(255,255,255,0.2)' }}>
           <p className="text-sm" style={{ color: 'rgba(255,255,255,0.8)' }}>
-            © 2025 THE MR Nail & Laser Studio. All rights reserved.
+            © 2025 THE MR ფრჩხილებისა და ლაზერული სტუდია. ყველა უფლება დაცულია.
           </p>
           
           <div className="flex items-center gap-2">

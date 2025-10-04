@@ -7,7 +7,8 @@ import {
   insertHeroContentSchema,
   insertServiceSchema,
   insertSiteSettingsSchema,
-  insertStaffSchema
+  insertStaffSchema,
+  insertGalleryImageSchema
 } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import { chatWithGemini } from "./gemini-chat";
@@ -254,6 +255,76 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ error: "Failed to delete staff member" });
+    }
+  });
+
+  // Gallery management
+  app.get("/api/gallery", async (req, res) => {
+    try {
+      const images = await storage.getAllGalleryImages();
+      res.json(images);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch gallery images" });
+    }
+  });
+
+  app.get("/api/admin/gallery", requireAuth, async (req, res) => {
+    try {
+      const images = await storage.getAllGalleryImages();
+      res.json(images);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch gallery images" });
+    }
+  });
+
+  app.post("/api/admin/gallery", requireAuth, async (req, res) => {
+    try {
+      const validatedData = insertGalleryImageSchema.parse(req.body);
+      const image = await storage.createGalleryImage(validatedData);
+      res.status(201).json(image);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        const validationError = fromZodError(error);
+        res.status(400).json({ error: validationError.message });
+      } else {
+        res.status(500).json({ error: "Failed to create gallery image" });
+      }
+    }
+  });
+
+  app.put("/api/admin/gallery/:id", requireAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const image = await storage.updateGalleryImage(id, req.body);
+      if (!image) {
+        return res.status(404).json({ error: "Gallery image not found" });
+      }
+      res.json(image);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update gallery image" });
+    }
+  });
+
+  app.delete("/api/admin/gallery/:id", requireAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deleted = await storage.deleteGalleryImage(id);
+      if (!deleted) {
+        return res.status(404).json({ error: "Gallery image not found" });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete gallery image" });
+    }
+  });
+
+  // Public services route
+  app.get("/api/services", async (req, res) => {
+    try {
+      const services = await storage.getAllServices();
+      res.json(services);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch services" });
     }
   });
 

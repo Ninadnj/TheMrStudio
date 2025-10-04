@@ -1,10 +1,14 @@
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
-import { Pool } from "@neondatabase/serverless";
+import { Pool, neonConfig } from "@neondatabase/serverless";
+import ws from "ws";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { initializeAdmin } from "./auth";
+
+// Configure WebSocket for Neon serverless
+neonConfig.webSocketConstructor = ws;
 
 const app = express();
 app.use(express.json());

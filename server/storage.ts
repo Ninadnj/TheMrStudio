@@ -250,28 +250,84 @@ export class MemStorage implements IStorage {
     });
     
     // Initialize gallery images for showcase
-    const galleryImage1 = {
-      id: randomUUID(),
-      category: "ფრჩხილები",
-      imageUrl: "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=800&auto=format&fit=crop",
-      order: "1"
-    };
-    const galleryImage2 = {
-      id: randomUUID(),
-      category: "ლაზერი",
-      imageUrl: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800&auto=format&fit=crop",
-      order: "1"
-    };
-    const galleryImage3 = {
-      id: randomUUID(),
-      category: "კოსმეტოლოგია",
-      imageUrl: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&auto=format&fit=crop",
-      order: "1"
-    };
+    const galleryImages = [
+      {
+        id: randomUUID(),
+        category: "ფრჩხილები",
+        imageUrl: "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=800&auto=format&fit=crop",
+        order: "1"
+      },
+      {
+        id: randomUUID(),
+        category: "ლაზერი",
+        imageUrl: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800&auto=format&fit=crop",
+        order: "2"
+      },
+      {
+        id: randomUUID(),
+        category: "კოსმეტოლოგია",
+        imageUrl: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&auto=format&fit=crop",
+        order: "3"
+      },
+      {
+        id: randomUUID(),
+        category: "ფრჩხილები",
+        imageUrl: "https://images.unsplash.com/photo-1610992015732-2449b76344bc?w=800&auto=format&fit=crop",
+        order: "4"
+      },
+      {
+        id: randomUUID(),
+        category: "კოსმეტოლოგია",
+        imageUrl: "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=800&auto=format&fit=crop",
+        order: "5"
+      },
+      {
+        id: randomUUID(),
+        category: "ფრჩხილები",
+        imageUrl: "https://images.unsplash.com/photo-1632345031435-8727f6897d53?w=800&auto=format&fit=crop",
+        order: "6"
+      },
+      {
+        id: randomUUID(),
+        category: "ლაზერი",
+        imageUrl: "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?w=800&auto=format&fit=crop",
+        order: "7"
+      },
+      {
+        id: randomUUID(),
+        category: "კოსმეტოლოგია",
+        imageUrl: "https://images.unsplash.com/photo-1560750588-73207b1ef5b8?w=800&auto=format&fit=crop",
+        order: "8"
+      },
+      {
+        id: randomUUID(),
+        category: "ფრჩხილები",
+        imageUrl: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&auto=format&fit=crop",
+        order: "9"
+      },
+      {
+        id: randomUUID(),
+        category: "ლაზერი",
+        imageUrl: "https://images.unsplash.com/photo-1487412912498-0447578fcca8?w=800&auto=format&fit=crop",
+        order: "10"
+      },
+      {
+        id: randomUUID(),
+        category: "კოსმეტოლოგია",
+        imageUrl: "https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=800&auto=format&fit=crop",
+        order: "11"
+      },
+      {
+        id: randomUUID(),
+        category: "ფრჩხილები",
+        imageUrl: "https://images.unsplash.com/photo-1599206676335-193c82b13c9e?w=800&auto=format&fit=crop",
+        order: "12"
+      }
+    ];
     
-    this.galleryImages.set(galleryImage1.id, galleryImage1);
-    this.galleryImages.set(galleryImage2.id, galleryImage2);
-    this.galleryImages.set(galleryImage3.id, galleryImage3);
+    galleryImages.forEach(image => {
+      this.galleryImages.set(image.id, image);
+    });
   }
 
   async getUser(id: string): Promise<User | undefined> {

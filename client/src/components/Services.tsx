@@ -2,22 +2,22 @@ import { Sparkles, Hand, Star } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 const categoryIcons: Record<string, any> = {
-  "Nail": Hand,
-  "Epilation": Sparkles,
-  "Cosmetology": Star,
+  "მანიკური / პედიკური": Hand,
+  "ლაზერული ეპილაცია": Sparkles,
+  "კოსმეტოლოგია": Star,
 };
 
 const categoryDescriptions: Record<string, string> = {
-  "Nail": "Professional nail care using premium gel polishes and advanced techniques. Our manicure and pedicure services include nail strengthening, extensions, and artistic designs.",
-  "Epilation": "Advanced laser hair removal technology with safe and effective treatments. Our laser systems provide long-lasting results with minimal discomfort.",
-  "Cosmetology": "Professional skincare and beauty treatments using modern techniques and high-quality products for optimal results.",
+  "მანიკური / პედიკური": "Professional nail care using premium gel polishes and advanced techniques. Our manicure and pedicure services include nail strengthening, extensions, and artistic designs.",
+  "ლაზერული ეპილაცია": "Advanced laser hair removal technology with safe and effective treatments. Our laser systems provide long-lasting results with minimal discomfort.",
+  "კოსმეტოლოგია": "Professional skincare and beauty treatments using modern techniques and high-quality products for optimal results.",
 };
 
 export default function Services() {
   const [visibleCards, setVisibleCards] = useState<number[]>([]);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  const categories = ["Nail", "Epilation", "Cosmetology"];
+  const categories = ["მანიკური / პედიკური", "ლაზერული ეპილაცია", "კოსმეტოლოგია"];
 
   useEffect(() => {
     const observers = cardRefs.current.map((card, index) => {
@@ -48,10 +48,10 @@ export default function Services() {
     <section id="services" className="py-20 lg:py-32 bg-background">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-20">
-          <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl mb-4 text-foreground font-normal">
+          <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl mb-3 text-foreground font-normal">
             ჩვენი სერვისები
           </h2>
-          <p className="text-base text-muted-foreground max-w-2xl mx-auto tracking-wide">
+          <p className="text-lg text-muted-foreground/80 max-w-2xl mx-auto tracking-wide">
             Our Services
           </p>
         </div>

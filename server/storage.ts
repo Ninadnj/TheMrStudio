@@ -248,6 +248,30 @@ export class MemStorage implements IStorage {
         order: service.order,
       });
     });
+    
+    // Initialize gallery images for showcase
+    const galleryImage1 = {
+      id: randomUUID(),
+      category: "ფრჩხილები",
+      imageUrl: "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=800&auto=format&fit=crop",
+      order: "1"
+    };
+    const galleryImage2 = {
+      id: randomUUID(),
+      category: "ლაზერი",
+      imageUrl: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800&auto=format&fit=crop",
+      order: "1"
+    };
+    const galleryImage3 = {
+      id: randomUUID(),
+      category: "კოსმეტოლოგია",
+      imageUrl: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&auto=format&fit=crop",
+      order: "1"
+    };
+    
+    this.galleryImages.set(galleryImage1.id, galleryImage1);
+    this.galleryImages.set(galleryImage2.id, galleryImage2);
+    this.galleryImages.set(galleryImage3.id, galleryImage3);
   }
 
   async getUser(id: string): Promise<User | undefined> {

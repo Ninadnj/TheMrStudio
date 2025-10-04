@@ -77,10 +77,6 @@ export default function Gallery() {
     );
   }
 
-  if (categories.length === 0) {
-    return null;
-  }
-
   return (
     <section id="gallery" className="py-20 lg:py-32 bg-background">
       <div className="max-w-7xl mx-auto px-6">
@@ -97,6 +93,11 @@ export default function Gallery() {
         </div>
         
         <div className="space-y-12 max-w-6xl mx-auto">
+          {categories.length === 0 && (
+            <p className="text-center text-muted-foreground">
+              ფოტოები ჯერ არ დაემატა / No images added yet
+            </p>
+          )}
           {categories.map((category, categoryIndex) => {
             const Icon = categoryIcons[category] || Hand;
             const categoryImages = imagesByCategory[category];

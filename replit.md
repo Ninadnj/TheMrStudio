@@ -10,6 +10,19 @@ The application showcases 60+ real services with Georgian/English bilingual pric
 
 ## Recent Changes
 
+### October 4, 2025 - Photo Gallery Feature
+- **Gallery Section Added**: New photo gallery (გალერეა) with three categories
+  - ფრჩხილები (Nails) - Showcase nail art and manicure work
+  - ლაზერი (Laser) - Display laser treatment results
+  - კოსმეტოლოგია (Cosmetology) - Present cosmetology services
+- **Admin Gallery Management**: Full CRUD interface in admin panel
+  - Upload images by URL with preview
+  - Organize by category with custom ordering
+  - Edit and delete gallery images
+- **Public Display**: Expandable category sections with responsive image grid
+- **Navigation Updated**: Added გალერეა link to main navigation menu
+- **Database Schema**: New galleryImages table with category, imageUrl, and order fields
+
 ### October 4, 2025 - Complete Georgian Translation
 - **Full Georgian Language Implementation**: All public-facing content translated to Georgian
 - **Hero Section**: Description and CTA buttons in Georgian
@@ -221,14 +234,24 @@ Preferred communication style: Simple, everyday language.
 - **2-Column Grid**: Service items displayed in responsive grid with service name and price
 - **Bilingual**: Section header "სერვისები და ფასები / Services & Pricing"
 
+### Photo Gallery
+- **Three Categories**: ფრჩხილები (Nails), ლაზერი (Laser), კოსმეტოლოგია (Cosmetology)
+- **Expandable Sections**: Accordion-style layout with category headers and image counts
+- **Responsive Grid**: Images displayed in 2-4 column grid based on screen size
+- **Admin Upload**: Upload images via URL with live preview
+- **Custom Ordering**: Set display order for each image within its category
+- **Public Display**: Georgian section heading "გალერეა" with bilingual subtitle
+
 ### Admin Panel
 - **Secure Authentication**: Bcrypt password hashing (10 rounds) with session-based auth
-- **4 Management Tabs**:
+- **5 Management Tabs**:
   1. **Hero Content**: Edit hero title, subtitle, and CTA
   2. **Services**: CRUD operations for services (currently 62 loaded)
-  3. **Staff**: CRUD operations for staff with service category assignments
-  4. **Settings**: Site-wide configuration
+  3. **Gallery**: Upload and manage gallery images by category
+  4. **Staff**: CRUD operations for staff with service category assignments
+  5. **Settings**: Site-wide configuration
 - **Staff Management**: Add/edit/delete staff, assign to service categories, set display order, prepare Google Calendar IDs
+- **Gallery Management**: Upload images by URL, preview, organize by category, set display order
 - **Default Credentials**: username=admin, password=admin123 (⚠️ change in production)
 
 ### AI-Powered Chat Assistant

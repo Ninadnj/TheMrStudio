@@ -89,6 +89,9 @@ export default function Services() {
           <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl mb-4 text-foreground font-normal">
             ჩვენი სერვისები
           </h2>
+          <p className="text-lg text-foreground/80 max-w-2xl mx-auto mb-2">
+            მანიკური /პედიკური , ლაზერული ეპილაცია , კოსმეტოლოგია
+          </p>
           <p className="text-base text-muted-foreground max-w-2xl mx-auto tracking-wide">
             სერვისები და ფასები / Services & Pricing
           </p>

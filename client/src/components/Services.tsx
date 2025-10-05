@@ -1,13 +1,6 @@
-import { Sparkles, Hand, Star } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { ServicesSection } from "@shared/schema";
-
-const categoryIcons: Record<string, any> = {
-  "მანიკური / პედიკური": Hand,
-  "ლაზერული ეპილაცია": Sparkles,
-  "კოსმეტოლოგია": Star,
-};
 
 export default function Services() {
   const [visibleCards, setVisibleCards] = useState<number[]>([]);
@@ -62,8 +55,6 @@ export default function Services() {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {categories.map((category, categoryIndex) => {
-            const Icon = categoryIcons[category] || Hand;
-            
             return (
               <div
                 key={category}
@@ -77,16 +68,13 @@ export default function Services() {
                 data-testid={`category-${category}`}
               >
                 <div className="border border-border rounded-md bg-card/30 p-8 hover-elevate transition-all h-full">
-                  <div className="flex flex-col items-center text-center gap-6">
-                    <Icon className="w-6 h-6 text-muted-foreground/40" />
-                    <div>
-                      <h3 className="font-serif text-2xl text-foreground tracking-tight mb-3">
-                        {category}
-                      </h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        {categoryDescriptions[category] || ""}
-                      </p>
-                    </div>
+                  <div className="flex flex-col items-center text-center">
+                    <h3 className="font-serif text-2xl text-foreground tracking-tight mb-3">
+                      {category}
+                    </h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {categoryDescriptions[category] || ""}
+                    </p>
                   </div>
                 </div>
               </div>

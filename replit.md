@@ -20,7 +20,7 @@ The backend is built with Express.js and TypeScript, using ESM modules and a mid
 Drizzle ORM is used for type-safe database operations and schema management, with a schema-first approach and Drizzle-Zod for runtime validation. The current schema includes a `users` table and is designed to expand with `services`, `appointments`, and `pricing` tables. PostgreSQL is integrated via the Neon serverless driver with WebSocket configuration for scalable and edge-compatible database access. Session persistence is managed via connect-pg-simple with automatic session table creation in PostgreSQL.
 
 ### UI/UX Decisions
-The design emphasizes sophisticated minimalism inspired by premium beauty brands, focusing on trust-building, breathing room, and clear visual hierarchy. It utilizes switchable color themes, elegant typography, and a responsive image gallery. All public-facing content is available in Georgian with selected English branding elements.
+The design emphasizes sophisticated minimalism inspired by premium beauty brands, focusing on trust-building, breathing room, and clear visual hierarchy. It utilizes switchable color themes, elegant typography, and a responsive image gallery. All public-facing content is available in Georgian with selected English branding elements. Service category cards feature a clean, text-only design without decorative icons to maintain the understated, elegant aesthetic.
 
 ### Feature Specifications
 - **Multi-Staff Booking System**: Allows clients to select services and preferred staff members, with smart filtering based on staff qualifications. Supports 2-hour appointments available daily from 8:00 AM to 6:00 PM at 2-hour intervals (last booking at 18:00). Google Calendar integration creates 2-hour appointments.

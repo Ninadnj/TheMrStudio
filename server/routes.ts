@@ -8,7 +8,8 @@ import {
   insertServiceSchema,
   insertSiteSettingsSchema,
   insertStaffSchema,
-  insertGalleryImageSchema
+  insertGalleryImageSchema,
+  insertServicesSectionSchema
 } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import { chatWithGemini } from "./gemini-chat";
@@ -374,6 +375,40 @@ ${booking.notes ? `Notes: ${booking.notes}` : ''}
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ error: "Failed to delete gallery image" });
+    }
+  });
+
+  // Services section content
+  app.get("/api/services-section", async (req, res) => {
+    try {
+      const content = await storage.getServicesSection();
+      res.json(content);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch services section content" });
+    }
+  });
+
+  app.get("/api/admin/services-section", requireAuth, async (req, res) => {
+    try {
+      const content = await storage.getServicesSection();
+      res.json(content);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch services section content" });
+    }
+  });
+
+  app.put("/api/admin/services-section", requireAuth, async (req, res) => {
+    try {
+      const validatedData = insertServicesSectionSchema.parse(req.body);
+      const content = await storage.updateServicesSection(validatedData);
+      res.json(content);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        const validationError = fromZodError(error);
+        res.status(400).json({ error: validationError.message });
+      } else {
+        res.status(500).json({ error: "Failed to update services section content" });
+      }
     }
   });
 

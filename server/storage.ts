@@ -5,7 +5,8 @@ import {
   type Service, type InsertService,
   type SiteSettings, type InsertSiteSettings,
   type Staff, type InsertStaff,
-  type GalleryImage, type InsertGalleryImage
+  type GalleryImage, type InsertGalleryImage,
+  type ServicesSection, type InsertServicesSection
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 
@@ -43,6 +44,9 @@ export interface IStorage {
   createGalleryImage(image: InsertGalleryImage): Promise<GalleryImage>;
   updateGalleryImage(id: string, updates: Partial<InsertGalleryImage>): Promise<GalleryImage | undefined>;
   deleteGalleryImage(id: string): Promise<boolean>;
+  
+  getServicesSection(): Promise<ServicesSection | undefined>;
+  updateServicesSection(content: InsertServicesSection): Promise<ServicesSection>;
 }
 
 export class MemStorage implements IStorage {
@@ -53,6 +57,7 @@ export class MemStorage implements IStorage {
   private siteSettings: SiteSettings | undefined;
   private staff: Map<string, Staff>;
   private galleryImages: Map<string, GalleryImage>;
+  private servicesSection: ServicesSection | undefined;
 
   constructor() {
     this.users = new Map();
@@ -328,6 +333,17 @@ export class MemStorage implements IStorage {
     galleryImages.forEach(image => {
       this.galleryImages.set(image.id, image);
     });
+    
+    this.servicesSection = {
+      id: randomUUID(),
+      title: "ჩვენი სერვისები",
+      subtitle: "Our Services",
+      categoryDescriptions: JSON.stringify({
+        "მანიკური / პედიკური": "Professional nail care using premium gel polishes and advanced techniques. Our manicure and pedicure services include nail strengthening, extensions, and artistic designs.",
+        "ლაზერული ეპილაცია": "Advanced laser hair removal technology with safe and effective treatments. Our laser systems provide long-lasting results with minimal discomfort.",
+        "კოსმეტოლოგია": "Professional skincare and beauty treatments using modern techniques and high-quality products for optimal results."
+      })
+    };
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -486,6 +502,16 @@ export class MemStorage implements IStorage {
 
   async deleteGalleryImage(id: string): Promise<boolean> {
     return this.galleryImages.delete(id);
+  }
+
+  async getServicesSection(): Promise<ServicesSection | undefined> {
+    return this.servicesSection;
+  }
+
+  async updateServicesSection(content: InsertServicesSection): Promise<ServicesSection> {
+    const id = this.servicesSection?.id || randomUUID();
+    this.servicesSection = { ...content, id };
+    return this.servicesSection;
   }
 }
 

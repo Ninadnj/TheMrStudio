@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, date } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, date, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -138,3 +138,18 @@ export const insertServicesSectionSchema = createInsertSchema(servicesSection).o
 
 export type InsertServicesSection = z.infer<typeof insertServicesSectionSchema>;
 export type ServicesSection = typeof servicesSection.$inferSelect;
+
+export const specialOffers = pgTable("special_offers", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  message: text("message").notNull(),
+  isActive: boolean("is_active").notNull().default(false),
+  expiryDate: date("expiry_date"),
+  link: text("link"),
+});
+
+export const insertSpecialOfferSchema = createInsertSchema(specialOffers).omit({
+  id: true,
+});
+
+export type InsertSpecialOffer = z.infer<typeof insertSpecialOfferSchema>;
+export type SpecialOffer = typeof specialOffers.$inferSelect;

@@ -9,18 +9,6 @@ const categoryIcons: Record<string, any> = {
   "კოსმეტოლოგია": Star,
 };
 
-const categoryGradients: Record<string, string> = {
-  "მანიკური / პედიკური": "from-rose-500/20 to-pink-500/20",
-  "ლაზერული ეპილაცია": "from-violet-500/20 to-purple-500/20",
-  "კოსმეტოლოგია": "from-amber-500/20 to-orange-500/20",
-};
-
-const categoryIconColors: Record<string, string> = {
-  "მანიკური / პედიკური": "text-rose-600 dark:text-rose-400",
-  "ლაზერული ეპილაცია": "text-violet-600 dark:text-violet-400",
-  "კოსმეტოლოგია": "text-amber-600 dark:text-amber-400",
-};
-
 export default function Services() {
   const [visibleCards, setVisibleCards] = useState<number[]>([]);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -90,11 +78,7 @@ export default function Services() {
               >
                 <div className="border border-border rounded-md bg-card/30 p-8 hover-elevate transition-all h-full">
                   <div className="flex flex-col items-center text-center gap-6">
-                    <div 
-                      className={`w-20 h-20 rounded-full flex items-center justify-center bg-gradient-to-br ${categoryGradients[category]} backdrop-blur-sm shadow-lg`}
-                    >
-                      <Icon className={`w-10 h-10 ${categoryIconColors[category]}`} />
-                    </div>
+                    <Icon className="w-6 h-6 text-muted-foreground/40" />
                     <div>
                       <h3 className="font-serif text-2xl text-foreground tracking-tight mb-3">
                         {category}

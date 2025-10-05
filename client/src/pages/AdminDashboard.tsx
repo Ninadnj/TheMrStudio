@@ -11,6 +11,7 @@ import ServicesSectionEditor from "@/components/admin/ServicesSectionEditor";
 import SiteSettingsEditor from "@/components/admin/SiteSettingsEditor";
 import { StaffEditor } from "@/components/admin/StaffEditor";
 import GalleryEditor from "@/components/admin/GalleryEditor";
+import SpecialOffersEditor from "@/components/admin/SpecialOffersEditor";
 
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
@@ -80,11 +81,12 @@ export default function AdminDashboard() {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="hero" className="space-y-6">
-          <TabsList className="grid w-full max-w-2xl grid-cols-5">
+          <TabsList className="grid w-full max-w-3xl grid-cols-6">
             <TabsTrigger value="hero" data-testid="tab-hero">Hero</TabsTrigger>
             <TabsTrigger value="services" data-testid="tab-services">Services</TabsTrigger>
             <TabsTrigger value="gallery" data-testid="tab-gallery">Gallery</TabsTrigger>
             <TabsTrigger value="staff" data-testid="tab-staff">Staff</TabsTrigger>
+            <TabsTrigger value="offers" data-testid="tab-offers">Offers</TabsTrigger>
             <TabsTrigger value="settings" data-testid="tab-settings">Settings</TabsTrigger>
           </TabsList>
 
@@ -105,6 +107,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="staff">
             <StaffEditor />
+          </TabsContent>
+
+          <TabsContent value="offers">
+            <SpecialOffersEditor />
           </TabsContent>
 
           <TabsContent value="settings">

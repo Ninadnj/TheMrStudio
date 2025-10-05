@@ -7,6 +7,7 @@ import { LogOut } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import HeroContentEditor from "@/components/admin/HeroContentEditor";
 import ServicesEditor from "@/components/admin/ServicesEditor";
+import ServicesSectionEditor from "@/components/admin/ServicesSectionEditor";
 import SiteSettingsEditor from "@/components/admin/SiteSettingsEditor";
 import { StaffEditor } from "@/components/admin/StaffEditor";
 import GalleryEditor from "@/components/admin/GalleryEditor";
@@ -92,7 +93,10 @@ export default function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="services">
-            <ServicesEditor />
+            <div className="space-y-6">
+              <ServicesSectionEditor />
+              <ServicesEditor />
+            </div>
           </TabsContent>
 
           <TabsContent value="gallery">

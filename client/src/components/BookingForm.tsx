@@ -250,7 +250,7 @@ export default function BookingForm() {
             <Label htmlFor="serviceDetails">რა პროცედურა გსურთ? *</Label>
             <Textarea
               id="serviceDetails"
-              placeholder="მაგ: გელ ლაქი ფრჩხილების აწევით, თეთრი ფერი"
+              placeholder="მაგ: გელ ლაქი ნუნების აწევით, თეთრი ფერი"
               className="min-h-[100px] resize-none"
               value={formData.serviceDetails}
               onChange={(e) => setFormData({ ...formData, serviceDetails: e.target.value })}

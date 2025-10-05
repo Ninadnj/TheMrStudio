@@ -19,36 +19,40 @@ export default function Footer() {
             <h4 className="font-medium mb-4 text-white">სწრაფი ბმულები</h4>
             <div className="space-y-2">
               <button 
-                className="block text-sm transition-colors" 
+                className="block text-sm transition-colors hover-elevate" 
                 style={{ color: 'rgba(255,255,255,0.8)' }}
                 data-testid="footer-link-about"
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                 onMouseEnter={(e) => e.currentTarget.style.color = 'white'}
                 onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.8)'}
               >
                 ჩვენს შესახებ
               </button>
               <button 
-                className="block text-sm transition-colors" 
+                className="block text-sm transition-colors hover-elevate" 
                 style={{ color: 'rgba(255,255,255,0.8)' }}
                 data-testid="footer-link-services"
+                onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
                 onMouseEnter={(e) => e.currentTarget.style.color = 'white'}
                 onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.8)'}
               >
                 ჩვენი სერვისები
               </button>
               <button 
-                className="block text-sm transition-colors" 
+                className="block text-sm transition-colors hover-elevate" 
                 style={{ color: 'rgba(255,255,255,0.8)' }}
                 data-testid="footer-link-gallery"
+                onClick={() => document.getElementById('gallery')?.scrollIntoView({ behavior: 'smooth' })}
                 onMouseEnter={(e) => e.currentTarget.style.color = 'white'}
                 onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.8)'}
               >
                 გალერეა
               </button>
               <button 
-                className="block text-sm transition-colors" 
+                className="block text-sm transition-colors hover-elevate" 
                 style={{ color: 'rgba(255,255,255,0.8)' }}
                 data-testid="footer-link-booking"
+                onClick={() => document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' })}
                 onMouseEnter={(e) => e.currentTarget.style.color = 'white'}
                 onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.8)'}
               >

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -46,6 +46,8 @@ export default function BookingForm() {
     notes: ""
   });
   const { toast } = useToast();
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
 
   const { data: availableStaff = [], isLoading: staffLoading } = useQuery<Staff[]>({
     queryKey: ["/api/staff/category", formData.serviceCategory],
@@ -111,6 +113,23 @@ export default function BookingForm() {
     },
   });
 
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -149,9 +168,11 @@ export default function BookingForm() {
   };
 
   return (
-    <section id="booking" className="py-20 lg:py-32 bg-card">
+    <section id="booking" className="py-20 lg:py-32 bg-card" ref={sectionRef}>
       <div className="max-w-3xl mx-auto px-6">
-        <div className="text-center mb-12">
+        <div className={`text-center mb-12 transition-all duration-700 ${
+          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}>
           <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl mb-4 text-card-foreground font-normal">
             დაჯავშნეთ თქვენი ვიზიტი
           </h2>
@@ -160,7 +181,9 @@ export default function BookingForm() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className={`space-y-6 transition-all duration-700 delay-200 ${
+          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="fullName">სრული სახელი *</Label>

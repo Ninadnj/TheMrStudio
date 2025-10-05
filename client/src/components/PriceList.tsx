@@ -139,6 +139,8 @@ export default function PriceList() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
 
   const checkScrollButtons = () => {
     if (!scrollContainerRef.current) return;
@@ -171,6 +173,23 @@ export default function PriceList() {
     };
   }, [priceLists.length]);
 
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
   const scroll = (direction: 'left' | 'right') => {
     if (!scrollContainerRef.current) return;
     
@@ -199,9 +218,11 @@ export default function PriceList() {
   };
 
   return (
-    <section id="prices" className="py-20 lg:py-32 bg-background">
+    <section id="prices" className="py-20 lg:py-32 bg-background" ref={sectionRef}>
       <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-12">
+        <div className={`text-center mb-12 transition-all duration-700 ${
+          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}>
           <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl mb-3 text-foreground font-normal">
             სერვისების ფასები
           </h2>
@@ -210,7 +231,9 @@ export default function PriceList() {
           </p>
         </div>
 
-        <div className="relative">
+        <div className={`relative transition-all duration-700 delay-200 ${
+          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}>
           <div 
             ref={scrollContainerRef}
             className="overflow-x-auto overflow-y-visible scrollbar-hide snap-x snap-mandatory"

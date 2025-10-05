@@ -124,3 +124,17 @@ export const insertGalleryImageSchema = createInsertSchema(galleryImages).omit({
 
 export type InsertGalleryImage = z.infer<typeof insertGalleryImageSchema>;
 export type GalleryImage = typeof galleryImages.$inferSelect;
+
+export const servicesSection = pgTable("services_section", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  subtitle: text("subtitle").notNull(),
+  categoryDescriptions: text("category_descriptions").notNull(),
+});
+
+export const insertServicesSectionSchema = createInsertSchema(servicesSection).omit({
+  id: true,
+});
+
+export type InsertServicesSection = z.infer<typeof insertServicesSectionSchema>;
+export type ServicesSection = typeof servicesSection.$inferSelect;

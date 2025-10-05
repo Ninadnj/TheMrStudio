@@ -9,7 +9,8 @@ import {
   insertSiteSettingsSchema,
   insertStaffSchema,
   insertGalleryImageSchema,
-  insertServicesSectionSchema
+  insertServicesSectionSchema,
+  insertSpecialOfferSchema
 } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import { chatWithGemini } from "./gemini-chat";
@@ -419,6 +420,66 @@ ${booking.notes ? `Notes: ${booking.notes}` : ''}
       res.json(services);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch services" });
+    }
+  });
+
+  // Special offers routes
+  app.get("/api/special-offers/active", async (req, res) => {
+    try {
+      const offer = await storage.getActiveSpecialOffer();
+      res.json(offer || null);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch active special offer" });
+    }
+  });
+
+  app.get("/api/admin/special-offers", requireAuth, async (req, res) => {
+    try {
+      const offers = await storage.getAllSpecialOffers();
+      res.json(offers);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch special offers" });
+    }
+  });
+
+  app.post("/api/admin/special-offers", requireAuth, async (req, res) => {
+    try {
+      const validatedData = insertSpecialOfferSchema.parse(req.body);
+      const offer = await storage.createSpecialOffer(validatedData);
+      res.status(201).json(offer);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        const validationError = fromZodError(error);
+        res.status(400).json({ error: validationError.message });
+      } else {
+        res.status(500).json({ error: "Failed to create special offer" });
+      }
+    }
+  });
+
+  app.put("/api/admin/special-offers/:id", requireAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const offer = await storage.updateSpecialOffer(id, req.body);
+      if (!offer) {
+        return res.status(404).json({ error: "Special offer not found" });
+      }
+      res.json(offer);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update special offer" });
+    }
+  });
+
+  app.delete("/api/admin/special-offers/:id", requireAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deleted = await storage.deleteSpecialOffer(id);
+      if (!deleted) {
+        return res.status(404).json({ error: "Special offer not found" });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete special offer" });
     }
   });
 

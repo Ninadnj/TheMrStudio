@@ -1,5 +1,7 @@
 import { Sparkles, Hand, Star } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import type { ServicesSection } from "@shared/schema";
 
 const categoryIcons: Record<string, any> = {
   "მანიკური / პედიკური": Hand,
@@ -7,15 +9,17 @@ const categoryIcons: Record<string, any> = {
   "კოსმეტოლოგია": Star,
 };
 
-const categoryDescriptions: Record<string, string> = {
-  "მანიკური / პედიკური": "Professional nail care using premium gel polishes and advanced techniques. Our manicure and pedicure services include nail strengthening, extensions, and artistic designs.",
-  "ლაზერული ეპილაცია": "Advanced laser hair removal technology with safe and effective treatments. Our laser systems provide long-lasting results with minimal discomfort.",
-  "კოსმეტოლოგია": "Professional skincare and beauty treatments using modern techniques and high-quality products for optimal results.",
-};
-
 export default function Services() {
   const [visibleCards, setVisibleCards] = useState<number[]>([]);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const { data: servicesSection } = useQuery<ServicesSection>({
+    queryKey: ["/api/services-section"],
+  });
+
+  const categoryDescriptions: Record<string, string> = servicesSection
+    ? JSON.parse(servicesSection.categoryDescriptions)
+    : {};
 
   const categories = ["მანიკური / პედიკური", "ლაზერული ეპილაცია", "კოსმეტოლოგია"];
 
@@ -49,10 +53,10 @@ export default function Services() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-20">
           <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl mb-3 text-foreground font-normal">
-            ჩვენი სერვისები
+            {servicesSection?.title || "ჩვენი სერვისები"}
           </h2>
           <p className="text-lg text-muted-foreground/80 max-w-2xl mx-auto tracking-wide">
-            Our Services
+            {servicesSection?.subtitle || "Our Services"}
           </p>
         </div>
         

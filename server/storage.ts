@@ -6,7 +6,8 @@ import {
   type SiteSettings, type InsertSiteSettings,
   type Staff, type InsertStaff,
   type GalleryImage, type InsertGalleryImage,
-  type ServicesSection, type InsertServicesSection
+  type ServicesSection, type InsertServicesSection,
+  type SpecialOffer, type InsertSpecialOffer
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 
@@ -47,6 +48,12 @@ export interface IStorage {
   
   getServicesSection(): Promise<ServicesSection | undefined>;
   updateServicesSection(content: InsertServicesSection): Promise<ServicesSection>;
+  
+  getAllSpecialOffers(): Promise<SpecialOffer[]>;
+  getActiveSpecialOffer(): Promise<SpecialOffer | undefined>;
+  createSpecialOffer(offer: InsertSpecialOffer): Promise<SpecialOffer>;
+  updateSpecialOffer(id: string, updates: Partial<InsertSpecialOffer>): Promise<SpecialOffer | undefined>;
+  deleteSpecialOffer(id: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -58,6 +65,7 @@ export class MemStorage implements IStorage {
   private staff: Map<string, Staff>;
   private galleryImages: Map<string, GalleryImage>;
   private servicesSection: ServicesSection | undefined;
+  private specialOffers: Map<string, SpecialOffer>;
 
   constructor() {
     this.users = new Map();
@@ -65,6 +73,7 @@ export class MemStorage implements IStorage {
     this.services = new Map();
     this.staff = new Map();
     this.galleryImages = new Map();
+    this.specialOffers = new Map();
     
     this.heroContent = {
       id: randomUUID(),
@@ -512,6 +521,48 @@ export class MemStorage implements IStorage {
     const id = this.servicesSection?.id || randomUUID();
     this.servicesSection = { ...content, id };
     return this.servicesSection;
+  }
+
+  async getAllSpecialOffers(): Promise<SpecialOffer[]> {
+    return Array.from(this.specialOffers.values());
+  }
+
+  async getActiveSpecialOffer(): Promise<SpecialOffer | undefined> {
+    const now = new Date();
+    return Array.from(this.specialOffers.values()).find(offer => {
+      if (!offer.isActive) return false;
+      if (offer.expiryDate) {
+        const expiryDate = new Date(offer.expiryDate);
+        return expiryDate >= now;
+      }
+      return true;
+    });
+  }
+
+  async createSpecialOffer(insertOffer: InsertSpecialOffer): Promise<SpecialOffer> {
+    const id = randomUUID();
+    const offer: SpecialOffer = { 
+      ...insertOffer, 
+      id,
+      isActive: insertOffer.isActive ?? false,
+      expiryDate: insertOffer.expiryDate ?? null,
+      link: insertOffer.link ?? null
+    };
+    this.specialOffers.set(id, offer);
+    return offer;
+  }
+
+  async updateSpecialOffer(id: string, updates: Partial<InsertSpecialOffer>): Promise<SpecialOffer | undefined> {
+    const existing = this.specialOffers.get(id);
+    if (!existing) return undefined;
+    
+    const updated: SpecialOffer = { ...existing, ...updates };
+    this.specialOffers.set(id, updated);
+    return updated;
+  }
+
+  async deleteSpecialOffer(id: string): Promise<boolean> {
+    return this.specialOffers.delete(id);
   }
 }
 

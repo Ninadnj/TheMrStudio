@@ -27,67 +27,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/login", loginHandler);
   app.post("/api/admin/logout", logoutHandler);
   app.get("/api/admin/check", checkAuthHandler);
-  // Create a new booking
+  // Create a new booking (pending status by default)
   app.post("/api/bookings", async (req, res) => {
     try {
       const validatedData = insertBookingSchema.parse(req.body);
       const booking = await storage.createBooking(validatedData);
       
-      // Create Google Calendar event if staff has calendar integration
-      if (booking.staffId) {
-        const staff = await storage.getStaffById(booking.staffId);
-        
-        if (staff?.calendarId) {
-          try {
-            // Parse booking date and time
-            const [year, month, day] = booking.date.split('-');
-            const [hours, minutes] = booking.time.split(':');
-            
-            // Convert Tbilisi local time to UTC instant
-            // Tbilisi is UTC+4, so subtract 4 hours to get UTC
-            const offsetMinutes = 4 * 60;
-            const startUtc = Date.UTC(
-              parseInt(year),
-              parseInt(month) - 1,
-              parseInt(day),
-              parseInt(hours),
-              parseInt(minutes)
-            ) - offsetMinutes * 60 * 1000;
-            
-            // Add 2 hours for end time
-            const endUtc = startUtc + 2 * 60 * 60 * 1000;
-            
-            // Convert to ISO strings - Google Calendar will display in Asia/Tbilisi timezone
-            const startDateTime = new Date(startUtc).toISOString();
-            const endDateTime = new Date(endUtc).toISOString();
-            
-            const summary = `${booking.service} - ${booking.fullName}`;
-            const description = `
-Booking Details:
-Client: ${booking.fullName}
-Phone: ${booking.phone}
-Email: ${booking.email}
-Service: ${booking.service}
-Staff: ${booking.staffName}
-${booking.notes ? `Notes: ${booking.notes}` : ''}
-            `.trim();
-            
-            await createCalendarEvent(
-              staff.calendarId,
-              summary,
-              description,
-              startDateTime,
-              endDateTime,
-              booking.email
-            );
-            
-            console.log(`Calendar event created for ${staff.name} (${staff.calendarId})`);
-          } catch (calendarError) {
-            console.error('Failed to create calendar event:', calendarError);
-            // Don't fail the booking if calendar creation fails
-          }
-        }
-      }
+      // No calendar event is created here - it happens only on admin approval
       
       res.status(201).json(booking);
     } catch (error: any) {

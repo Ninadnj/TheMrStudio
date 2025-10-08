@@ -8,6 +8,14 @@ A modern beauty salon booking website built with React, Express, and PostgreSQL,
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes & Bug Fixes
+
+### October 2025
+- **Fixed Staff Management Bug**: Corrected `apiRequest` parameter order in StaffEditor component. All CRUD operations (create, update, delete) now work correctly with Georgian characters. Backend validation added for proper error handling.
+- **Fixed Booking Availability Logic**: Time slots now correctly block based on full booking duration, not just start time. Handles edge cases like mid-hour bookings (e.g., 12:45 + 30min properly blocks both 12:00 and 13:00).
+- **Fixed Booking Modification Bug**: Changing only duration no longer sets time field to undefined.
+- **Email Notifications**: Admin receives instant email alerts for new bookings (requires EMAIL_USER/EMAIL_PASS in Secrets, admin email configured in Settings tab).
+
 ## System Architecture
 
 ### Frontend Architecture

@@ -82,6 +82,7 @@ export default function Header() {
             <button
               onClick={() => scrollToSection('booking')}
               className={`text-sm font-medium transition-colors ${isScrolled ? 'text-foreground' : 'text-white'}`}
+              style={{ color: 'inherit' }}
               onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
               onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
               data-testid="nav-booking"
@@ -91,6 +92,7 @@ export default function Header() {
             <button
               onClick={() => scrollToSection('contact')}
               className={`text-sm font-medium transition-colors ${isScrolled ? 'text-foreground' : 'text-white'}`}
+              style={{ color: 'inherit' }}
               onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
               onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
               data-testid="nav-contact"

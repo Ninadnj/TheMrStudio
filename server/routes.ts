@@ -64,7 +64,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const bookings = await storage.getBookingsByDate(date);
-      const bookedTimes = bookings.map((booking) => booking.time);
+      
+      // Calculate all blocked time slots based on booking duration
+      const bookedTimesSet = new Set<string>();
+      
+      for (const booking of bookings) {
+        const [hours, minutes] = booking.time.split(':').map(Number);
+        const durationMinutes = parseInt(booking.duration);
+        
+        // Calculate how many hourly slots this booking occupies
+        // A booking blocks its start hour plus any additional hours it extends into
+        const startMinutes = hours * 60 + minutes;
+        const endMinutes = startMinutes + durationMinutes;
+        
+        // Add all hourly time slots that this booking overlaps
+        for (let currentMinutes = startMinutes; currentMinutes < endMinutes; currentMinutes += 60) {
+          const slotHour = Math.floor(currentMinutes / 60);
+          const slotTime = `${slotHour.toString().padStart(2, '0')}:00`;
+          bookedTimesSet.add(slotTime);
+        }
+      }
+      
+      const bookedTimes = Array.from(bookedTimesSet);
       
       res.json({ bookedTimes });
     } catch (error) {

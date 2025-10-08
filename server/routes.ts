@@ -69,19 +69,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const bookedTimesSet = new Set<string>();
       
       for (const booking of bookings) {
-        const [hours, minutes] = booking.time.split(':').map(Number);
-        const durationMinutes = parseInt(booking.duration);
-        
-        // Calculate how many hourly slots this booking occupies
-        // A booking blocks its start hour plus any additional hours it extends into
-        const startMinutes = hours * 60 + minutes;
-        const endMinutes = startMinutes + durationMinutes;
-        
-        // Add all hourly time slots that this booking overlaps
-        for (let currentMinutes = startMinutes; currentMinutes < endMinutes; currentMinutes += 60) {
-          const slotHour = Math.floor(currentMinutes / 60);
-          const slotTime = `${slotHour.toString().padStart(2, '0')}:00`;
-          bookedTimesSet.add(slotTime);
+        try {
+          const [hours, minutes] = booking.time.split(':').map(Number);
+          const durationMinutes = parseInt(booking.duration);
+          
+          // Validate duration is a valid number
+          if (isNaN(durationMinutes) || durationMinutes <= 0) {
+            console.error(`Invalid duration for booking ${booking.id}: ${booking.duration}`);
+            continue;
+          }
+          
+          // Calculate which hourly slots this booking overlaps
+          const startMinutes = hours * 60 + (minutes || 0);
+          const endMinutes = startMinutes + durationMinutes;
+          
+          // Find first and last hour slots that this booking touches
+          const startHour = Math.floor(startMinutes / 60);
+          const endHour = Math.floor((endMinutes - 1) / 60);
+          
+          // Block all hours from start to end (inclusive)
+          for (let hour = startHour; hour <= endHour; hour++) {
+            const slotTime = `${hour.toString().padStart(2, '0')}:00`;
+            bookedTimesSet.add(slotTime);
+          }
+        } catch (bookingError) {
+          console.error(`Error processing booking ${booking.id}:`, bookingError);
+          continue;
         }
       }
       
@@ -89,6 +102,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json({ bookedTimes });
     } catch (error) {
+      console.error('Availability endpoint error:', error);
       res.status(500).json({ error: "Failed to fetch availability" });
     }
   });

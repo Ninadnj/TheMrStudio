@@ -443,7 +443,12 @@ export class MemStorage implements IStorage {
     const booking = this.bookings.get(id);
     if (!booking) return undefined;
     
-    const updated: Booking = { ...booking, ...updates };
+    // Only include defined values in updates to avoid overwriting with undefined
+    const filteredUpdates: Partial<Booking> = {};
+    if (updates.time !== undefined) filteredUpdates.time = updates.time;
+    if (updates.duration !== undefined) filteredUpdates.duration = updates.duration;
+    
+    const updated: Booking = { ...booking, ...filteredUpdates };
     this.bookings.set(id, updated);
     return updated;
   }

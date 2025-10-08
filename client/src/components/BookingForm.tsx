@@ -189,7 +189,7 @@ export default function BookingForm() {
               <Label htmlFor="fullName">სახელი გვარი *</Label>
               <Input
                 id="fullName"
-                placeholder="მაგ: მარიამ ესებუა"
+                placeholder="მაგ: სახელი გვარი"
                 value={formData.fullName}
                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                 required

@@ -42,6 +42,9 @@ export const bookings = pgTable("bookings", {
   staffName: text("staff_name"),
   date: date("date").notNull(),
   time: text("time").notNull(),
+  duration: text("duration").notNull().default("90"),
+  status: text("status").notNull().default("pending"),
+  rejectionReason: text("rejection_reason"),
   notes: text("notes"),
 });
 

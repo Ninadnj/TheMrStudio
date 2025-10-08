@@ -180,7 +180,7 @@ export function BookingsEditor() {
               onClick={() => {
                 setModifyBooking(booking);
                 setModifyTime(booking.time);
-                setModifyDuration(booking.duration);
+                setModifyDuration(String(booking.duration));
               }}
               data-testid={`button-modify-${booking.id}`}
             >
@@ -274,7 +274,10 @@ export function BookingsEditor() {
                   <SelectItem value="60">1 hour</SelectItem>
                   <SelectItem value="90">1.5 hours</SelectItem>
                   <SelectItem value="120">2 hours</SelectItem>
+                  <SelectItem value="150">2.5 hours</SelectItem>
                   <SelectItem value="180">3 hours</SelectItem>
+                  <SelectItem value="210">3.5 hours</SelectItem>
+                  <SelectItem value="240">4 hours</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -24,7 +24,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { Service, Staff } from "@shared/schema";
 
 const timeSlots = [
-  "08:00", "10:00", "12:00", "14:00", "16:00", "18:00"
+  "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"
 ];
 
 const serviceCategories = [
@@ -89,8 +89,8 @@ export default function BookingForm() {
         exact: false 
       });
       toast({
-        title: "დაჯავშნა დადასტურებულია!",
-        description: "თქვენი ვიზიტი დაემატა კალენდარში. ელ. ფოსტაზე მიიღებთ დადასტურებას",
+        title: "მოთხოვნა გაგზავნილია!",
+        description: "თქვენი დაჯავშნის მოთხოვნა გაიგზავნა. სპეციალისტი დაგიკავშირდებათ დასადასტურებლად",
       });
       setFormData({
         fullName: "",

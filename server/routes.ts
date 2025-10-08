@@ -403,13 +403,23 @@ ${booking.notes ? `Notes: ${booking.notes}` : ''}
   app.put("/api/admin/staff/:id", requireAuth, async (req, res) => {
     try {
       const { id } = req.params;
-      const staffMember = await storage.updateStaff(id, req.body);
+      
+      // Validate the update data - partial schema since not all fields required for update
+      const validatedData = insertStaffSchema.partial().parse(req.body);
+      
+      const staffMember = await storage.updateStaff(id, validatedData);
       if (!staffMember) {
         return res.status(404).json({ error: "Staff member not found" });
       }
       res.json(staffMember);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to update staff member" });
+    } catch (error: any) {
+      console.error("Error updating staff member:", error);
+      if (error.name === "ZodError") {
+        const validationError = fromZodError(error);
+        res.status(400).json({ error: validationError.message });
+      } else {
+        res.status(500).json({ error: "Failed to update staff member" });
+      }
     }
   });
 

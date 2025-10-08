@@ -55,7 +55,7 @@ export function StaffEditor() {
 
   const createMutation = useMutation({
     mutationFn: async (data: StaffFormData) => {
-      return await apiRequest("/api/admin/staff", "POST", data);
+      return await apiRequest("POST", "/api/admin/staff", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/staff"] });
@@ -77,7 +77,7 @@ export function StaffEditor() {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<StaffFormData> }) => {
-      return await apiRequest(`/api/admin/staff/${id}`, "PUT", data);
+      return await apiRequest("PUT", `/api/admin/staff/${id}`, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/staff"] });
@@ -99,7 +99,7 @@ export function StaffEditor() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      return await apiRequest(`/api/admin/staff/${id}`, "DELETE");
+      return await apiRequest("DELETE", `/api/admin/staff/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/staff"] });

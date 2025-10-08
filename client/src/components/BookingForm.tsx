@@ -186,7 +186,7 @@ export default function BookingForm() {
         }`}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="fullName">სრული სახელი *</Label>
+              <Label htmlFor="fullName">სახელი გვარი *</Label>
               <Input
                 id="fullName"
                 placeholder="მაგ: მარიამ ესებუა"

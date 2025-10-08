@@ -51,50 +51,35 @@ export default function Header() {
           <nav className="hidden md:flex items-center gap-8">
             <button
               onClick={() => scrollToSection('services')}
-              className={`text-sm font-medium transition-colors ${isScrolled ? 'text-foreground' : 'text-white'}`}
-              style={{ color: 'inherit' }}
-              onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
-              onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
+              className={`text-sm font-medium transition-colors hover:text-theme-accent ${isScrolled ? 'text-foreground' : 'text-white'}`}
               data-testid="nav-services"
             >
               სერვისები
             </button>
             <button
               onClick={() => scrollToSection('prices')}
-              className={`text-sm font-medium transition-colors ${isScrolled ? 'text-foreground' : 'text-white'}`}
-              style={{ color: 'inherit' }}
-              onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
-              onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
+              className={`text-sm font-medium transition-colors hover:text-theme-accent ${isScrolled ? 'text-foreground' : 'text-white'}`}
               data-testid="nav-prices"
             >
               ფასები
             </button>
             <button
               onClick={() => scrollToSection('gallery')}
-              className={`text-sm font-medium transition-colors ${isScrolled ? 'text-foreground' : 'text-white'}`}
-              style={{ color: 'inherit' }}
-              onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
-              onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
+              className={`text-sm font-medium transition-colors hover:text-theme-accent ${isScrolled ? 'text-foreground' : 'text-white'}`}
               data-testid="nav-gallery"
             >
               გალერეა
             </button>
             <button
               onClick={() => scrollToSection('booking')}
-              className={`text-sm font-medium transition-colors ${isScrolled ? 'text-foreground' : 'text-white'}`}
-              style={{ color: 'inherit' }}
-              onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
-              onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
+              className={`text-sm font-medium transition-colors hover:text-theme-accent ${isScrolled ? 'text-foreground' : 'text-white'}`}
               data-testid="nav-booking"
             >
               დაჯავშნა
             </button>
             <button
               onClick={() => scrollToSection('contact')}
-              className={`text-sm font-medium transition-colors ${isScrolled ? 'text-foreground' : 'text-white'}`}
-              style={{ color: 'inherit' }}
-              onMouseEnter={(e) => e.currentTarget.style.color = 'var(--theme-accent)'}
-              onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
+              className={`text-sm font-medium transition-colors hover:text-theme-accent ${isScrolled ? 'text-foreground' : 'text-white'}`}
               data-testid="nav-contact"
             >
               კონტაქტი

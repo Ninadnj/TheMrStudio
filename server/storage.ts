@@ -21,6 +21,12 @@ export interface IStorage {
   createBooking(booking: InsertBooking): Promise<Booking>;
   getBookingsByDate(date: string): Promise<Booking[]>;
   getAllBookings(): Promise<Booking[]>;
+  getBookingById(id: string): Promise<Booking | undefined>;
+  getPendingBookings(): Promise<Booking[]>;
+  getConfirmedBookings(): Promise<Booking[]>;
+  approveBooking(id: string): Promise<Booking | undefined>;
+  rejectBooking(id: string, reason?: string): Promise<Booking | undefined>;
+  modifyBooking(id: string, updates: { time?: string; duration?: string }): Promise<Booking | undefined>;
   
   getHeroContent(): Promise<HeroContent | undefined>;
   updateHeroContent(content: InsertHeroContent): Promise<HeroContent>;
@@ -377,6 +383,9 @@ export class MemStorage implements IStorage {
     const booking: Booking = { 
       ...insertBooking, 
       id,
+      duration: insertBooking.duration ?? "90",
+      status: insertBooking.status ?? "pending",
+      rejectionReason: insertBooking.rejectionReason ?? null,
       notes: insertBooking.notes ?? null,
       staffId: insertBooking.staffId ?? null,
       staffName: insertBooking.staffName ?? null
@@ -393,6 +402,49 @@ export class MemStorage implements IStorage {
 
   async getAllBookings(): Promise<Booking[]> {
     return Array.from(this.bookings.values());
+  }
+
+  async getBookingById(id: string): Promise<Booking | undefined> {
+    return this.bookings.get(id);
+  }
+
+  async getPendingBookings(): Promise<Booking[]> {
+    return Array.from(this.bookings.values()).filter(
+      (booking) => booking.status === "pending"
+    );
+  }
+
+  async getConfirmedBookings(): Promise<Booking[]> {
+    return Array.from(this.bookings.values()).filter(
+      (booking) => booking.status === "confirmed"
+    );
+  }
+
+  async approveBooking(id: string): Promise<Booking | undefined> {
+    const booking = this.bookings.get(id);
+    if (!booking) return undefined;
+    
+    const updated: Booking = { ...booking, status: "confirmed", rejectionReason: null };
+    this.bookings.set(id, updated);
+    return updated;
+  }
+
+  async rejectBooking(id: string, reason?: string): Promise<Booking | undefined> {
+    const booking = this.bookings.get(id);
+    if (!booking) return undefined;
+    
+    const updated: Booking = { ...booking, status: "rejected", rejectionReason: reason ?? null };
+    this.bookings.set(id, updated);
+    return updated;
+  }
+
+  async modifyBooking(id: string, updates: { time?: string; duration?: string }): Promise<Booking | undefined> {
+    const booking = this.bookings.get(id);
+    if (!booking) return undefined;
+    
+    const updated: Booking = { ...booking, ...updates };
+    this.bookings.set(id, updated);
+    return updated;
   }
 
   async getHeroContent(): Promise<HeroContent | undefined> {

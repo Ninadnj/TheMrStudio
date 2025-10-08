@@ -95,6 +95,7 @@ export class MemStorage implements IStorage {
       phone: "+995 599 999 999",
       email: "info@themrstudio.ge",
       hours: "Mon-Sat: 10:00 AM - 8:00 PM",
+      adminEmail: null,
     };
     
     const staff1 = {
@@ -489,7 +490,11 @@ export class MemStorage implements IStorage {
 
   async updateSiteSettings(settings: InsertSiteSettings): Promise<SiteSettings> {
     const id = this.siteSettings?.id || randomUUID();
-    this.siteSettings = { ...settings, id };
+    this.siteSettings = { 
+      ...settings, 
+      id,
+      adminEmail: settings.adminEmail ?? null 
+    };
     return this.siteSettings;
   }
 

@@ -21,6 +21,7 @@ import {
   requireAuth 
 } from "./auth";
 import { createCalendarEvent } from "./google-calendar";
+import { sendNewBookingNotification } from "./email-notifications";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
@@ -34,6 +35,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const booking = await storage.createBooking(validatedData);
       
       // No calendar event is created here - it happens only on admin approval
+      
+      // Send email notification to admin if configured
+      const settings = await storage.getSiteSettings();
+      if (settings?.adminEmail) {
+        await sendNewBookingNotification(booking, settings.adminEmail);
+      }
       
       res.status(201).json(booking);
     } catch (error: any) {

@@ -24,12 +24,14 @@ export default function SiteSettingsEditor() {
       phone: settings?.phone || "",
       email: settings?.email || "",
       hours: settings?.hours || "",
+      adminEmail: settings?.adminEmail || "",
     },
     values: settings ? {
       address: settings.address,
       phone: settings.phone,
       email: settings.email,
       hours: settings.hours,
+      adminEmail: settings.adminEmail || "",
     } : undefined,
   });
 
@@ -116,6 +118,26 @@ export default function SiteSettingsEditor() {
                   <FormLabel>Business Hours</FormLabel>
                   <FormControl>
                     <Input {...field} placeholder="Mon-Sat: 10:00 AM - 8:00 PM" data-testid="input-hours" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="adminEmail"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Admin Email (for booking notifications)</FormLabel>
+                  <FormControl>
+                    <Input 
+                      {...field} 
+                      type="email" 
+                      placeholder="admin@themrstudio.ge" 
+                      data-testid="input-admin-email"
+                      value={field.value || ""}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

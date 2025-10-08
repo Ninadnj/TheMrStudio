@@ -105,6 +105,7 @@ export const siteSettings = pgTable("site_settings", {
   phone: text("phone").notNull(),
   email: text("email").notNull(),
   hours: text("hours").notNull(),
+  adminEmail: text("admin_email"),
 });
 
 export const insertSiteSettingsSchema = createInsertSchema(siteSettings).omit({

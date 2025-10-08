@@ -129,6 +129,125 @@ ${booking.notes ? `Notes: ${booking.notes}` : ''}
     }
   });
 
+  // Admin booking management routes (protected)
+  app.get("/api/admin/bookings/pending", requireAuth, async (req, res) => {
+    try {
+      const bookings = await storage.getPendingBookings();
+      res.json(bookings);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch pending bookings" });
+    }
+  });
+
+  app.get("/api/admin/bookings/confirmed", requireAuth, async (req, res) => {
+    try {
+      const bookings = await storage.getConfirmedBookings();
+      res.json(bookings);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch confirmed bookings" });
+    }
+  });
+
+  app.post("/api/admin/bookings/:id/approve", requireAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const booking = await storage.approveBooking(id);
+      
+      if (!booking) {
+        return res.status(404).json({ error: "Booking not found" });
+      }
+
+      // Create Google Calendar event when approved
+      if (booking.staffId) {
+        const staff = await storage.getStaffById(booking.staffId);
+        
+        if (staff?.calendarId) {
+          try {
+            const [year, month, day] = booking.date.split('-');
+            const [hours, minutes] = booking.time.split(':');
+            
+            const offsetMinutes = 4 * 60;
+            const startUtc = Date.UTC(
+              parseInt(year),
+              parseInt(month) - 1,
+              parseInt(day),
+              parseInt(hours),
+              parseInt(minutes)
+            ) - offsetMinutes * 60 * 1000;
+            
+            const durationMs = parseInt(booking.duration) * 60 * 1000;
+            const endUtc = startUtc + durationMs;
+            
+            const startDateTime = new Date(startUtc).toISOString();
+            const endDateTime = new Date(endUtc).toISOString();
+            
+            const summary = `${booking.service} - ${booking.fullName}`;
+            const description = `
+Booking Details:
+Client: ${booking.fullName}
+Phone: ${booking.phone}
+Email: ${booking.email}
+Service: ${booking.service}
+Staff: ${booking.staffName}
+Duration: ${booking.duration} minutes
+${booking.notes ? `Notes: ${booking.notes}` : ''}
+            `.trim();
+            
+            await createCalendarEvent(
+              staff.calendarId,
+              summary,
+              description,
+              startDateTime,
+              endDateTime,
+              booking.email
+            );
+            
+            console.log(`Calendar event created for approved booking ${id}`);
+          } catch (calendarError) {
+            console.error('Failed to create calendar event:', calendarError);
+          }
+        }
+      }
+      
+      res.json(booking);
+    } catch (error) {
+      console.error('Approve booking error:', error);
+      res.status(500).json({ error: "Failed to approve booking" });
+    }
+  });
+
+  app.post("/api/admin/bookings/:id/reject", requireAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { reason } = req.body;
+      const booking = await storage.rejectBooking(id, reason);
+      
+      if (!booking) {
+        return res.status(404).json({ error: "Booking not found" });
+      }
+      
+      res.json(booking);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to reject booking" });
+    }
+  });
+
+  app.put("/api/admin/bookings/:id/modify", requireAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { time, duration } = req.body;
+      const booking = await storage.modifyBooking(id, { time, duration });
+      
+      if (!booking) {
+        return res.status(404).json({ error: "Booking not found" });
+      }
+      
+      res.json(booking);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to modify booking" });
+    }
+  });
+
   // Chat with Gemini assistant
   app.post("/api/chat", async (req, res) => {
     try {

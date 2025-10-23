@@ -308,13 +308,21 @@ ${booking.notes ? `Notes: ${booking.notes}` : ''}
   app.put("/api/admin/services/:id", requireAuth, async (req, res) => {
     try {
       const { id } = req.params;
-      const service = await storage.updateService(id, req.body);
+      const validatedData = insertServiceSchema.partial().parse(req.body);
+      const service = await storage.updateService(id, validatedData);
       if (!service) {
         return res.status(404).json({ error: "Service not found" });
       }
       res.json(service);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to update service" });
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        const validationError = fromZodError(error);
+        console.error("Service update validation error:", validationError.message);
+        res.status(400).json({ error: validationError.message });
+      } else {
+        console.error("Service update error:", error);
+        res.status(500).json({ error: "Failed to update service" });
+      }
     }
   });
 

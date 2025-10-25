@@ -10,7 +10,8 @@ import {
   insertStaffSchema,
   insertGalleryImageSchema,
   insertServicesSectionSchema,
-  insertSpecialOfferSchema
+  insertSpecialOfferSchema,
+  insertTrendSchema
 } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import { chatWithGemini } from "./gemini-chat";
@@ -626,6 +627,66 @@ ${booking.notes ? `Notes: ${booking.notes}` : ''}
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ error: "Failed to delete special offer" });
+    }
+  });
+
+  // Trends management
+  app.get("/api/trends", async (req, res) => {
+    try {
+      const trends = await storage.getAllTrends();
+      res.json(trends);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch trends" });
+    }
+  });
+
+  app.get("/api/admin/trends", requireAuth, async (req, res) => {
+    try {
+      const trends = await storage.getAllTrends();
+      res.json(trends);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch trends" });
+    }
+  });
+
+  app.post("/api/admin/trends", requireAuth, async (req, res) => {
+    try {
+      const validatedData = insertTrendSchema.parse(req.body);
+      const trend = await storage.createTrend(validatedData);
+      res.status(201).json(trend);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        const validationError = fromZodError(error);
+        res.status(400).json({ error: validationError.message });
+      } else {
+        res.status(500).json({ error: "Failed to create trend" });
+      }
+    }
+  });
+
+  app.put("/api/admin/trends/:id", requireAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const trend = await storage.updateTrend(id, req.body);
+      if (!trend) {
+        return res.status(404).json({ error: "Trend not found" });
+      }
+      res.json(trend);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update trend" });
+    }
+  });
+
+  app.delete("/api/admin/trends/:id", requireAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deleted = await storage.deleteTrend(id);
+      if (!deleted) {
+        return res.status(404).json({ error: "Trend not found" });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to delete trend" });
     }
   });
 

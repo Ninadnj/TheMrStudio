@@ -71,14 +71,16 @@ export default function Hero() {
       >
         {/* Bold, Minimalist Typography (2025 Design) */}
         <motion.h1 
-          className="font-display text-7xl md:text-8xl lg:text-9xl font-bold mb-8 text-[#0B0B0B] leading-none drop-shadow-sm" 
+          className="font-display text-7xl md:text-8xl lg:text-9xl mb-8 text-[#0B0B0B] leading-none drop-shadow-sm" 
           style={{ letterSpacing: '-0.02em' }}
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          <span style={{ opacity: 0.3 }}>THE</span> MR<br/>
-          Studio
+          <span style={{ opacity: 0.3 }}>THE </span>
+          <span className="font-bold">MR</span>
+          <br/>
+          <span style={{ opacity: 0.3 }}>Studio</span>
         </motion.h1>
         
         <motion.p 

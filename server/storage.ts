@@ -8,7 +8,9 @@ import {
   type GalleryImage, type InsertGalleryImage,
   type ServicesSection, type InsertServicesSection,
   type SpecialOffer, type InsertSpecialOffer,
-  galleryImages as galleryImagesTable
+  type Trend, type InsertTrend,
+  galleryImages as galleryImagesTable,
+  trends as trendsTable
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { db } from "./db";
@@ -63,6 +65,12 @@ export interface IStorage {
   createSpecialOffer(offer: InsertSpecialOffer): Promise<SpecialOffer>;
   updateSpecialOffer(id: string, updates: Partial<InsertSpecialOffer>): Promise<SpecialOffer | undefined>;
   deleteSpecialOffer(id: string): Promise<boolean>;
+  
+  getAllTrends(): Promise<Trend[]>;
+  getTrendsByCategory(category: string): Promise<Trend[]>;
+  createTrend(trend: InsertTrend): Promise<Trend>;
+  updateTrend(id: string, updates: Partial<InsertTrend>): Promise<Trend | undefined>;
+  deleteTrend(id: string): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -624,6 +632,34 @@ export class MemStorage implements IStorage {
 
   async deleteSpecialOffer(id: string): Promise<boolean> {
     return this.specialOffers.delete(id);
+  }
+
+  async getAllTrends(): Promise<Trend[]> {
+    const trends = await db.select().from(trendsTable);
+    return trends.sort((a, b) => a.order.localeCompare(b.order));
+  }
+
+  async getTrendsByCategory(category: string): Promise<Trend[]> {
+    const trends = await db.select().from(trendsTable).where(eq(trendsTable.category, category));
+    return trends.sort((a, b) => a.order.localeCompare(b.order));
+  }
+
+  async createTrend(insertTrend: InsertTrend): Promise<Trend> {
+    const [trend] = await db.insert(trendsTable).values(insertTrend).returning();
+    return trend;
+  }
+
+  async updateTrend(id: string, updates: Partial<InsertTrend>): Promise<Trend | undefined> {
+    const [updated] = await db.update(trendsTable)
+      .set(updates)
+      .where(eq(trendsTable.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteTrend(id: string): Promise<boolean> {
+    const result = await db.delete(trendsTable).where(eq(trendsTable.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
   }
 }
 

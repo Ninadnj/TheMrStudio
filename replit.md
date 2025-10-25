@@ -11,7 +11,7 @@ Preferred communication style: Simple, everyday language.
 ## Recent Changes & Bug Fixes
 
 ### October 2025
-- **Ultra-Modern Design Transformation**: Complete visual redesign with editorial aesthetic, featuring Playfair Display typography for headlines, premium glass effects on header, smooth hover interactions (lift, zoom, border accents), and generous white space. All functionality preserved.
+- **Ultra-Modern Design Transformation**: Complete visual redesign with editorial aesthetic, featuring Playfair Display typography for headlines, premium glass effects on header, smooth hover interactions (lift, zoom, border accents), and generous white space. Modern effects include: parallax scrolling hero, scroll progress indicator, magnetic buttons, ripple click effects, animated gradients, image reveal animations, skeleton loading states, and smooth scroll-triggered fade-ins. All functionality preserved.
 - **Admin Password Updated**: Changed default admin password to "Wadisheni1." for enhanced security.
 - **Two-Way Google Calendar Sync**: Website now reads from Google Calendar to check availability, preventing double-bookings when staff manually add events. Uses Freebusy API to query all staff calendars in batch. Properly converts times to Asia/Tbilisi timezone. Gracefully falls back to database-only if Calendar API unavailable.
 - **Enhanced Service Update Validation**: Added Zod schema validation to service update endpoint with proper error handling and logging for better data integrity.

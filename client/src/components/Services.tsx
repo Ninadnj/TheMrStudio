@@ -45,10 +45,10 @@ export default function Services() {
     <section id="services" className="py-20 lg:py-32 bg-background">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-20">
-          <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl mb-3 text-foreground font-normal">
+          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl mb-6 text-foreground">
             {servicesSection?.title || "ჩვენი სერვისები"}
           </h2>
-          <p className="text-lg text-muted-foreground/80 max-w-2xl mx-auto tracking-wide">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             {servicesSection?.subtitle || "Our Services"}
           </p>
         </div>
@@ -67,12 +67,12 @@ export default function Services() {
                 style={{ transitionDelay: `${categoryIndex * 100}ms` }}
                 data-testid={`category-${category}`}
               >
-                <div className="border border-border rounded-md bg-card/30 p-8 hover-elevate transition-all h-full">
+                <div className="border border-border rounded-md bg-card/30 p-10 hover-lift hover-border-accent transition-all h-full cursor-pointer">
                   <div className="flex flex-col items-center text-center">
-                    <h3 className="font-serif text-2xl text-foreground tracking-tight mb-3">
+                    <h3 className="font-display text-3xl text-foreground mb-4">
                       {category}
                     </h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
+                    <p className="text-base text-muted-foreground leading-relaxed">
                       {categoryDescriptions[category] || ""}
                     </p>
                   </div>

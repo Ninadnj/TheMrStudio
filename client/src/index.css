@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
 @import url('https://fonts.cdnfonts.com/css/neue-haas-grotesk-display-pro');
 
 @tailwind base;
@@ -62,8 +62,8 @@
   --chart-3: 200 50% 60%;
   --chart-4: 280 45% 65%;
   --chart-5: 40 65% 70%;
-  --font-sans: 'Neue Haas Grotesk Display Pro', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
-  --font-serif: 'Neue Haas Grotesk Display Pro', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
   --font-mono: Menlo, monospace;
   --radius: .5rem;
   --shadow-2xs: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
@@ -174,8 +174,8 @@
   --chart-4: 280 45% 65%;
   --chart-5: 40 65% 70%;
 
-  --font-sans: 'Neue Haas Grotesk Display Pro', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
-  --font-serif: 'Neue Haas Grotesk Display Pro', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
   --font-mono: Menlo, monospace;
   --radius: .5rem; /* 8px */
   --shadow-2xs: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
@@ -375,6 +375,75 @@
   
   .border-theme-accent {
     border-color: var(--theme-accent);
+  }
+  
+  /* Ultra-Modern Typography */
+  .font-display {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  
+  /* Premium Glass Effect */
+  .glass {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  
+  .dark .glass {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.06);
+  }
+  
+  /* Smooth Hover Lift */
+  .hover-lift {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-4px) scale(1.02);
+  }
+  
+  /* Subtle Border Highlight */
+  .hover-border-accent {
+    transition: border-color 0.3s ease;
+  }
+  
+  .hover-border-accent:hover {
+    border-color: var(--theme-accent);
+  }
+  
+  /* Image Zoom Effect */
+  .hover-zoom {
+    overflow: hidden;
+  }
+  
+  .hover-zoom img {
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .hover-zoom:hover img {
+    transform: scale(1.05);
+  }
+  
+  /* Smooth Scroll Behavior */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Editorial Spacing */
+  .section-spacing {
+    padding-top: clamp(4rem, 8vw, 8rem);
+    padding-bottom: clamp(4rem, 8vw, 8rem);
+  }
+  
+  .editorial-max-width {
+    max-width: 75rem;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 

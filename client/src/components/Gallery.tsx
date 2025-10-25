@@ -134,11 +134,11 @@ export default function Gallery() {
     <>
       <section id="gallery" className="py-20 lg:py-32 bg-background">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl mb-4 text-foreground font-normal">
+          <div className="text-center mb-16">
+            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl mb-6 text-foreground">
               გალერეა
             </h2>
-            <p className="text-base text-muted-foreground max-w-2xl mx-auto tracking-wide">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               ჩვენი სამუშაოების პორტფოლიო
             </p>
           </div>

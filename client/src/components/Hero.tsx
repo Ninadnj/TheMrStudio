@@ -39,7 +39,7 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 0.2 }}
         >
           <div className="mb-8">
-            <h1 className="font-sans text-6xl md:text-7xl lg:text-8xl font-light text-white" style={{ letterSpacing: '0.08em' }}>
+            <h1 className="font-sans text-6xl md:text-7xl lg:text-9xl font-light text-white" style={{ letterSpacing: '0.12em' }}>
               <span style={{ opacity: 0.3, fontWeight: 300 }}>THE </span>
               <span className="font-bold">MR</span>
             </h1>
@@ -47,10 +47,10 @@ export default function Hero() {
         </motion.div>
         
         <motion.h2 
-          className="font-sans text-xl md:text-2xl mb-6 font-light text-white tracking-widest uppercase" 
-          style={{ opacity: 0.7 }}
+          className="font-display text-3xl md:text-4xl lg:text-5xl mb-10 text-white" 
+          style={{ letterSpacing: '-0.01em' }}
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 0.7, y: 0 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
         >
           Nail & Laser Studio

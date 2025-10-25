@@ -134,3 +134,82 @@ export async function listCalendars() {
     throw error;
   }
 }
+
+// Get busy time slots from Google Calendar for multiple calendars
+export async function getCalendarBusySlots(
+  calendarIds: string[],
+  date: string
+): Promise<Set<string>> {
+  try {
+    if (!calendarIds || calendarIds.length === 0) {
+      return new Set<string>();
+    }
+
+    const calendar = await getUncachableGoogleCalendarClient();
+    
+    // Use freebusy query for efficient batch checking
+    const timeMin = new Date(`${date}T00:00:00+04:00`).toISOString();
+    const timeMax = new Date(`${date}T23:59:59+04:00`).toISOString();
+
+    const response = await calendar.freebusy.query({
+      requestBody: {
+        timeMin,
+        timeMax,
+        items: calendarIds.map(id => ({ id })),
+      },
+    });
+
+    const busySlots = new Set<string>();
+
+    // Process busy times from all calendars
+    if (response.data.calendars) {
+      for (const [calendarId, calendarData] of Object.entries(response.data.calendars)) {
+        const busyTimes = calendarData.busy || [];
+        
+        for (const busyPeriod of busyTimes) {
+          if (busyPeriod.start && busyPeriod.end) {
+            // Convert busy period to hourly slots in Asia/Tbilisi timezone
+            const startTime = new Date(busyPeriod.start);
+            const endTime = new Date(busyPeriod.end);
+            
+            // Calculate duration in minutes
+            const durationMs = endTime.getTime() - startTime.getTime();
+            const durationMinutes = Math.floor(durationMs / (60 * 1000));
+            
+            // Get start hour and minute in Tbilisi timezone
+            const tbilisiTimeStr = startTime.toLocaleString('en-US', {
+              timeZone: 'Asia/Tbilisi',
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false
+            });
+            
+            const [startHours, startMinutes] = tbilisiTimeStr.split(':').map(Number);
+            
+            // Calculate which hourly slots this busy period overlaps
+            const startMinutesFromMidnight = startHours * 60 + startMinutes;
+            const endMinutesFromMidnight = startMinutesFromMidnight + durationMinutes;
+            
+            // Block all hours from start to end (inclusive)
+            const startHour = Math.floor(startMinutesFromMidnight / 60);
+            const endHour = Math.floor((endMinutesFromMidnight - 1) / 60);
+            
+            // Log for debugging
+            console.log(`Calendar busy slot: ${busyPeriod.start} → Tbilisi ${tbilisiTimeStr} → blocking hours ${startHour}-${endHour}`);
+            
+            for (let hour = startHour; hour <= endHour; hour++) {
+              const slotTime = `${hour.toString().padStart(2, '0')}:00`;
+              busySlots.add(slotTime);
+            }
+          }
+        }
+      }
+    }
+
+    return busySlots;
+  } catch (error) {
+    console.error('Error getting calendar busy slots:', error);
+    // Return empty set on error to prevent blocking all bookings
+    return new Set<string>();
+  }
+}

@@ -98,6 +98,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
+      // Also check Google Calendar for all staff members
+      try {
+        const staff = await storage.getAllStaff();
+        const calendarIds = staff
+          .filter(s => s.calendarId)
+          .map(s => s.calendarId as string);
+        
+        if (calendarIds.length > 0) {
+          const { getCalendarBusySlots } = await import('./google-calendar.js');
+          const calendarBusySlots = await getCalendarBusySlots(calendarIds, date);
+          
+          // Merge calendar busy slots with database bookings
+          calendarBusySlots.forEach(slot => bookedTimesSet.add(slot));
+          
+          console.log(`Checked ${calendarIds.length} Google Calendars, found ${calendarBusySlots.size} busy slots`);
+        }
+      } catch (calendarError) {
+        // Log error but don't fail the request - fallback to database bookings only
+        console.error('Error checking Google Calendar availability:', calendarError);
+      }
+      
       const bookedTimes = Array.from(bookedTimesSet);
       
       res.json({ bookedTimes });

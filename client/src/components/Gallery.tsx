@@ -203,7 +203,7 @@ export default function Gallery() {
                       <img
                         src={image.imageUrl}
                         alt={`${image.category} ${image.order}`}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 image-reveal"
                         loading="lazy"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-all duration-300">

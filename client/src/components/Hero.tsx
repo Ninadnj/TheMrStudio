@@ -1,9 +1,29 @@
 import { Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useState, useEffect } from "react";
 import heroBackground from "@assets/dnj0209_Stylized_illustration_of_a_fashionable_woman_wearing__c8336757-5e7e-4c3b-8d06-de464e7c4e40_1_1759491029908.png";
 
 export default function Hero() {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const { scrollY } = useScroll();
+  
+  const parallaxY = useTransform(scrollY, [0, 1000], [0, 300]);
+  const opacity = useTransform(scrollY, [0, 500], [1, 0]);
+  const scale = useTransform(scrollY, [0, 500], [1, 1.1]);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({
+        x: (e.clientX - window.innerWidth / 2) / 50,
+        y: (e.clientY - window.innerHeight / 2) / 50,
+      });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   const handleBookClick = () => {
     const bookingSection = document.getElementById('booking');
     bookingSection?.scrollIntoView({ behavior: 'smooth' });
@@ -16,8 +36,14 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image with Dark Wash */}
-      <div className="absolute inset-0">
+      {/* Animated Gradient Background */}
+      <div className="absolute inset-0 animated-gradient" />
+      
+      {/* Background Image with Parallax */}
+      <motion.div 
+        className="absolute inset-0"
+        style={{ y: parallaxY }}
+      >
         <motion.img 
           src={heroBackground}
           alt="Elegant Fashion"
@@ -25,13 +51,21 @@ export default function Hero() {
           initial={{ scale: 1.1 }}
           animate={{ scale: 1 }}
           transition={{ duration: 1.5, ease: "easeOut" }}
+          style={{ scale }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/80 to-black/85"></div>
-      </div>
+      </motion.div>
       
       <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(0,0,0,0.1) 0%, transparent 50%, rgba(0,0,0,0.05) 100%)' }} />
       
-      <div className="relative max-w-5xl mx-auto px-6 text-center">
+      <motion.div 
+        className="relative max-w-5xl mx-auto px-6 text-center"
+        style={{ 
+          x: mousePosition.x,
+          y: mousePosition.y,
+          opacity
+        }}
+      >
         <motion.div 
           className="mb-12 inline-block"
           initial={{ opacity: 0, y: 30 }}
@@ -39,7 +73,7 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 0.2 }}
         >
           <div className="mb-8">
-            <h1 className="font-sans text-6xl md:text-7xl lg:text-9xl font-light text-white" style={{ letterSpacing: '0.12em' }}>
+            <h1 className="font-sans text-6xl md:text-7xl lg:text-9xl font-light text-white text-reveal" style={{ letterSpacing: '0.12em' }}>
               <span style={{ opacity: 0.3, fontWeight: 300 }}>THE </span>
               <span className="font-bold">MR</span>
             </h1>
@@ -47,7 +81,7 @@ export default function Hero() {
         </motion.div>
         
         <motion.h2 
-          className="font-display text-3xl md:text-4xl lg:text-5xl mb-10 text-white" 
+          className="font-display text-3xl md:text-4xl lg:text-5xl mb-10 text-white text-reveal" 
           style={{ letterSpacing: '-0.01em' }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -84,7 +118,7 @@ export default function Hero() {
         >
           <Button 
             size="lg"
-            className="bg-theme-accent min-w-[200px] font-medium tracking-wide"
+            className="bg-theme-accent min-w-[200px] font-medium tracking-wide magnetic-button ripple-effect"
             onClick={handleBookClick}
             data-testid="button-book-appointment"
           >
@@ -95,14 +129,14 @@ export default function Hero() {
           <Button 
             size="lg"
             variant="outline"
-            className="min-w-[200px] font-medium tracking-wide backdrop-blur-sm border-white/80 text-white hover:bg-white/10"
+            className="min-w-[200px] font-medium tracking-wide backdrop-blur-sm border-white/80 text-white hover:bg-white/10 magnetic-button"
             onClick={handleServicesClick}
             data-testid="button-view-services"
           >
             სერვისები
           </Button>
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 }

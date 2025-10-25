@@ -8,6 +8,7 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
+import ScrollProgress from "@/components/ScrollProgress";
 
 const pageVariants = {
   initial: {
@@ -66,6 +67,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
+        <ScrollProgress />
         <Toaster />
         <Router />
       </TooltipProvider>

@@ -36,7 +36,13 @@ export default function ServicesEditor() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/services"] });
       toast({ title: "Success", description: "Service created successfully" });
-      form.reset();
+      form.reset({
+        category: "",
+        name: "",
+        description: "",
+        price: "",
+        order: "",
+      });
     },
   });
 
@@ -46,7 +52,13 @@ export default function ServicesEditor() {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/services"] });
       toast({ title: "Success", description: "Service updated successfully" });
       setEditingId(null);
-      form.reset();
+      form.reset({
+        category: "",
+        name: "",
+        description: "",
+        price: "",
+        order: "",
+      });
     },
   });
 
@@ -175,7 +187,13 @@ export default function ServicesEditor() {
                     variant="outline"
                     onClick={() => {
                       setEditingId(null);
-                      form.reset();
+                      form.reset({
+                        category: "",
+                        name: "",
+                        description: "",
+                        price: "",
+                        order: "",
+                      });
                     }}
                     data-testid="button-cancel-edit"
                   >

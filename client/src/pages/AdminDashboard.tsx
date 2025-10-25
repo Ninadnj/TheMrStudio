@@ -12,6 +12,7 @@ import SiteSettingsEditor from "@/components/admin/SiteSettingsEditor";
 import { StaffEditor } from "@/components/admin/StaffEditor";
 import GalleryEditor from "@/components/admin/GalleryEditor";
 import SpecialOffersEditor from "@/components/admin/SpecialOffersEditor";
+import TrendsEditor from "@/components/admin/TrendsEditor";
 import { BookingsEditor } from "@/components/admin/BookingsEditor";
 
 export default function AdminDashboard() {
@@ -82,11 +83,12 @@ export default function AdminDashboard() {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="bookings" className="space-y-6">
-          <TabsList className="grid w-full max-w-4xl grid-cols-7">
+          <TabsList className="grid w-full max-w-5xl grid-cols-8">
             <TabsTrigger value="bookings" data-testid="tab-bookings">Bookings</TabsTrigger>
             <TabsTrigger value="hero" data-testid="tab-hero">Hero</TabsTrigger>
             <TabsTrigger value="services" data-testid="tab-services">Services</TabsTrigger>
             <TabsTrigger value="gallery" data-testid="tab-gallery">Gallery</TabsTrigger>
+            <TabsTrigger value="trends" data-testid="tab-trends">Trends</TabsTrigger>
             <TabsTrigger value="staff" data-testid="tab-staff">Staff</TabsTrigger>
             <TabsTrigger value="offers" data-testid="tab-offers">Offers</TabsTrigger>
             <TabsTrigger value="settings" data-testid="tab-settings">Settings</TabsTrigger>
@@ -109,6 +111,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="gallery">
             <GalleryEditor />
+          </TabsContent>
+
+          <TabsContent value="trends">
+            <TrendsEditor />
           </TabsContent>
 
           <TabsContent value="staff">

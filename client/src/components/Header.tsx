@@ -26,7 +26,7 @@ export default function Header() {
   return (
     <header 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled ? 'glass border-b' : 'bg-transparent'
+        isScrolled ? 'glass border-b' : 'bg-white/80 backdrop-blur-md shadow-sm'
       }`}
     >
       <div className="max-w-7xl mx-auto px-6">
@@ -41,7 +41,7 @@ export default function Header() {
               alt="MR Studio" 
               className="h-10 w-10 object-contain"
             />
-            <span className={`font-serif text-xl md:text-2xl transition-colors ${isScrolled ? 'text-foreground' : 'text-white'}`}>
+            <span className="font-serif text-xl md:text-2xl transition-colors text-foreground">
               <span style={{ opacity: 0.3 }}>THE </span>
               <span className="font-bold">MR</span>
               <span style={{ opacity: 0.3 }}> Studio</span>
@@ -51,42 +51,42 @@ export default function Header() {
           <nav className="hidden md:flex items-center gap-8">
             <button
               onClick={() => scrollToSection('services')}
-              className={`text-sm font-medium transition-colors hover:text-theme-accent ${isScrolled ? 'text-foreground' : 'text-white'}`}
+              className="text-sm font-medium transition-colors hover:text-theme-accent text-foreground"
               data-testid="nav-services"
             >
               სერვისები
             </button>
             <button
               onClick={() => scrollToSection('prices')}
-              className={`text-sm font-medium transition-colors hover:text-theme-accent ${isScrolled ? 'text-foreground' : 'text-white'}`}
+              className="text-sm font-medium transition-colors hover:text-theme-accent text-foreground"
               data-testid="nav-prices"
             >
               ფასები
             </button>
             <button
               onClick={() => scrollToSection('gallery')}
-              className={`text-sm font-medium transition-colors hover:text-theme-accent ${isScrolled ? 'text-foreground' : 'text-white'}`}
+              className="text-sm font-medium transition-colors hover:text-theme-accent text-foreground"
               data-testid="nav-gallery"
             >
               გალერეა
             </button>
             <button
               onClick={() => scrollToSection('booking')}
-              className={`text-sm font-medium transition-colors hover:text-theme-accent ${isScrolled ? 'text-foreground' : 'text-white'}`}
+              className="text-sm font-medium transition-colors hover:text-theme-accent text-foreground"
               data-testid="nav-booking"
             >
               დაჯავშნა
             </button>
             <button
               onClick={() => scrollToSection('contact')}
-              className={`text-sm font-medium transition-colors hover:text-theme-accent ${isScrolled ? 'text-foreground' : 'text-white'}`}
+              className="text-sm font-medium transition-colors hover:text-theme-accent text-foreground"
               data-testid="nav-contact"
             >
               კონტაქტი
             </button>
           </nav>
 
-          <div className={`flex items-center gap-2 ${isScrolled ? '' : 'text-white'}`}>
+          <div className="flex items-center gap-2">
             <ThemeSwitch />
 
             <Button

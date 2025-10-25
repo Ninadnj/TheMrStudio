@@ -3,7 +3,10 @@ import { Button } from "@/components/ui/button";
 
 export default function Footer() {
   return (
-    <footer id="contact" className="py-16 lg:py-20" style={{ backgroundColor: 'var(--theme-accent)' }}>
+    <footer id="contact" className="relative py-16 lg:py-20 bg-[#0B0B0B]">
+      {/* Warm Caramel Accent Line (2025 Design Brief) */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-theme-accent to-transparent" />
+      
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           <div>
@@ -91,12 +94,13 @@ export default function Footer() {
             © 2025 THE MR Nail & Laser Studio. All Rights Reserved.
           </p>
           
+          {/* Social Icons with Hover Fade (2025 Design Brief) */}
           <div className="flex items-center gap-2">
             <Button 
               size="icon" 
               variant="ghost" 
               data-testid="button-instagram" 
-              style={{ color: 'white' }}
+              className="text-white hover:text-white/70 transition-all duration-300"
               asChild
             >
               <a href="https://www.instagram.com/studiomariamisnail?igsh=N3RvYTE3dXBnZ29v&utm_source=qr" target="_blank" rel="noopener noreferrer">
@@ -107,7 +111,7 @@ export default function Footer() {
               size="icon" 
               variant="ghost" 
               data-testid="button-facebook" 
-              style={{ color: 'white' }}
+              className="text-white hover:text-white/70 transition-all duration-300"
               asChild
             >
               <a href="https://www.facebook.com/profile.php?id=61566420489825" target="_blank" rel="noopener noreferrer">
@@ -118,7 +122,7 @@ export default function Footer() {
               size="icon" 
               variant="ghost" 
               data-testid="button-email" 
-              style={{ color: 'white' }}
+              className="text-white hover:text-white/70 transition-all duration-300"
               asChild
             >
               <a href="mailto:Studiomrmr1@gmail.com">
@@ -134,8 +138,6 @@ export default function Footer() {
             <span className="font-bold">The</span>{' '}
             <span className="font-bold">DNJ™</span>{' '}
             <span style={{ opacity: 0.3 }}>with</span>{' '}
-            🤍{' '}
-            <span style={{ opacity: 0.3 }}>&</span>{' '}
             <Coffee className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.8)' }} />
           </p>
         </div>

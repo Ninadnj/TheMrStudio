@@ -1,0 +1,38 @@
+Project: THE MR Studio — visual design upgrade
+
+Context:
+- You’re enhancing an existing Next.js (App Router) + Tailwind + Framer Motion project.
+- The site is a nail & laser salon. It must feel premium, minimalist, and editorial, with warm accents.
+- Preserve existing page structure (home, services, gallery, about, book, contact) and routing.
+
+Design Goals (2025 trends):
+1. **Colour palette:** Switch to soothing warm tones. Base: rich black (`#0B0B0B`) or off‑white (`#F5F5F5`), neutral greys (`#BDBDBD`), accent caramel/nude (`#C6A58A`). Avoid neon or saturated hues; embrace multi‑tonal warmth.
+2. **Typography:** Use bold, expressive fonts with contrast. Headlines: Playfair Display. Body: Inter. Large sizes, generous letter‑spacing. Pair serif + sans to create rhythm.
+3. **Minimalism & negative space:** Increase white/black space around elements. Remove clutter. Let images and headlines breathe. Use full‑bleed sections with one clear message. Keep copy concise.
+4. **Block‑based layout:** Use vivid contrast blocks to separate sections (e.g., nails vs laser). Each block can have its own accent background. Use grid and flex layouts to keep things aligned.
+5. **Micro‑interactions & motion:** Use Framer Motion for subtle fade‑ups, parallax hero, scroll‑triggered reveals. Buttons should animate on hover (scale up/down, colour shift). Links should have underline slides. Use micro‑animations sparingly.
+6. **Experimental navigation:** Keep the nav intuitive but add flair. Example: sticky progress bar showing scroll position, or slight horizontal scroll in gallery. Retain top nav bar with language switcher and CTA. On mobile, consider a slide‑in menu.
+7. **Interactive elements:** Add a small quiz or selector (“Find your perfect nail shape”) on the services page. Integrate a chatbot component (placeholder) for booking FAQs. Use a single high‑quality video in the hero or services page if appropriate.
+8. **Dark mode & accessibility:** Offer dark and light themes (via CSS variables). Ensure high contrast, visible focus states, and proper aria‑labels. Use alt text for all images.
+9. **Sustainability:** Optimise images (Next/Image), lazy‑load below‑the‑fold media, compress assets. Remove unused CSS/JS. Choose eco‑friendly font sizes and weights to improve load times.
+10. **Custom graphics & text‑only hero:** Replace stock photos with simple custom illustrations or line art where feasible. In the hero section, consider a text‑only option: bold headline (“Precision beauty. Minimal effort.”) with a subline. Use subtle grain or noise overlay.
+
+Tasks:
+- Update the Tailwind config with custom colours and fonts.
+- Refactor the global CSS/utility classes to reflect the new palette and typography scale.
+- Add a theme toggle for dark/light mode.
+- Implement Framer Motion animations for sections, buttons, and scroll cues.
+- Introduce a progress bar component tied to page scroll.
+- Add a mini‑quiz component (React) on the services page that suggests nail types.
+- Integrate a chatbot component hook (placeholder) on the booking page.
+- Optimise all images using Next/Image. Convert large JPGs/PNGs to WebP.
+- Simplify copy throughout; replace filler text with concise, benefit‑driven statements.
+- Enhance footer: dark background, caramel accent line, social icons with hover fade, and small signature (“Created by The DNJ™ with 🤍 & ☕”).
+
+Deliverables:
+- Updated Next.js codebase with all design enhancements.
+- Tailwind config and theme variables reflecting the new palette.
+- New components for ProgressBar, Quiz, and Chatbot (stubs).
+- README section summarising how to toggle themes, update colours/fonts, and modify interactive elements.
+
+Please rewrite CSS/JS/TSX files as needed and ensure the site still runs (`npm run build`). Feel free to use modern libraries like Lucide Icons and maintain responsive design across all devices.

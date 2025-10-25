@@ -36,8 +36,8 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Animated Gradient Background */}
-      <div className="absolute inset-0 animated-gradient" />
+      {/* Warm Gradient Background (2025) */}
+      <div className="absolute inset-0 animated-gradient" style={{ background: 'linear-gradient(135deg, #0B0B0B 0%, #1a1410 50%, #0B0B0B 100%)' }} />
       
       {/* Background Image with Parallax */}
       <motion.div 
@@ -47,16 +47,21 @@ export default function Hero() {
         <motion.img 
           src={heroBackground}
           alt="Elegant Fashion"
-          className="w-full h-full object-cover opacity-75"
+          className="w-full h-full object-cover opacity-60"
           initial={{ scale: 1.1 }}
           animate={{ scale: 1 }}
           transition={{ duration: 1.5, ease: "easeOut" }}
           style={{ scale }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/80 to-black/85"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-black/85 to-black/90"></div>
       </motion.div>
       
-      <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(0,0,0,0.1) 0%, transparent 50%, rgba(0,0,0,0.05) 100%)' }} />
+      {/* Subtle Noise/Grain Overlay (2025 Design Brief) */}
+      <div className="absolute inset-0 opacity-[0.03]" style={{ 
+        backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")',
+        backgroundRepeat: 'repeat',
+        backgroundSize: '200px 200px'
+      }} />
       
       <motion.div 
         className="relative max-w-5xl mx-auto px-6 text-center"
@@ -66,48 +71,43 @@ export default function Hero() {
           opacity
         }}
       >
-        <motion.div 
-          className="mb-12 inline-block"
-          initial={{ opacity: 0, y: 30 }}
+        {/* Bold, Minimalist Typography (2025 Design) */}
+        <motion.h1 
+          className="font-display text-7xl md:text-8xl lg:text-9xl font-bold mb-8 text-white leading-none" 
+          style={{ letterSpacing: '-0.02em' }}
+          initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          <div className="mb-8">
-            <h1 className="font-sans text-6xl md:text-7xl lg:text-9xl font-light text-white text-reveal" style={{ letterSpacing: '0.12em' }}>
-              <span style={{ opacity: 0.3, fontWeight: 300 }}>THE </span>
-              <span className="font-bold">MR</span>
-            </h1>
-          </div>
-        </motion.div>
+          Precision<br/>
+          Beauty.
+        </motion.h1>
         
-        <motion.h2 
-          className="font-display text-3xl md:text-4xl lg:text-5xl mb-10 text-white text-reveal" 
-          style={{ letterSpacing: '-0.01em' }}
+        <motion.p 
+          className="font-sans text-2xl md:text-3xl mb-6 font-light text-white/90" 
+          style={{ letterSpacing: '0.02em' }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
         >
-          Nail & Laser Studio
-        </motion.h2>
-        
-        <motion.p 
-          className="text-xl md:text-2xl mb-4 tracking-wide uppercase text-sm md:text-base font-light text-white" 
-          style={{ opacity: 0.85 }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 0.85, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-        >
-          Where Beauty Meets Precision
+          Minimal effort.
         </motion.p>
         
+        <motion.div 
+          className="w-24 h-1 mx-auto mb-10 bg-theme-accent"
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+        />
+        
         <motion.p 
-          className="text-base md:text-lg max-w-2xl mx-auto mb-12 leading-relaxed text-white" 
-          style={{ opacity: 0.85 }}
+          className="text-lg md:text-xl max-w-lg mx-auto mb-14 leading-relaxed text-white/80 font-light" 
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 0.85, y: 0 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
         >
-          პროფესიონალური ფრჩხილების ხელოვნება და თანამედროვე ლაზერული პროცედურები
+          პროფესიონალური ფრჩხილები და ლაზერული პროცედურები<br/>
+          <span className="text-sm text-white/60">Professional nail art & laser treatments</span>
         </motion.p>
         
         <motion.div 

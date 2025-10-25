@@ -36,7 +36,7 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#F8F5F0] to-[#E8E0D5]">
-      {/* Background Image with Parallax - Now the Star */}
+      {/* Background Image with Parallax - Subtle atmospheric effect */}
       <motion.div 
         className="absolute inset-0"
         style={{ y: parallaxY }}
@@ -44,14 +44,14 @@ export default function Hero() {
         <motion.img 
           src={heroBackground}
           alt="Elegant Fashion"
-          className="w-full h-full object-cover opacity-95"
+          className="w-full h-full object-cover opacity-70"
           initial={{ scale: 1.1 }}
           animate={{ scale: 1 }}
           transition={{ duration: 1.5, ease: "easeOut" }}
           style={{ scale }}
         />
-        {/* Subtle warm overlay - just enough for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#F8F5F0]/30 via-transparent to-[#F8F5F0]/20"></div>
+        {/* Warm overlay for elegant, subtle effect */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#F8F5F0]/60 via-[#F8F5F0]/40 to-[#E8E0D5]/50"></div>
       </motion.div>
       
       {/* Subtle Noise/Grain Overlay (2025 Design Brief) */}

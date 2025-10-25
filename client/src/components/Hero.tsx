@@ -35,7 +35,10 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#F8F5F0] to-[#E8E0D5]">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Warm gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#2A2520] to-[#3A3530]" />
+      
       {/* Background Image with Parallax - Subtle atmospheric effect */}
       <motion.div 
         className="absolute inset-0"
@@ -44,14 +47,14 @@ export default function Hero() {
         <motion.img 
           src={heroBackground}
           alt="Elegant Fashion"
-          className="w-full h-full object-cover opacity-70"
+          className="w-full h-full object-cover opacity-60"
           initial={{ scale: 1.1 }}
           animate={{ scale: 1 }}
           transition={{ duration: 1.5, ease: "easeOut" }}
           style={{ scale }}
         />
-        {/* Warm overlay for elegant, subtle effect */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#F8F5F0]/60 via-[#F8F5F0]/40 to-[#E8E0D5]/50"></div>
+        {/* Warm overlay for elegant atmosphere */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/25 to-black/35"></div>
       </motion.div>
       
       {/* Subtle Noise/Grain Overlay (2025 Design Brief) */}
@@ -71,7 +74,7 @@ export default function Hero() {
       >
         {/* Bold, Minimalist Typography (2025 Design) */}
         <motion.h1 
-          className="font-display text-7xl md:text-8xl lg:text-9xl mb-8 text-[#0B0B0B] leading-none drop-shadow-sm" 
+          className="font-display text-7xl md:text-8xl lg:text-9xl mb-8 text-white leading-none" 
           style={{ letterSpacing: '-0.02em' }}
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -84,7 +87,7 @@ export default function Hero() {
         </motion.h1>
         
         <motion.p 
-          className="font-sans text-2xl md:text-3xl mb-6 font-light text-[#2A2A2A]" 
+          className="font-sans text-2xl md:text-3xl mb-6 font-light text-white/90" 
           style={{ letterSpacing: '0.02em' }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -101,13 +104,13 @@ export default function Hero() {
         />
         
         <motion.p 
-          className="text-lg md:text-xl max-w-lg mx-auto mb-14 leading-relaxed text-[#3A3A3A] font-light" 
+          className="text-lg md:text-xl max-w-lg mx-auto mb-14 leading-relaxed text-white/85 font-light" 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
         >
           პროფესიონალური ფრჩხილები და ლაზერული პროცედურები<br/>
-          <span className="text-sm text-[#5A5A5A]">Professional nail art & laser treatments</span>
+          <span className="text-sm text-white/70">Professional nail art & laser treatments</span>
         </motion.p>
         
         <motion.div 
@@ -118,7 +121,7 @@ export default function Hero() {
         >
           <Button 
             size="lg"
-            className="bg-[#C6A58A] hover:bg-[#B8967C] text-white min-w-[200px] font-medium tracking-wide magnetic-button ripple-effect shadow-lg"
+            className="bg-theme-accent hover:bg-[#B8967C] text-white min-w-[200px] font-medium tracking-wide magnetic-button ripple-effect shadow-lg"
             onClick={handleBookClick}
             data-testid="button-book-appointment"
           >
@@ -129,7 +132,7 @@ export default function Hero() {
           <Button 
             size="lg"
             variant="outline"
-            className="min-w-[200px] font-medium tracking-wide border-[#0B0B0B]/30 text-[#0B0B0B] hover:bg-[#0B0B0B]/5 magnetic-button shadow-md"
+            className="min-w-[200px] font-medium tracking-wide backdrop-blur-sm border-white/60 text-white hover:bg-white/10 magnetic-button"
             onClick={handleServicesClick}
             data-testid="button-view-services"
           >

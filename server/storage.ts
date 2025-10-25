@@ -7,9 +7,12 @@ import {
   type Staff, type InsertStaff,
   type GalleryImage, type InsertGalleryImage,
   type ServicesSection, type InsertServicesSection,
-  type SpecialOffer, type InsertSpecialOffer
+  type SpecialOffer, type InsertSpecialOffer,
+  galleryImages as galleryImagesTable
 } from "@shared/schema";
 import { randomUUID } from "crypto";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 // modify the interface with any CRUD methods
 // you might need
@@ -544,35 +547,31 @@ export class MemStorage implements IStorage {
   }
 
   async getAllGalleryImages(): Promise<GalleryImage[]> {
-    return Array.from(this.galleryImages.values()).sort((a, b) => 
-      a.order.localeCompare(b.order)
-    );
+    const images = await db.select().from(galleryImagesTable);
+    return images.sort((a, b) => a.order.localeCompare(b.order));
   }
 
   async getGalleryImagesByCategory(category: string): Promise<GalleryImage[]> {
-    return Array.from(this.galleryImages.values())
-      .filter(img => img.category === category)
-      .sort((a, b) => a.order.localeCompare(b.order));
+    const images = await db.select().from(galleryImagesTable).where(eq(galleryImagesTable.category, category));
+    return images.sort((a, b) => a.order.localeCompare(b.order));
   }
 
   async createGalleryImage(insertImage: InsertGalleryImage): Promise<GalleryImage> {
-    const id = randomUUID();
-    const image: GalleryImage = { ...insertImage, id };
-    this.galleryImages.set(id, image);
+    const [image] = await db.insert(galleryImagesTable).values(insertImage).returning();
     return image;
   }
 
   async updateGalleryImage(id: string, updates: Partial<InsertGalleryImage>): Promise<GalleryImage | undefined> {
-    const existing = this.galleryImages.get(id);
-    if (!existing) return undefined;
-    
-    const updated: GalleryImage = { ...existing, ...updates };
-    this.galleryImages.set(id, updated);
+    const [updated] = await db.update(galleryImagesTable)
+      .set(updates)
+      .where(eq(galleryImagesTable.id, id))
+      .returning();
     return updated;
   }
 
   async deleteGalleryImage(id: string): Promise<boolean> {
-    return this.galleryImages.delete(id);
+    const result = await db.delete(galleryImagesTable).where(eq(galleryImagesTable.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
   }
 
   async getServicesSection(): Promise<ServicesSection | undefined> {

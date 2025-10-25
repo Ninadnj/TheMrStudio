@@ -82,7 +82,7 @@ export default function TrendsSection() {
                   <motion.div
                     key={trend.id}
                     className="group relative bg-card border-2 rounded-xl overflow-hidden hover-elevate active-elevate-2"
-                    style={{ borderColor: '#B76E7933' }}
+                    style={{ borderColor: '#A89B8E33' }}
                     initial={{ opacity: 0, y: 30 }}
                     animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                     transition={{

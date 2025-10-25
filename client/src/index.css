@@ -12,9 +12,9 @@
   --theme-muted1: #BDBDBD;     /* Neutral grey - secondary text */
   --theme-muted2: #8A8A8A;     /* Darker grey - tertiary elements */
   
-  /* Rose Gold Accent - 2025 Trend: Elegant and sophisticated */
-  --theme-accent: #B76E79;
-  --theme-accent-hover: #C88691;
+  /* Warm Taupe Accent - 2025 Trend: Subtle and refined */
+  --theme-accent: #A89B8E;
+  --theme-accent-hover: #B8AB9E;
   
   --theme-surface: #FFFFFF;
   --theme-line: #E8E8E8;
@@ -32,31 +32,31 @@
   --sidebar: 0 0% 98%;
   --sidebar-foreground: 0 0% 4%;
   --sidebar-border: 0 0% 90%;
-  --sidebar-primary: 345 28% 58%;      /* Rose Gold accent #B76E79 */
+  --sidebar-primary: 30 15% 61%;       /* Warm Taupe accent #A89B8E */
   --sidebar-primary-foreground: 0 0% 4%;
   --sidebar-accent: 0 0% 94%;
   --sidebar-accent-foreground: 0 0% 4%;
-  --sidebar-ring: 345 28% 58%;
+  --sidebar-ring: 30 15% 61%;
   --popover: 0 0% 100%;
   --popover-foreground: 0 0% 4%;
   --popover-border: 0 0% 91%;
-  --primary: 345 28% 58%;              /* Rose Gold accent #B76E79 */
+  --primary: 30 15% 61%;               /* Warm Taupe accent #A89B8E */
   --primary-foreground: 0 0% 4%;
   --secondary: 0 0% 94%;
   --secondary-foreground: 0 0% 4%;
   --muted: 0 0% 96%;
   --muted-foreground: 0 0% 42%;
-  --accent: 345 28% 58%;               /* Rose Gold accent #B76E79 */
+  --accent: 30 15% 61%;                /* Warm Taupe accent #A89B8E */
   --accent-foreground: 0 0% 4%;
   --destructive: 0 72% 58%;
   --destructive-foreground: 0 0% 98%;
   --input: 0 0% 75%;
-  --ring: 345 28% 58%;
-  --chart-1: 345 35% 65%;             /* Rose Gold tones */
-  --chart-2: 350 30% 60%;
-  --chart-3: 340 25% 70%;
-  --chart-4: 355 32% 55%;
-  --chart-5: 348 28% 62%;
+  --ring: 30 15% 61%;
+  --chart-1: 30 18% 65%;              /* Warm Taupe tones */
+  --chart-2: 28 16% 60%;
+  --chart-3: 32 14% 68%;
+  --chart-4: 29 17% 58%;
+  --chart-5: 31 15% 63%;
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
   --font-serif: 'Playfair Display', Georgia, serif;
   --font-mono: Menlo, monospace;
@@ -87,9 +87,9 @@
   --theme-muted1: #BDBDBD;      /* Neutral grey - consistent with light mode */
   --theme-muted2: #8A8A8A;      /* Darker grey - tertiary text */
   
-  /* Rose Gold Accent - 2025 elegance in dark mode */
-  --theme-accent: #B76E79;      /* Rose Gold accent - consistent across themes */
-  --theme-accent-hover: #C88691; /* Lighter rose gold on hover */
+  /* Warm Taupe Accent - 2025 sophistication in dark mode */
+  --theme-accent: #A89B8E;      /* Warm Taupe accent - consistent across themes */
+  --theme-accent-hover: #B8AB9E; /* Lighter taupe on hover */
   
   --theme-surface: #1A1A1A;      /* Slightly elevated black for cards */
   --theme-line: #2A2A2A;         /* Subtle line separator */
@@ -108,31 +108,31 @@
   --sidebar: 0 0% 6%;
   --sidebar-foreground: 0 0% 96%;
   --sidebar-border: 0 0% 14%;
-  --sidebar-primary: 345 28% 58%;      /* Rose Gold accent */
+  --sidebar-primary: 30 15% 61%;       /* Warm Taupe accent */
   --sidebar-primary-foreground: 0 0% 4%;
   --sidebar-accent: 0 0% 12%;
   --sidebar-accent-foreground: 0 0% 96%;
-  --sidebar-ring: 345 28% 58%;
+  --sidebar-ring: 30 15% 61%;
   --popover: 0 0% 10%;
   --popover-foreground: 0 0% 96%;
   --popover-border: 0 0% 14%;
-  --primary: 345 28% 58%;              /* Rose Gold accent */
+  --primary: 30 15% 61%;               /* Warm Taupe accent */
   --primary-foreground: 0 0% 4%;
   --secondary: 0 0% 14%;
   --secondary-foreground: 0 0% 96%;
   --muted: 0 0% 8%;
   --muted-foreground: 0 0% 74%;        /* Neutral grey #BDBDBD */
-  --accent: 345 28% 58%;               /* Rose Gold accent */
+  --accent: 30 15% 61%;                /* Warm Taupe accent */
   --accent-foreground: 0 0% 4%;
   --destructive: 0 68% 55%;
   --destructive-foreground: 0 0% 98%;
   --input: 0 0% 14%;
-  --ring: 345 28% 58%;
-  --chart-1: 345 35% 65%;             /* Rose Gold tones */
-  --chart-2: 350 30% 60%;
-  --chart-3: 340 25% 70%;
-  --chart-4: 355 32% 55%;
-  --chart-5: 348 28% 62%;
+  --ring: 30 15% 61%;
+  --chart-1: 30 18% 65%;              /* Warm Taupe tones */
+  --chart-2: 28 16% 60%;
+  --chart-3: 32 14% 68%;
+  --chart-4: 29 17% 58%;
+  --chart-5: 31 15% 63%;
   --shadow-2xs: 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
   --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.35);
   --shadow-sm: 0px 2px 4px -1px rgba(0, 0, 0, 0.40), 0px 1px 2px -1px rgba(0, 0, 0, 0.35);

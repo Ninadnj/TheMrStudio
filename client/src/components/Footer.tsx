@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 export default function Footer() {
   return (
     <footer id="contact" className="relative py-16 lg:py-20 bg-[#0B0B0B]">
-      {/* Rose Gold Accent Line (2025 Design Brief) */}
+      {/* Warm Taupe Accent Line (2025 Design Brief) */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[var(--theme-accent)] to-transparent" />
       
       <div className="max-w-7xl mx-auto px-6">

@@ -239,12 +239,12 @@ export default function PriceList() {
             className="overflow-x-auto overflow-y-visible scrollbar-hide snap-x snap-mandatory"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            <div className="flex gap-6">
+            <div className="flex gap-6 pb-4">
               {priceLists.map((list) => (
                 <Card 
                   key={list.id}
                   data-price-card
-                  className="flex-shrink-0 w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] overflow-hidden hover-elevate transition-all duration-300 cursor-pointer snap-start border-2 border-theme-accent/20"
+                  className="flex-shrink-0 w-[90vw] md:w-[45vw] lg:w-[30vw] max-w-sm overflow-hidden hover-elevate transition-all duration-300 cursor-pointer snap-start border-2 border-theme-accent/20"
                   data-testid={`card-price-${list.id}`}
                   onClick={() => setExpandedCard(expandedCard === list.id ? null : list.id)}
                 >

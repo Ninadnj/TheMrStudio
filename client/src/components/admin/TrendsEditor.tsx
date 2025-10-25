@@ -47,7 +47,7 @@ export default function TrendsEditor() {
 
   const createMutation = useMutation({
     mutationFn: async (data: InsertTrend) => {
-      return await apiRequest("/api/admin/trends", "POST", data);
+      return await apiRequest("POST", "/api/admin/trends", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/trends"] });
@@ -70,7 +70,7 @@ export default function TrendsEditor() {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<InsertTrend> }) => {
-      return await apiRequest(`/api/admin/trends/${id}`, "PUT", data);
+      return await apiRequest("PUT", `/api/admin/trends/${id}`, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/trends"] });
@@ -93,7 +93,7 @@ export default function TrendsEditor() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      return await apiRequest(`/api/admin/trends/${id}`, "DELETE");
+      return await apiRequest("DELETE", `/api/admin/trends/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/trends"] });

@@ -1,6 +1,7 @@
 import { Sparkles, Hand, Star, X, ChevronLeft, ChevronRight } from "lucide-react";
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useEffect, useRef, useState, useMemo, type PointerEvent } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { motion, useInView, useMotionValue, useTransform } from "framer-motion";
 import type { GalleryImage } from "@shared/schema";
 
 const categoryIcons: Record<string, any> = {
@@ -28,10 +29,14 @@ const getBentoPattern = (index: number): string => {
 };
 
 export default function Gallery() {
-  const [visibleCards, setVisibleCards] = useState<number[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [lightboxImage, setLightboxImage] = useState<number | null>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [categoryKey, setCategoryKey] = useState(0);
+  const [cardRotations, setCardRotations] = useState<Record<number, { x: number; y: number }>>({});
+  const galleryRef = useRef(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const isInView = useInView(galleryRef, { once: false, amount: 0.1 });
 
   const { data: images = [], isLoading } = useQuery<GalleryImage[]>({
     queryKey: ["/api/gallery"],
@@ -60,30 +65,30 @@ export default function Gallery() {
     return images.sort((a, b) => parseInt(a.order) - parseInt(b.order));
   }, [selectedCategory, imagesByCategory, images]);
 
-  useEffect(() => {
-    const observers = cardRefs.current.map((card, index) => {
-      if (!card) return null;
-      
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            setVisibleCards(prev => {
-              if (prev.includes(index)) return prev;
-              return [...prev, index];
-            });
-          }
-        },
-        { threshold: 0.1 }
-      );
-      
-      observer.observe(card);
-      return observer;
-    });
+  const handlePointerMove = (index: number, e: PointerEvent<HTMLDivElement>) => {
+    const cardRef = cardRefs.current[index];
+    if (!cardRef) return;
+    
+    const rect = cardRef.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = ((y - centerY) / centerY) * -10;
+    const rotateY = ((x - centerX) / centerX) * 10;
 
-    return () => {
-      observers.forEach(observer => observer?.disconnect());
-    };
-  }, [displayedImages.length]);
+    setCardRotations(prev => ({
+      ...prev,
+      [index]: { x: rotateX, y: rotateY }
+    }));
+  };
+
+  const handlePointerLeave = (index: number) => {
+    setCardRotations(prev => ({
+      ...prev,
+      [index]: { x: 0, y: 0 }
+    }));
+  };
 
   const openLightbox = (index: number) => {
     setLightboxImage(index);
@@ -146,10 +151,19 @@ export default function Gallery() {
           {categories.length > 0 && (
             <div className="flex flex-wrap justify-center gap-3 mb-12">
               <button
-                onClick={() => setSelectedCategory(null)}
-                className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all ${
+                onClick={() => {
+                  if (selectedCategory !== null) {
+                    setIsTransitioning(true);
+                    setTimeout(() => {
+                      setSelectedCategory(null);
+                      setCategoryKey(prev => prev + 1);
+                      setIsTransitioning(false);
+                    }, 150);
+                  }
+                }}
+                className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 magnetic-button ${
                   selectedCategory === null
-                    ? 'bg-theme-accent text-white'
+                    ? 'bg-theme-accent text-white scale-105'
                     : 'bg-card hover-elevate border border-border text-foreground'
                 }`}
                 data-testid="filter-all"
@@ -161,10 +175,19 @@ export default function Gallery() {
                 return (
                   <button
                     key={category}
-                    onClick={() => setSelectedCategory(category)}
-                    className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${
+                    onClick={() => {
+                      if (selectedCategory !== category) {
+                        setIsTransitioning(true);
+                        setTimeout(() => {
+                          setSelectedCategory(category);
+                          setCategoryKey(prev => prev + 1);
+                          setIsTransitioning(false);
+                        }, 150);
+                      }
+                    }}
+                    className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 flex items-center gap-2 magnetic-button ${
                       selectedCategory === category
-                        ? 'bg-theme-accent text-white'
+                        ? 'bg-theme-accent text-white scale-105'
                         : 'bg-card hover-elevate border border-border text-foreground'
                     }`}
                     data-testid={`filter-${category}`}
@@ -177,50 +200,77 @@ export default function Gallery() {
             </div>
           )}
 
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-7xl mx-auto" ref={galleryRef}>
             {displayedImages.length === 0 ? (
               <p className="text-center text-muted-foreground">
                 ფოტოები ჯერ არ დაემატა / No images added yet
               </p>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[200px] gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[200px] gap-4" key={categoryKey}>
                 {displayedImages.map((image, index) => {
                   const pattern = getBentoPattern(index);
                   
+                  const rotation = cardRotations[index] || { x: 0, y: 0 };
+                  
                   return (
-                    <div
+                    <motion.div
                       key={image.id}
                       ref={el => cardRefs.current[index] = el}
-                      className={`group relative rounded-xl overflow-hidden bg-muted cursor-pointer transition-all duration-500 ${pattern} ${
-                        visibleCards.includes(index)
-                          ? 'opacity-100 scale-100'
-                          : 'opacity-0 scale-95'
-                      }`}
-                      style={{ transitionDelay: `${index * 50}ms` }}
+                      className={`group relative rounded-xl overflow-visible bg-muted cursor-pointer ${pattern}`}
+                      style={{
+                        perspective: '1000px',
+                        transformStyle: 'preserve-3d',
+                      }}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{
+                        opacity: isInView && !isTransitioning ? 1 : 0,
+                        scale: isInView && !isTransitioning ? 1 : 0.95,
+                        rotateX: rotation.x,
+                        rotateY: rotation.y,
+                      }}
+                      transition={{
+                        duration: 0.6,
+                        delay: index * 0.05,
+                        ease: [0.25, 0.46, 0.45, 0.94],
+                        rotateX: { duration: 0.2 },
+                        rotateY: { duration: 0.2 },
+                      }}
+                      whileHover={{
+                        scale: 1.02,
+                        transition: { duration: 0.3 }
+                      }}
+                      onPointerMove={(e) => {
+                        handlePointerMove(index, e);
+                      }}
+                      onPointerLeave={() => {
+                        handlePointerLeave(index);
+                      }}
                       onClick={() => openLightbox(index)}
                       data-testid={`gallery-image-${image.id}`}
                     >
-                      <img
-                        src={image.imageUrl}
-                        alt={`${image.category} ${image.order}`}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 image-reveal"
-                        loading="lazy"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                        <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-medium text-white bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full">
-                              {image.category}
-                            </span>
+                      <div className="relative w-full h-full rounded-xl overflow-hidden shadow-lg">
+                        <img
+                          src={image.imageUrl}
+                          alt={`${image.category} ${image.order}`}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 image-reveal"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                          <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-medium text-white bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                                {image.category}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <div className="bg-white/20 backdrop-blur-sm rounded-full p-2">
+                            <Sparkles className="w-4 h-4 text-white" />
                           </div>
                         </div>
                       </div>
-                      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <div className="bg-white/20 backdrop-blur-sm rounded-full p-2">
-                          <Sparkles className="w-4 h-4 text-white" />
-                        </div>
-                      </div>
-                    </div>
+                    </motion.div>
                   );
                 })}
               </div>

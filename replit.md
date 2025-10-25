@@ -11,6 +11,8 @@ Preferred communication style: Simple, everyday language.
 ## Recent Changes & Bug Fixes
 
 ### October 2025
+- **Ultra-Modern Design Transformation**: Complete visual redesign with editorial aesthetic, featuring Playfair Display typography for headlines, premium glass effects on header, smooth hover interactions (lift, zoom, border accents), and generous white space. All functionality preserved.
+- **Admin Password Updated**: Changed default admin password to "Wadisheni1." for enhanced security.
 - **Two-Way Google Calendar Sync**: Website now reads from Google Calendar to check availability, preventing double-bookings when staff manually add events. Uses Freebusy API to query all staff calendars in batch. Properly converts times to Asia/Tbilisi timezone. Gracefully falls back to database-only if Calendar API unavailable.
 - **Enhanced Service Update Validation**: Added Zod schema validation to service update endpoint with proper error handling and logging for better data integrity.
 - **Fixed Staff Management Bug**: Corrected `apiRequest` parameter order in StaffEditor component. All CRUD operations (create, update, delete) now work correctly with Georgian characters. Backend validation added for proper error handling.
@@ -37,7 +39,7 @@ The design emphasizes sophisticated minimalism inspired by premium beauty brands
 - **Booking Management Admin Panel**: Dedicated "Bookings" tab (first tab in admin dashboard) with separate sections for pending and confirmed bookings. Admins can approve, reject (with optional reason), or modify (time/duration) pending booking requests. Approved bookings automatically move to confirmed section and create Google Calendar events.
 - **Services Display**: Displays 60+ real services with bilingual Georgian/English names and prices, organized by expandable categories in a responsive 2-column grid.
 - **Photo Gallery**: Features three categories (Nails, Laser, Cosmetology) with expandable sections and a responsive image grid.
-- **Admin Panel**: Provides secure, PostgreSQL-backed session authentication (admin/admin123) with persistent login across server restarts. Accessible at `/admin`, `/admin/login`, or `/admin/dashboard`. Offers CRUD operations for bookings (approve/reject/modify), hero content, services, gallery images, staff management (including Google Calendar ID preparation), special offers, and site settings. Sessions stored in PostgreSQL with 24-hour expiration, httpOnly cookies, and secure flag in production.
+- **Admin Panel**: Provides secure, PostgreSQL-backed session authentication (admin/Wadisheni1.) with persistent login across server restarts. Accessible at `/admin`, `/admin/login`, or `/admin/dashboard`. Offers CRUD operations for bookings (approve/reject/modify), hero content, services, gallery images, staff management (including Google Calendar ID preparation), special offers, and site settings. Sessions stored in PostgreSQL with 24-hour expiration, httpOnly cookies, and secure flag in production.
 - **Special Offers Banner**: Promotional banner system for seasonal offers (Christmas, New Year, etc.). Admin can create offers with custom messages, optional links, and expiry dates. Active offers display at the top of the homepage with dismiss functionality. Supports smooth scroll to sections via anchor links.
 - **AI-Powered Chat Assistant**: A bilingual (Georgian/English) Google Gemini AI chatbot provides customer support, answers service inquiries, assists with booking, and provides location/contact information.
 

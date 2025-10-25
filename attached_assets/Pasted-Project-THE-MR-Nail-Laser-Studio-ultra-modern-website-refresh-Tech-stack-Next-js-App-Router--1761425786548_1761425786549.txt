@@ -1,0 +1,189 @@
+Project: THE MR Nail & Laser Studio — ultra-modern website refresh
+Tech stack: Next.js (App Router) + Tailwind CSS + Framer Motion + Lucide Icons + Lenis (smooth scroll).
+Style: Minimal, premium, editorial. Black/white/gray base with caramel/nude accents. Big typography, generous white space, micro-interactions.
+
+Brand system
+
+Fonts: Inter (UI/body), Playfair Display (hero/headlines). Load via next/font/google.
+
+Colors (Tailwind custom tokens):
+
+--bg: #0B0B0B (rich black)
+
+--fg: #F5F5F5 (off-white)
+
+--muted: #BDBDBD
+
+--accent: #C6A58A (caramel/nude)
+
+--line: rgba(255,255,255,0.08)
+
+Components use subtle glass / blur and soft shadows (premium, not kitsch).
+
+Pages & structure
+
+/ (Home): Hero, services highlights, laser/nails split, gallery teaser, testimonials, CTA.
+
+/services (detail cards for Nails / Laser with pricing “from …” and benefits).
+
+/gallery (masonry grid, WebP, lazy-load).
+
+/about (short philosophy + studio images).
+
+/book (CTA hub → external booking link).
+
+/contact (map, WhatsApp / phone / hours).
+
+i18n ready (en + ka placeholders) using simple JSON dictionaries; language switcher in the navbar.
+
+Header / Nav
+
+Sticky, translucent, blur (backdrop-filter) with subtle border (--line).
+
+Left: wordmark “THE MR Studio”. Center: nav links. Right: accent CTA “Book a Visit”.
+
+Mobile: slide-in menu with framer-motion (scale + fade), links spaced, large tap targets.
+
+Hero (Home)
+
+Full-bleed editorial hero with layered effects:
+
+Headline: “Nail & Laser Studio” (Playfair, tight leading).
+
+Subcopy: one-line value prop.
+
+Primary CTA: “Book a Visit” (accent), Secondary: “View Services”.
+
+Effects:
+
+Parallax background image (subtle).
+
+Framer Motion staggered reveal for headline lines.
+
+Micro noise overlay (very subtle) for texture.
+
+Magnetic CTA hover (slight translate toward cursor).
+
+Smooth scroll cue arrow (lenis scroll to Services).
+
+Sections (Home)
+
+Services split (Nails / Laser):
+
+Two large cards with image cover, title, 3 bullet benefits, “Explore” button.
+
+On hover: image zoom 1.03, light tilt, border highlight in --accent.
+
+Gallery teaser:
+
+6-item masonry preview with hover zoom + caption.
+
+“See full gallery” link → /gallery.
+
+Why MR (3-4 pillars):
+
+Minimal icon + headline + short line: “Hygiene first”, “Long-lasting results”, “Certified laser tech”, “Editorial-grade finish”.
+
+Testimonials:
+
+Horizontal carousel (Framer Motion drag) with star rating + initials avatar.
+
+CTA band:
+
+Full-width, high contrast, “Limited slots this week. Book your visit.” + button.
+
+Services page
+
+Filter tabs (Nails, Laser, All).
+
+Cards: title, short description, “from price”, duration, tiny tag (“Gel”, “Design”, “Hair removal”).
+
+Animated expand for details (Framer Motion height + opacity).
+
+Conversion button on each card → /book.
+
+Gallery page
+
+Masonry grid (CSS columns), lazy-loaded WebP, LQIP blur.
+
+Lightbox modal with swipe on mobile.
+
+Footer
+
+3 columns: Address + hours, Quick links, Social (Instagram/WhatsApp).
+
+Tiny signature line: “Created by The DNJ™ with 🤍 & ☕”.
+
+Effects & motion (keep subtle, 60fps)
+
+Use Framer Motion for all reveals (fade-up, 20–40px, 0.4–0.6s, spring where relevant).
+
+Scroll-triggered section headers with mask-reveal (clip-path).
+
+Parallax: hero image + 1 decorative element on scroll (small translateY).
+
+Lenis for smooth scrolling.
+
+Micro-interactions: link underline slide, button press depth (shadow change), card hover lift.
+
+Performance & SEO
+
+Next/Image everywhere, responsive sizes, priority on hero.
+
+Preload fonts; use display: swap.
+
+Add metadata per page (title/description).
+
+schema.org/LocalBusiness JSON-LD with name, address, phone, hours.
+
+Lighthouse ≥ 90 on Performance/Best Practices/SEO.
+
+Accessibility
+
+Color contrast ≥ WCAG AA.
+
+Focus states visible on all interactive elements.
+
+Alt text for all images; aria-labels on icon-only buttons.
+
+Implementation details
+
+Create a Tailwind config with custom colors & typography scale (fluid type via clamp).
+
+Build reusable components: Header, Footer, CTAButton, SectionHeader, CardService, GalleryGrid, TestimonialCard, LocaleSwitcher.
+
+Add useReducedMotion checks; tone down heavy animations if user prefers reduced motion.
+
+Put all copy in /content/en.json and /content/ka.json to prep for i18n.
+
+Add .env placeholder for booking URL (NEXT_PUBLIC_BOOKING_URL) and wire CTAs to it.
+
+Provide seed content/images as placeholders.
+
+Deliverables
+
+Full Next.js project scaffold in Replit with Tailwind/Framer/Lenis configured.
+
+Finished pages/routes, components, and placeholder content.
+
+Example JSON-LD injected in <head>.
+
+README with:
+
+How to edit colors/fonts/content.
+
+Where to replace images and set booking link.
+
+How to add a new service card.
+
+How to add translations.
+
+Copy tone (short and chic)
+
+Headline: “Precision beauty. Minimal effort.”
+
+Sub: “Editorial nails and certified laser — clean, modern, long-lasting.”
+
+Pillars: “Hygiene”, “Longevity”, “Technique”, “Design”.
+
+Please proceed now and generate the full codebase accordingly.

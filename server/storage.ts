@@ -9,10 +9,17 @@ import {
   type ServicesSection, type InsertServicesSection,
   type SpecialOffer, type InsertSpecialOffer,
   type Trend, type InsertTrend,
+  users as usersTable,
+  staff as staffTable,
+  bookings as bookingsTable,
+  heroContent as heroContentTable,
+  services as servicesTable,
+  siteSettings as siteSettingsTable,
+  servicesSection as servicesSectionTable,
+  specialOffers as specialOffersTable,
   galleryImages as galleryImagesTable,
   trends as trendsTable
 } from "@shared/schema";
-import { randomUUID } from "crypto";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 
@@ -74,74 +81,58 @@ export interface IStorage {
 }
 
 export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-  private bookings: Map<string, Booking>;
-  private heroContent: HeroContent | undefined;
-  private services: Map<string, Service>;
-  private siteSettings: SiteSettings | undefined;
-  private staff: Map<string, Staff>;
-  private galleryImages: Map<string, GalleryImage>;
-  private servicesSection: ServicesSection | undefined;
-  private specialOffers: Map<string, SpecialOffer>;
-
   constructor() {
-    this.users = new Map();
-    this.bookings = new Map();
-    this.services = new Map();
-    this.staff = new Map();
-    this.galleryImages = new Map();
-    this.specialOffers = new Map();
-    
-    this.heroContent = {
-      id: randomUUID(),
-      mainTitle: "THE MR",
-      subtitle: "Nail & Laser Studio",
-      description: "Expert nail artistry and advanced laser treatments in an elegant, modern setting",
-      tagline: "Where Beauty Meets Precision",
-    };
-    
-    this.siteSettings = {
-      id: randomUUID(),
-      address: "თბილისი, დიდი დიღომი, ასმათის ქუჩა",
-      phone: "+995 599 999 999",
-      email: "info@themrstudio.ge",
-      hours: "Mon-Sat: 10:00 AM - 8:00 PM",
-      adminEmail: null,
-    };
-    
-    const staff1 = {
-      id: randomUUID(),
-      name: "მარიამი",
-      serviceCategory: "Nail",
-      calendarId: "5a628b97225c40af603e9c5080f8fc88f8a7fcadbd61c7df1657af6cf7e20311@group.calendar.google.com",
-      order: "1"
-    };
-    const staff2 = {
-      id: randomUUID(),
-      name: "რიტა",
-      serviceCategory: "Nail",
-      calendarId: "be60a59a51dee66edc5846a870e1aa11bd454898854ea78763b704e1e2754b83@group.calendar.google.com",
-      order: "2"
-    };
-    const staff3 = {
-      id: randomUUID(),
-      name: "სალომე",
-      serviceCategory: "Epilation",
-      calendarId: "d9df0557df5863cbcd507d62463b61fd15d746bf42d71f1fc66e191d04af0130@group.calendar.google.com",
-      order: "3"
-    };
-    const staff4 = {
-      id: randomUUID(),
-      name: "ComingSoon",
-      serviceCategory: "Cosmetology",
-      calendarId: "7b14cf445638512bbfc3cbcbd7eb457be404170b14f605d3646380a4a8b2e033@group.calendar.google.com",
-      order: "4"
-    };
-    
-    this.staff.set(staff1.id, staff1);
-    this.staff.set(staff2.id, staff2);
-    this.staff.set(staff3.id, staff3);
-    this.staff.set(staff4.id, staff4);
+    this.seedDatabase();
+  }
+
+  private async seedDatabase() {
+    try {
+      const existingHero = await db.select().from(heroContentTable).limit(1);
+      if (existingHero.length > 0) {
+        return;
+      }
+
+      await db.insert(heroContentTable).values({
+        mainTitle: "THE MR",
+        subtitle: "Nail & Laser Studio",
+        description: "Expert nail artistry and advanced laser treatments in an elegant, modern setting",
+        tagline: "Where Beauty Meets Precision",
+      });
+
+      await db.insert(siteSettingsTable).values({
+        address: "თბილისი, დიდი დიღომი, ასმათის ქუჩა",
+        phone: "+995 599 999 999",
+        email: "info@themrstudio.ge",
+        hours: "Mon-Sat: 10:00 AM - 8:00 PM",
+        adminEmail: null,
+      });
+
+      await db.insert(staffTable).values([
+        {
+          name: "მარიამი",
+          serviceCategory: "Nail",
+          calendarId: "5a628b97225c40af603e9c5080f8fc88f8a7fcadbd61c7df1657af6cf7e20311@group.calendar.google.com",
+          order: "1"
+        },
+        {
+          name: "რიტა",
+          serviceCategory: "Nail",
+          calendarId: "be60a59a51dee66edc5846a870e1aa11bd454898854ea78763b704e1e2754b83@group.calendar.google.com",
+          order: "2"
+        },
+        {
+          name: "სალომე",
+          serviceCategory: "Epilation",
+          calendarId: "d9df0557df5863cbcd507d62463b61fd15d746bf42d71f1fc66e191d04af0130@group.calendar.google.com",
+          order: "3"
+        },
+        {
+          name: "ComingSoon",
+          serviceCategory: "Cosmetology",
+          calendarId: "7b14cf445638512bbfc3cbcbd7eb457be404170b14f605d3646380a4a8b2e033@group.calendar.google.com",
+          order: "4"
+        }
+      ]);
     
     // Initialize services with real pricing
     const epilationServices = [
@@ -220,338 +211,222 @@ export class MemStorage implements IStorage {
       { name: "ქრომი / Chrome", price: "10 ₾", order: "81" },
       { name: "სტიკრები / Stickers", price: "1+ ₾", order: "82" },
     ];
+
+      const servicesData = [
+        ...epilationServices.map(s => ({
+          category: "Epilation",
+          name: s.name,
+          description: "ლაზერული ეპილაცია / Laser Hair Removal",
+          price: s.price,
+          order: s.order,
+        })),
+        ...epilationMenServices.map(s => ({
+          category: "Epilation",
+          name: s.name,
+          description: "ლაზერული ეპილაცია მამაკაცებისთვის / Laser Hair Removal for Men",
+          price: s.price,
+          order: s.order,
+        })),
+        ...manicureServices.map(s => ({
+          category: "Nail",
+          name: s.name,
+          description: "მანიკიური / Manicure",
+          price: s.price,
+          order: s.order,
+        })),
+        ...pedicureServices.map(s => ({
+          category: "Nail",
+          name: s.name,
+          description: "პედიკიური / Pedicure",
+          price: s.price,
+          order: s.order,
+        })),
+        ...designServices.map(s => ({
+          category: "Nail",
+          name: s.name,
+          description: "ფრჩხილების დიზაინი / Nail Design",
+          price: s.price,
+          order: s.order,
+        }))
+      ];
+
+      await db.insert(servicesTable).values(servicesData);
     
-    epilationServices.forEach((service) => {
-      const id = randomUUID();
-      this.services.set(id, {
-        id,
-        category: "Epilation",
-        name: service.name,
-        description: "ლაზერული ეპილაცია / Laser Hair Removal",
-        price: service.price,
-        order: service.order,
+      await db.insert(servicesSectionTable).values({
+        title: "ჩვენი სერვისები",
+        subtitle: "Our Services",
+        categoryDescriptions: JSON.stringify({
+          "მანიკური / პედიკური": "Professional nail care using premium gel polishes and advanced techniques. Our manicure and pedicure services include nail strengthening, extensions, and artistic designs.",
+          "ლაზერული ეპილაცია": "Advanced laser hair removal technology with safe and effective treatments. Our laser systems provide long-lasting results with minimal discomfort.",
+          "კოსმეტოლოგია": "Professional skincare and beauty treatments using modern techniques and high-quality products for optimal results."
+        })
       });
-    });
-    
-    epilationMenServices.forEach((service) => {
-      const id = randomUUID();
-      this.services.set(id, {
-        id,
-        category: "Epilation",
-        name: service.name,
-        description: "ლაზერული ეპილაცია მამაკაცებისთვის / Laser Hair Removal for Men",
-        price: service.price,
-        order: service.order,
-      });
-    });
-    
-    manicureServices.forEach((service) => {
-      const id = randomUUID();
-      this.services.set(id, {
-        id,
-        category: "Nail",
-        name: service.name,
-        description: "მანიკიური / Manicure",
-        price: service.price,
-        order: service.order,
-      });
-    });
-    
-    pedicureServices.forEach((service) => {
-      const id = randomUUID();
-      this.services.set(id, {
-        id,
-        category: "Nail",
-        name: service.name,
-        description: "პედიკიური / Pedicure",
-        price: service.price,
-        order: service.order,
-      });
-    });
-    
-    designServices.forEach((service) => {
-      const id = randomUUID();
-      this.services.set(id, {
-        id,
-        category: "Nail",
-        name: service.name,
-        description: "ფრჩხილების დიზაინი / Nail Design",
-        price: service.price,
-        order: service.order,
-      });
-    });
-    
-    // Initialize gallery images for showcase
-    const galleryImages = [
-      {
-        id: randomUUID(),
-        category: "ფრჩხილები",
-        imageUrl: "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=800&auto=format&fit=crop",
-        order: "1"
-      },
-      {
-        id: randomUUID(),
-        category: "ლაზერი",
-        imageUrl: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800&auto=format&fit=crop",
-        order: "2"
-      },
-      {
-        id: randomUUID(),
-        category: "კოსმეტოლოგია",
-        imageUrl: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&auto=format&fit=crop",
-        order: "3"
-      },
-      {
-        id: randomUUID(),
-        category: "ფრჩხილები",
-        imageUrl: "https://images.unsplash.com/photo-1610992015732-2449b76344bc?w=800&auto=format&fit=crop",
-        order: "4"
-      },
-      {
-        id: randomUUID(),
-        category: "კოსმეტოლოგია",
-        imageUrl: "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=800&auto=format&fit=crop",
-        order: "5"
-      },
-      {
-        id: randomUUID(),
-        category: "ფრჩხილები",
-        imageUrl: "https://images.unsplash.com/photo-1632345031435-8727f6897d53?w=800&auto=format&fit=crop",
-        order: "6"
-      },
-      {
-        id: randomUUID(),
-        category: "ლაზერი",
-        imageUrl: "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?w=800&auto=format&fit=crop",
-        order: "7"
-      },
-      {
-        id: randomUUID(),
-        category: "კოსმეტოლოგია",
-        imageUrl: "https://images.unsplash.com/photo-1560750588-73207b1ef5b8?w=800&auto=format&fit=crop",
-        order: "8"
-      },
-      {
-        id: randomUUID(),
-        category: "ფრჩხილები",
-        imageUrl: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&auto=format&fit=crop",
-        order: "9"
-      },
-      {
-        id: randomUUID(),
-        category: "ლაზერი",
-        imageUrl: "https://images.unsplash.com/photo-1487412912498-0447578fcca8?w=800&auto=format&fit=crop",
-        order: "10"
-      },
-      {
-        id: randomUUID(),
-        category: "კოსმეტოლოგია",
-        imageUrl: "https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=800&auto=format&fit=crop",
-        order: "11"
-      },
-      {
-        id: randomUUID(),
-        category: "ფრჩხილები",
-        imageUrl: "https://images.unsplash.com/photo-1599206676335-193c82b13c9e?w=800&auto=format&fit=crop",
-        order: "12"
-      }
-    ];
-    
-    galleryImages.forEach(image => {
-      this.galleryImages.set(image.id, image);
-    });
-    
-    this.servicesSection = {
-      id: randomUUID(),
-      title: "ჩვენი სერვისები",
-      subtitle: "Our Services",
-      categoryDescriptions: JSON.stringify({
-        "მანიკური / პედიკური": "Professional nail care using premium gel polishes and advanced techniques. Our manicure and pedicure services include nail strengthening, extensions, and artistic designs.",
-        "ლაზერული ეპილაცია": "Advanced laser hair removal technology with safe and effective treatments. Our laser systems provide long-lasting results with minimal discomfort.",
-        "კოსმეტოლოგია": "Professional skincare and beauty treatments using modern techniques and high-quality products for optimal results."
-      })
-    };
+    } catch (error) {
+      console.error("Error seeding database:", error);
+    }
   }
 
   async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(usersTable).where(eq(usersTable.id, id));
+    return user;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(usersTable).where(eq(usersTable.username, username));
+    return user;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const [user] = await db.insert(usersTable).values(insertUser).returning();
     return user;
   }
 
   async createBooking(insertBooking: InsertBooking): Promise<Booking> {
-    const id = randomUUID();
-    const booking: Booking = { 
-      ...insertBooking, 
-      id,
-      duration: insertBooking.duration ?? "90",
-      status: insertBooking.status ?? "pending",
-      rejectionReason: insertBooking.rejectionReason ?? null,
-      notes: insertBooking.notes ?? null,
-      staffId: insertBooking.staffId ?? null,
-      staffName: insertBooking.staffName ?? null
-    };
-    this.bookings.set(id, booking);
+    const [booking] = await db.insert(bookingsTable).values(insertBooking).returning();
     return booking;
   }
 
   async getBookingsByDate(date: string): Promise<Booking[]> {
-    return Array.from(this.bookings.values()).filter(
-      (booking) => booking.date === date,
-    );
+    return await db.select().from(bookingsTable).where(eq(bookingsTable.date, date));
   }
 
   async getAllBookings(): Promise<Booking[]> {
-    return Array.from(this.bookings.values());
+    return await db.select().from(bookingsTable);
   }
 
   async getBookingById(id: string): Promise<Booking | undefined> {
-    return this.bookings.get(id);
+    const [booking] = await db.select().from(bookingsTable).where(eq(bookingsTable.id, id));
+    return booking;
   }
 
   async getPendingBookings(): Promise<Booking[]> {
-    return Array.from(this.bookings.values()).filter(
-      (booking) => booking.status === "pending"
-    );
+    return await db.select().from(bookingsTable).where(eq(bookingsTable.status, "pending"));
   }
 
   async getConfirmedBookings(): Promise<Booking[]> {
-    return Array.from(this.bookings.values()).filter(
-      (booking) => booking.status === "confirmed"
-    );
+    return await db.select().from(bookingsTable).where(eq(bookingsTable.status, "confirmed"));
   }
 
   async approveBooking(id: string): Promise<Booking | undefined> {
-    const booking = this.bookings.get(id);
-    if (!booking) return undefined;
-    
-    const updated: Booking = { ...booking, status: "confirmed", rejectionReason: null };
-    this.bookings.set(id, updated);
+    const [updated] = await db.update(bookingsTable)
+      .set({ status: "confirmed", rejectionReason: null })
+      .where(eq(bookingsTable.id, id))
+      .returning();
     return updated;
   }
 
   async rejectBooking(id: string, reason?: string): Promise<Booking | undefined> {
-    const booking = this.bookings.get(id);
-    if (!booking) return undefined;
-    
-    const updated: Booking = { ...booking, status: "rejected", rejectionReason: reason ?? null };
-    this.bookings.set(id, updated);
+    const [updated] = await db.update(bookingsTable)
+      .set({ status: "rejected", rejectionReason: reason ?? null })
+      .where(eq(bookingsTable.id, id))
+      .returning();
     return updated;
   }
 
   async modifyBooking(id: string, updates: { time?: string; duration?: string }): Promise<Booking | undefined> {
-    const booking = this.bookings.get(id);
-    if (!booking) return undefined;
+    const updateData: Partial<Booking> = {};
+    if (updates.time !== undefined) updateData.time = updates.time;
+    if (updates.duration !== undefined) updateData.duration = updates.duration;
     
-    // Only include defined values in updates to avoid overwriting with undefined
-    const filteredUpdates: Partial<Booking> = {};
-    if (updates.time !== undefined) filteredUpdates.time = updates.time;
-    if (updates.duration !== undefined) filteredUpdates.duration = updates.duration;
-    
-    const updated: Booking = { ...booking, ...filteredUpdates };
-    this.bookings.set(id, updated);
+    const [updated] = await db.update(bookingsTable)
+      .set(updateData)
+      .where(eq(bookingsTable.id, id))
+      .returning();
     return updated;
   }
 
   async getHeroContent(): Promise<HeroContent | undefined> {
-    return this.heroContent;
+    const [heroContent] = await db.select().from(heroContentTable).limit(1);
+    return heroContent;
   }
 
   async updateHeroContent(content: InsertHeroContent): Promise<HeroContent> {
-    const id = this.heroContent?.id || randomUUID();
-    this.heroContent = { ...content, id };
-    return this.heroContent;
+    const existing = await this.getHeroContent();
+    if (existing) {
+      const [updated] = await db.update(heroContentTable)
+        .set(content)
+        .where(eq(heroContentTable.id, existing.id))
+        .returning();
+      return updated;
+    } else {
+      const [created] = await db.insert(heroContentTable).values(content).returning();
+      return created;
+    }
   }
 
   async getAllServices(): Promise<Service[]> {
-    return Array.from(this.services.values()).sort((a, b) => 
-      a.order.localeCompare(b.order)
-    );
+    const services = await db.select().from(servicesTable);
+    return services.sort((a, b) => a.order.localeCompare(b.order));
   }
 
   async createService(insertService: InsertService): Promise<Service> {
-    const id = randomUUID();
-    const service: Service = { ...insertService, id };
-    this.services.set(id, service);
+    const [service] = await db.insert(servicesTable).values(insertService).returning();
     return service;
   }
 
   async updateService(id: string, updates: Partial<InsertService>): Promise<Service | undefined> {
-    const existing = this.services.get(id);
-    if (!existing) return undefined;
-    
-    const updated: Service = { ...existing, ...updates };
-    this.services.set(id, updated);
+    const [updated] = await db.update(servicesTable)
+      .set(updates)
+      .where(eq(servicesTable.id, id))
+      .returning();
     return updated;
   }
 
   async deleteService(id: string): Promise<boolean> {
-    return this.services.delete(id);
+    const result = await db.delete(servicesTable).where(eq(servicesTable.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
   }
 
   async getSiteSettings(): Promise<SiteSettings | undefined> {
-    return this.siteSettings;
+    const [settings] = await db.select().from(siteSettingsTable).limit(1);
+    return settings;
   }
 
   async updateSiteSettings(settings: InsertSiteSettings): Promise<SiteSettings> {
-    const id = this.siteSettings?.id || randomUUID();
-    this.siteSettings = { 
-      ...settings, 
-      id,
-      adminEmail: settings.adminEmail ?? null 
-    };
-    return this.siteSettings;
+    const existing = await this.getSiteSettings();
+    if (existing) {
+      const [updated] = await db.update(siteSettingsTable)
+        .set(settings)
+        .where(eq(siteSettingsTable.id, existing.id))
+        .returning();
+      return updated;
+    } else {
+      const [created] = await db.insert(siteSettingsTable).values(settings).returning();
+      return created;
+    }
   }
 
   async getAllStaff(): Promise<Staff[]> {
-    return Array.from(this.staff.values()).sort((a, b) => 
-      a.order.localeCompare(b.order)
-    );
+    const staff = await db.select().from(staffTable);
+    return staff.sort((a, b) => a.order.localeCompare(b.order));
   }
 
   async getStaffById(id: string): Promise<Staff | undefined> {
-    return this.staff.get(id);
+    const [staff] = await db.select().from(staffTable).where(eq(staffTable.id, id));
+    return staff;
   }
 
   async getStaffByCategory(category: string): Promise<Staff[]> {
-    return Array.from(this.staff.values())
-      .filter(s => s.serviceCategory === category)
-      .sort((a, b) => a.order.localeCompare(b.order));
+    const staff = await db.select().from(staffTable).where(eq(staffTable.serviceCategory, category));
+    return staff.sort((a, b) => a.order.localeCompare(b.order));
   }
 
   async createStaff(insertStaff: InsertStaff): Promise<Staff> {
-    const id = randomUUID();
-    const staffMember: Staff = { 
-      ...insertStaff, 
-      id,
-      calendarId: insertStaff.calendarId ?? null 
-    };
-    this.staff.set(id, staffMember);
-    return staffMember;
+    const [staff] = await db.insert(staffTable).values(insertStaff).returning();
+    return staff;
   }
 
   async updateStaff(id: string, updates: Partial<InsertStaff>): Promise<Staff | undefined> {
-    const existing = this.staff.get(id);
-    if (!existing) return undefined;
-    
-    const updated: Staff = { ...existing, ...updates };
-    this.staff.set(id, updated);
+    const [updated] = await db.update(staffTable)
+      .set(updates)
+      .where(eq(staffTable.id, id))
+      .returning();
     return updated;
   }
 
   async deleteStaff(id: string): Promise<boolean> {
-    return this.staff.delete(id);
+    const result = await db.delete(staffTable).where(eq(staffTable.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
   }
 
   async getAllGalleryImages(): Promise<GalleryImage[]> {
@@ -583,23 +458,32 @@ export class MemStorage implements IStorage {
   }
 
   async getServicesSection(): Promise<ServicesSection | undefined> {
-    return this.servicesSection;
+    const [section] = await db.select().from(servicesSectionTable).limit(1);
+    return section;
   }
 
   async updateServicesSection(content: InsertServicesSection): Promise<ServicesSection> {
-    const id = this.servicesSection?.id || randomUUID();
-    this.servicesSection = { ...content, id };
-    return this.servicesSection;
+    const existing = await this.getServicesSection();
+    if (existing) {
+      const [updated] = await db.update(servicesSectionTable)
+        .set(content)
+        .where(eq(servicesSectionTable.id, existing.id))
+        .returning();
+      return updated;
+    } else {
+      const [created] = await db.insert(servicesSectionTable).values(content).returning();
+      return created;
+    }
   }
 
   async getAllSpecialOffers(): Promise<SpecialOffer[]> {
-    return Array.from(this.specialOffers.values());
+    return await db.select().from(specialOffersTable);
   }
 
   async getActiveSpecialOffer(): Promise<SpecialOffer | undefined> {
     const now = new Date();
-    return Array.from(this.specialOffers.values()).find(offer => {
-      if (!offer.isActive) return false;
+    const offers = await db.select().from(specialOffersTable).where(eq(specialOffersTable.isActive, true));
+    return offers.find(offer => {
       if (offer.expiryDate) {
         const expiryDate = new Date(offer.expiryDate);
         return expiryDate >= now;
@@ -609,29 +493,21 @@ export class MemStorage implements IStorage {
   }
 
   async createSpecialOffer(insertOffer: InsertSpecialOffer): Promise<SpecialOffer> {
-    const id = randomUUID();
-    const offer: SpecialOffer = { 
-      ...insertOffer, 
-      id,
-      isActive: insertOffer.isActive ?? false,
-      expiryDate: insertOffer.expiryDate ?? null,
-      link: insertOffer.link ?? null
-    };
-    this.specialOffers.set(id, offer);
+    const [offer] = await db.insert(specialOffersTable).values(insertOffer).returning();
     return offer;
   }
 
   async updateSpecialOffer(id: string, updates: Partial<InsertSpecialOffer>): Promise<SpecialOffer | undefined> {
-    const existing = this.specialOffers.get(id);
-    if (!existing) return undefined;
-    
-    const updated: SpecialOffer = { ...existing, ...updates };
-    this.specialOffers.set(id, updated);
+    const [updated] = await db.update(specialOffersTable)
+      .set(updates)
+      .where(eq(specialOffersTable.id, id))
+      .returning();
     return updated;
   }
 
   async deleteSpecialOffer(id: string): Promise<boolean> {
-    return this.specialOffers.delete(id);
+    const result = await db.delete(specialOffersTable).where(eq(specialOffersTable.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
   }
 
   async getAllTrends(): Promise<Trend[]> {

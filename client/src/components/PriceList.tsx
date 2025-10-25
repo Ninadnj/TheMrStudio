@@ -244,12 +244,13 @@ export default function PriceList() {
                 <Card 
                   key={list.id}
                   data-price-card
-                  className="flex-shrink-0 w-[90vw] md:w-[45vw] lg:w-[30vw] max-w-sm overflow-hidden hover-elevate transition-all duration-300 cursor-pointer snap-start border-2 border-theme-accent/20"
+                  className="flex-shrink-0 w-[90vw] md:w-[45vw] lg:w-[30vw] max-w-sm overflow-hidden hover-elevate transition-all duration-300 cursor-pointer snap-start border-2"
+                  style={{ borderColor: '#B76E7933' }}
                   data-testid={`card-price-${list.id}`}
                   onClick={() => setExpandedCard(expandedCard === list.id ? null : list.id)}
                 >
                   <div className="aspect-[4/3] relative overflow-hidden flex items-center justify-center bg-card">
-                    <div className={`absolute top-0 left-0 w-12 h-1 bg-theme-accent ${list.accentOpacity}`}></div>
+                    <div className={`absolute top-0 left-0 w-12 h-1 ${list.accentOpacity}`} style={{ backgroundColor: 'var(--theme-accent)' }}></div>
                     <div className="text-center px-6">
                       <h3 className="font-serif text-2xl text-foreground mb-2">
                         {list.category}

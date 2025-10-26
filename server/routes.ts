@@ -489,14 +489,17 @@ ${booking.notes ? `Notes: ${booking.notes}` : ''}
 
   app.post("/api/admin/gallery", requireAuth, async (req, res) => {
     try {
+      console.log("[Gallery POST] Creating gallery image with data:", req.body);
       const validatedData = insertGalleryImageSchema.parse(req.body);
       const image = await storage.createGalleryImage(validatedData);
+      console.log("[Gallery POST] Created gallery image:", image);
       res.status(201).json(image);
     } catch (error: any) {
       if (error.name === "ZodError") {
         const validationError = fromZodError(error);
         res.status(400).json({ error: validationError.message });
       } else {
+        console.error("[Gallery POST] Error:", error);
         res.status(500).json({ error: "Failed to create gallery image" });
       }
     }
@@ -734,6 +737,8 @@ ${booking.notes ? `Notes: ${booking.notes}` : ''}
       const { id } = req.params;
       const { imageUrl } = req.body;
       
+      console.log(`[ACL Route] Setting ACL for gallery image ${id}, imageUrl:`, imageUrl);
+      
       if (!imageUrl) {
         return res.status(400).json({ error: "imageUrl is required" });
       }
@@ -749,9 +754,13 @@ ${booking.notes ? `Notes: ${booking.notes}` : ''}
           visibility: "public", // Gallery images are publicly accessible
         }
       );
+      
+      console.log(`[ACL Route] ACL set successfully, objectPath:`, objectPath);
 
       // Update gallery image in database
       const galleryImage = await storage.updateGalleryImage(id, { imageUrl: objectPath });
+      console.log(`[ACL Route] Database updated, galleryImage:`, galleryImage);
+      
       if (!galleryImage) {
         return res.status(404).json({ error: "Gallery image not found" });
       }

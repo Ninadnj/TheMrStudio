@@ -44,9 +44,13 @@ export default function GalleryEditor() {
     },
     onSuccess: async (createdImage: any) => {
       console.log("[GalleryEditor] Gallery image created:", createdImage);
+      console.log("[GalleryEditor] Created image ID:", createdImage.id);
+      console.log("[GalleryEditor] Created image category:", createdImage.category);
+      console.log("[GalleryEditor] Created image order:", createdImage.order);
       // Always set ACL policy and get stable URL for uploaded images
       if (createdImage.imageUrl) {
         console.log("[GalleryEditor] Setting ACL policy for image:", createdImage.imageUrl);
+        console.log("[GalleryEditor] ACL route will be called with ID:", createdImage.id);
         try {
           const aclResponse = await apiRequest("PUT", `/api/admin/gallery-images/${createdImage.id}/image`, {
             imageUrl: createdImage.imageUrl,

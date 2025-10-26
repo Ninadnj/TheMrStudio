@@ -138,7 +138,11 @@ export default function Footer() {
             <span className="font-bold">The</span>{' '}
             <span className="font-bold">DNJ™</span>{' '}
             <span style={{ opacity: 0.3 }}>with</span>{' '}
-            ❤️
+            <Coffee className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.8)' }} />
+            {' '}
+            <span style={{ opacity: 0.3 }}>and</span>
+            {' '}
+            🤍
             {' '}
             <span style={{ opacity: 0.3 }}>here</span>
           </p>

@@ -174,3 +174,16 @@ export const insertTrendSchema = createInsertSchema(trends).omit({
 
 export type InsertTrend = z.infer<typeof insertTrendSchema>;
 export type Trend = typeof trends.$inferSelect;
+
+export const trendsSection = pgTable("trends_section", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  subtitle: text("subtitle"),
+});
+
+export const insertTrendsSectionSchema = createInsertSchema(trendsSection).omit({
+  id: true,
+});
+
+export type InsertTrendsSection = z.infer<typeof insertTrendsSectionSchema>;
+export type TrendsSection = typeof trendsSection.$inferSelect;

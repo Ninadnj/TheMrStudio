@@ -11,7 +11,8 @@ import {
   insertGalleryImageSchema,
   insertServicesSectionSchema,
   insertSpecialOfferSchema,
-  insertTrendSchema
+  insertTrendSchema,
+  insertTrendsSectionSchema
 } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import { chatWithGemini } from "./gemini-chat";
@@ -692,6 +693,31 @@ ${booking.notes ? `Notes: ${booking.notes}` : ''}
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ error: "Failed to delete trend" });
+    }
+  });
+
+  // Trends section heading management
+  app.get("/api/trends-section", async (req, res) => {
+    try {
+      const section = await storage.getTrendsSection();
+      res.json(section || { title: "რა არის ახლა ტრენდში", subtitle: "What's Trendy Now" });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch trends section" });
+    }
+  });
+
+  app.put("/api/admin/trends-section", requireAuth, async (req, res) => {
+    try {
+      const validatedData = insertTrendsSectionSchema.parse(req.body);
+      const section = await storage.updateTrendsSection(validatedData);
+      res.json(section);
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        const validationError = fromZodError(error);
+        res.status(400).json({ error: validationError.message });
+      } else {
+        res.status(500).json({ error: "Failed to update trends section" });
+      }
     }
   });
 

@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,13 @@ import {
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertTrendSchema, type Trend, type InsertTrend } from "@shared/schema";
+import { 
+  insertTrendSchema, 
+  type Trend, 
+  type InsertTrend,
+  type TrendsSection,
+  type InsertTrendsSection 
+} from "@shared/schema";
 import { Plus, Edit, Trash2, Save, X, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ObjectUploader } from "@/components/ObjectUploader";
@@ -30,12 +36,20 @@ import type { UploadResult } from "@uppy/core";
 export default function TrendsEditor() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [isEditingHeading, setIsEditingHeading] = useState(false);
   const currentUploadUrlRef = useRef<string>("");
   const { toast } = useToast();
 
   const { data: trends = [], isLoading } = useQuery<Trend[]>({
     queryKey: ["/api/admin/trends"],
   });
+
+  const { data: sectionData } = useQuery<TrendsSection>({
+    queryKey: ["/api/trends-section"],
+  });
+
+  const [headingTitle, setHeadingTitle] = useState("");
+  const [headingSubtitle, setHeadingSubtitle] = useState("");
 
   const form = useForm<InsertTrend>({
     resolver: zodResolver(insertTrendSchema),
@@ -147,6 +161,55 @@ export default function TrendsEditor() {
     },
   });
 
+  const updateSectionMutation = useMutation({
+    mutationFn: async (data: InsertTrendsSection) => {
+      return await apiRequest("PUT", "/api/admin/trends-section", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/trends-section"] });
+      toast({
+        title: "Success",
+        description: "Section heading updated successfully",
+      });
+      setIsEditingHeading(false);
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update section heading",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Initialize heading form values when sectionData loads
+  useEffect(() => {
+    if (sectionData) {
+      setHeadingTitle(sectionData.title || "რა არის ახლა ტრენდში");
+      setHeadingSubtitle(sectionData.subtitle || "What's Trendy Now");
+    }
+  }, [sectionData]);
+
+  const handleEditHeading = () => {
+    setIsEditingHeading(true);
+  };
+
+  const handleCancelHeading = () => {
+    setIsEditingHeading(false);
+    // Reset to original values
+    if (sectionData) {
+      setHeadingTitle(sectionData.title || "რა არის ახლა ტრენდში");
+      setHeadingSubtitle(sectionData.subtitle || "What's Trendy Now");
+    }
+  };
+
+  const handleSaveHeading = () => {
+    updateSectionMutation.mutate({
+      title: headingTitle,
+      subtitle: headingSubtitle,
+    });
+  };
+
   const handleEdit = (trend: Trend) => {
     setEditingId(trend.id);
     setIsCreating(false);
@@ -203,6 +266,87 @@ export default function TrendsEditor() {
 
   return (
     <div className="space-y-6">
+      {/* Section Heading Editor */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Section Heading</CardTitle>
+              <CardDescription>
+                Customize the heading for the Trends section
+              </CardDescription>
+            </div>
+            {!isEditingHeading ? (
+              <Button
+                onClick={handleEditHeading}
+                variant="outline"
+                data-testid="button-edit-heading"
+              >
+                <Edit className="w-4 h-4 mr-2" />
+                Edit
+              </Button>
+            ) : (
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleSaveHeading}
+                  disabled={updateSectionMutation.isPending}
+                  data-testid="button-save-heading"
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  Save
+                </Button>
+                <Button
+                  onClick={handleCancelHeading}
+                  variant="outline"
+                  disabled={updateSectionMutation.isPending}
+                  data-testid="button-cancel-heading"
+                >
+                  <X className="w-4 h-4 mr-2" />
+                  Cancel
+                </Button>
+              </div>
+            )}
+          </div>
+        </CardHeader>
+        {isEditingHeading && (
+          <CardContent className="space-y-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">
+                Main Title (Georgian)
+              </label>
+              <Input
+                value={headingTitle}
+                onChange={(e) => setHeadingTitle(e.target.value)}
+                placeholder="რა არის ახლა ტრენდში"
+                data-testid="input-heading-title"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-2 block">
+                Subtitle (English)
+              </label>
+              <Input
+                value={headingSubtitle}
+                onChange={(e) => setHeadingSubtitle(e.target.value)}
+                placeholder="What's Trendy Now"
+                data-testid="input-heading-subtitle"
+              />
+            </div>
+          </CardContent>
+        )}
+        {!isEditingHeading && (
+          <CardContent>
+            <div className="text-center py-2">
+              <p className="text-lg font-medium">{headingTitle || "რა არის ახლა ტრენდში"}</p>
+              {headingSubtitle && (
+                <p className="text-sm text-muted-foreground">{headingSubtitle}</p>
+              )}
+            </div>
+          </CardContent>
+        )}
+      </Card>
+
+      {/* Trends Management */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">

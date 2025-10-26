@@ -2,13 +2,17 @@ import { TrendingUp } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useRef } from "react";
-import type { Trend } from "@shared/schema";
+import type { Trend, TrendsSection as TrendsSectionType } from "@shared/schema";
 
 export default function TrendsSection() {
   const sectionRef = useRef(null);
 
   const { data: trends = [], isLoading } = useQuery<Trend[]>({
     queryKey: ["/api/trends"],
+  });
+
+  const { data: sectionData } = useQuery<TrendsSectionType>({
+    queryKey: ["/api/trends-section"],
   });
 
   if (isLoading) {
@@ -41,9 +45,14 @@ export default function TrendsSection() {
           <div className="flex items-center justify-center gap-2 mb-2">
             <TrendingUp className="w-5 h-5 text-theme-accent" />
             <h2 className="font-display text-2xl md:text-3xl text-foreground">
-              რა არის ახლა ტრენდში
+              {sectionData?.title || "რა არის ახლა ტრენდში"}
             </h2>
           </div>
+          {sectionData?.subtitle && (
+            <p className="text-sm text-muted-foreground">
+              {sectionData.subtitle}
+            </p>
+          )}
         </motion.div>
 
         {/* Modern Lookbook Grid - Pinterest/Mood Board Style */}

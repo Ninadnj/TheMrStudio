@@ -9,6 +9,7 @@ import {
   type ServicesSection, type InsertServicesSection,
   type SpecialOffer, type InsertSpecialOffer,
   type Trend, type InsertTrend,
+  type TrendsSection, type InsertTrendsSection,
   users as usersTable,
   staff as staffTable,
   bookings as bookingsTable,
@@ -18,7 +19,8 @@ import {
   servicesSection as servicesSectionTable,
   specialOffers as specialOffersTable,
   galleryImages as galleryImagesTable,
-  trends as trendsTable
+  trends as trendsTable,
+  trendsSection as trendsSectionTable
 } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
@@ -78,6 +80,9 @@ export interface IStorage {
   createTrend(trend: InsertTrend): Promise<Trend>;
   updateTrend(id: string, updates: Partial<InsertTrend>): Promise<Trend | undefined>;
   deleteTrend(id: string): Promise<boolean>;
+  
+  getTrendsSection(): Promise<TrendsSection | undefined>;
+  updateTrendsSection(content: InsertTrendsSection): Promise<TrendsSection>;
 }
 
 export class MemStorage implements IStorage {
@@ -537,6 +542,28 @@ export class MemStorage implements IStorage {
   async deleteTrend(id: string): Promise<boolean> {
     const result = await db.delete(trendsTable).where(eq(trendsTable.id, id));
     return result.rowCount !== null && result.rowCount > 0;
+  }
+
+  async getTrendsSection(): Promise<TrendsSection | undefined> {
+    const [section] = await db.select().from(trendsSectionTable).limit(1);
+    return section;
+  }
+
+  async updateTrendsSection(content: InsertTrendsSection): Promise<TrendsSection> {
+    const existing = await this.getTrendsSection();
+    
+    if (existing) {
+      const [updated] = await db.update(trendsSectionTable)
+        .set(content)
+        .where(eq(trendsSectionTable.id, existing.id))
+        .returning();
+      return updated;
+    } else {
+      const [created] = await db.insert(trendsSectionTable)
+        .values(content)
+        .returning();
+      return created;
+    }
   }
 }
 

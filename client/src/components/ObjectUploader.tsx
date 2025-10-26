@@ -21,6 +21,16 @@ interface ObjectUploaderProps {
   children: ReactNode;
 }
 
+// Uppy File type for getUploadParameters
+interface UppyFile {
+  id: string;
+  name: string;
+  type: string;
+  data: File | Blob;
+  size: number;
+  [key: string]: any;
+}
+
 /**
  * A file upload component that renders as a button and provides a modal interface for
  * file management.
@@ -56,9 +66,15 @@ export function ObjectUploader({
     })
       .use(AwsS3, {
         shouldUseMultipart: false,
-        getUploadParameters: onGetUploadParameters,
+        getUploadParameters: async (file: UppyFile) => {
+          console.log("[ObjectUploader] Getting upload parameters for file:", file.name);
+          const params = await onGetUploadParameters();
+          console.log("[ObjectUploader] Upload parameters:", params);
+          return params;
+        },
       })
       .on("complete", (result) => {
+        console.log("[ObjectUploader] Upload complete:", result);
         onComplete?.(result);
         setShowModal(false);
       })

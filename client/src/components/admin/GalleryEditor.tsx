@@ -38,17 +38,25 @@ export default function GalleryEditor() {
   });
 
   const createMutation = useMutation({
-    mutationFn: (data: any) => apiRequest("POST", "/api/admin/gallery", data),
+    mutationFn: (data: any) => {
+      console.log("[GalleryEditor] Creating gallery image with data:", data);
+      return apiRequest("POST", "/api/admin/gallery", data);
+    },
     onSuccess: async (createdImage: any) => {
+      console.log("[GalleryEditor] Gallery image created:", createdImage);
       // Always set ACL policy and get stable URL for uploaded images
       if (createdImage.imageUrl) {
+        console.log("[GalleryEditor] Setting ACL policy for image:", createdImage.imageUrl);
         try {
-          await apiRequest("PUT", `/api/admin/gallery-images/${createdImage.id}/image`, {
+          const aclResponse = await apiRequest("PUT", `/api/admin/gallery-images/${createdImage.id}/image`, {
             imageUrl: createdImage.imageUrl,
           });
+          console.log("[GalleryEditor] ACL policy set, response:", aclResponse);
         } catch (error) {
           console.error("Failed to set ACL policy:", error);
         }
+      } else {
+        console.warn("[GalleryEditor] No imageUrl in created image, skipping ACL");
       }
       queryClient.invalidateQueries({ queryKey: ["/api/admin/gallery"] });
       queryClient.invalidateQueries({ queryKey: ["/api/gallery"] });
@@ -58,17 +66,25 @@ export default function GalleryEditor() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) => apiRequest("PUT", `/api/admin/gallery/${id}`, data),
+    mutationFn: ({ id, data }: { id: string; data: any }) => {
+      console.log("[GalleryEditor] Updating gallery image", id, "with data:", data);
+      return apiRequest("PUT", `/api/admin/gallery/${id}`, data);
+    },
     onSuccess: async (updatedImage: any, variables) => {
+      console.log("[GalleryEditor] Gallery image updated:", updatedImage);
       // Always set ACL policy and get stable URL for uploaded images
       if (updatedImage.imageUrl) {
+        console.log("[GalleryEditor] Setting ACL policy for updated image:", updatedImage.imageUrl);
         try {
-          await apiRequest("PUT", `/api/admin/gallery-images/${variables.id}/image`, {
+          const aclResponse = await apiRequest("PUT", `/api/admin/gallery-images/${variables.id}/image`, {
             imageUrl: updatedImage.imageUrl,
           });
+          console.log("[GalleryEditor] ACL policy set, response:", aclResponse);
         } catch (error) {
           console.error("Failed to set ACL policy:", error);
         }
+      } else {
+        console.warn("[GalleryEditor] No imageUrl in updated image, skipping ACL");
       }
       queryClient.invalidateQueries({ queryKey: ["/api/admin/gallery"] });
       queryClient.invalidateQueries({ queryKey: ["/api/gallery"] });
@@ -196,6 +212,7 @@ export default function GalleryEditor() {
                           if (result.successful && result.successful.length > 0) {
                             // Save the presigned URL directly - ACL will be set after form submission
                             const presignedUrl = result.successful[0]?.uploadURL;
+                            console.log("[GalleryEditor] Upload complete, presigned URL:", presignedUrl);
                             form.setValue("imageUrl", presignedUrl);
                             toast({ 
                               title: "წარმატება", 

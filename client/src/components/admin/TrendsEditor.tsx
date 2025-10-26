@@ -49,18 +49,24 @@ export default function TrendsEditor() {
 
   const createMutation = useMutation({
     mutationFn: async (data: InsertTrend) => {
+      console.log("[TrendsEditor] Creating trend with data:", data);
       return await apiRequest("POST", "/api/admin/trends", data);
     },
     onSuccess: async (createdTrend: any) => {
+      console.log("[TrendsEditor] Trend created:", createdTrend);
       // Always set ACL policy and get stable URL for uploaded images
       if (createdTrend.imageUrl) {
+        console.log("[TrendsEditor] Setting ACL policy for image:", createdTrend.imageUrl);
         try {
-          await apiRequest("PUT", `/api/admin/trends/${createdTrend.id}/image`, {
+          const aclResponse = await apiRequest("PUT", `/api/admin/trends/${createdTrend.id}/image`, {
             imageUrl: createdTrend.imageUrl,
           });
+          console.log("[TrendsEditor] ACL policy set, response:", aclResponse);
         } catch (error) {
           console.error("Failed to set ACL policy:", error);
         }
+      } else {
+        console.warn("[TrendsEditor] No imageUrl in created trend, skipping ACL");
       }
       queryClient.invalidateQueries({ queryKey: ["/api/admin/trends"] });
       queryClient.invalidateQueries({ queryKey: ["/api/trends"] });
@@ -82,18 +88,24 @@ export default function TrendsEditor() {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<InsertTrend> }) => {
+      console.log("[TrendsEditor] Updating trend", id, "with data:", data);
       return await apiRequest("PUT", `/api/admin/trends/${id}`, data);
     },
     onSuccess: async (updatedTrend: any, variables) => {
+      console.log("[TrendsEditor] Trend updated:", updatedTrend);
       // Always set ACL policy and get stable URL for uploaded images
       if (updatedTrend.imageUrl) {
+        console.log("[TrendsEditor] Setting ACL policy for updated image:", updatedTrend.imageUrl);
         try {
-          await apiRequest("PUT", `/api/admin/trends/${variables.id}/image`, {
+          const aclResponse = await apiRequest("PUT", `/api/admin/trends/${variables.id}/image`, {
             imageUrl: updatedTrend.imageUrl,
           });
+          console.log("[TrendsEditor] ACL policy set, response:", aclResponse);
         } catch (error) {
           console.error("Failed to set ACL policy:", error);
         }
+      } else {
+        console.warn("[TrendsEditor] No imageUrl in updated trend, skipping ACL");
       }
       queryClient.invalidateQueries({ queryKey: ["/api/admin/trends"] });
       queryClient.invalidateQueries({ queryKey: ["/api/trends"] });
@@ -279,6 +291,7 @@ export default function TrendsEditor() {
                             if (result.successful && result.successful.length > 0) {
                               // Save the presigned URL directly - ACL will be set after form submission
                               const presignedUrl = result.successful[0]?.uploadURL;
+                              console.log("[TrendsEditor] Upload complete, presigned URL:", presignedUrl);
                               form.setValue("imageUrl", presignedUrl);
                               toast({ 
                                 title: "Success", 

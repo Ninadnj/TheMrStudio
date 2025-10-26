@@ -47,7 +47,7 @@ export default function Hero() {
         <motion.img 
           src={heroBackground}
           alt="Elegant Fashion"
-          className="w-full h-full object-cover opacity-60 blur-sm"
+          className="w-full h-full object-cover opacity-30"
           initial={{ scale: 1.1 }}
           animate={{ scale: 1 }}
           transition={{ duration: 1.5, ease: "easeOut" }}

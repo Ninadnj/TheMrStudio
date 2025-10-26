@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertHeroContentSchema, type HeroContent } from "@shared/schema";
@@ -16,7 +16,7 @@ import { Image, Upload } from "lucide-react";
 
 export default function HeroContentEditor() {
   const { toast } = useToast();
-  const [currentUploadUrl, setCurrentUploadUrl] = useState<string>("");
+  const currentUploadUrlRef = useRef<string>("");
 
   const { data: heroContent } = useQuery<HeroContent>({
     queryKey: ["/api/admin/hero-content"],
@@ -136,8 +136,8 @@ export default function HeroContentEditor() {
                   maxFileSize={10485760}
                   onGetUploadParameters={async () => {
                     const response = await apiRequest("POST", "/api/objects/upload", {});
-                    // Save the URL for later use in onComplete
-                    setCurrentUploadUrl(response.uploadURL);
+                    // Save the URL in ref for later use in onComplete (avoids stale closure)
+                    currentUploadUrlRef.current = response.uploadURL;
                     return {
                       method: "PUT" as const,
                       url: response.uploadURL,
@@ -145,10 +145,10 @@ export default function HeroContentEditor() {
                   }}
                   onComplete={async (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
                     if (result.successful[0]) {
-                      // Use the saved presigned URL
+                      // Use the saved presigned URL from ref
                       try {
                         await apiRequest("PUT", "/api/admin/hero/background-image", {
-                          imageUrl: currentUploadUrl,
+                          imageUrl: currentUploadUrlRef.current,
                         });
                         queryClient.invalidateQueries({ queryKey: ["/api/admin/hero-content"] });
                         toast({

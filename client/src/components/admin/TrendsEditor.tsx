@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,7 @@ import type { UploadResult } from "@uppy/core";
 export default function TrendsEditor() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
-  const [currentUploadUrl, setCurrentUploadUrl] = useState<string>("");
+  const currentUploadUrlRef = useRef<string>("");
   const { toast } = useToast();
 
   const { data: trends = [], isLoading } = useQuery<Trend[]>({
@@ -283,8 +283,8 @@ export default function TrendsEditor() {
                           maxFileSize={10485760}
                           onGetUploadParameters={async () => {
                             const response = await apiRequest("POST", "/api/objects/upload", {});
-                            // Save the URL for later use in onComplete
-                            setCurrentUploadUrl(response.uploadURL);
+                            // Save the URL in ref for later use in onComplete (avoids stale closure)
+                            currentUploadUrlRef.current = response.uploadURL;
                             return {
                               method: "PUT" as const,
                               url: response.uploadURL,
@@ -292,9 +292,9 @@ export default function TrendsEditor() {
                           }}
                           onComplete={async (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
                             if (result.successful && result.successful.length > 0) {
-                              // Use the saved presigned URL - ACL will be set after form submission
-                              console.log("[TrendsEditor] Upload complete, using saved presigned URL:", currentUploadUrl);
-                              form.setValue("imageUrl", currentUploadUrl);
+                              // Use the saved presigned URL from ref - ACL will be set after form submission
+                              console.log("[TrendsEditor] Upload complete, using saved presigned URL:", currentUploadUrlRef.current);
+                              form.setValue("imageUrl", currentUploadUrlRef.current);
                               toast({ 
                                 title: "Success", 
                                 description: "Image uploaded successfully" 

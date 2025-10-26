@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertGalleryImageSchema, type GalleryImage } from "@shared/schema";
@@ -23,7 +23,7 @@ const GALLERY_CATEGORIES = [
 export default function GalleryEditor() {
   const { toast } = useToast();
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [currentUploadUrl, setCurrentUploadUrl] = useState<string>("");
+  const currentUploadUrlRef = useRef<string>("");
 
   const { data: images = [] } = useQuery<GalleryImage[]>({
     queryKey: ["/api/admin/gallery"],
@@ -211,8 +211,8 @@ export default function GalleryEditor() {
                           const response = await apiRequest("POST", "/api/objects/upload", {});
                           console.log("[GalleryEditor] Received upload response:", response);
                           console.log("[GalleryEditor] Upload URL:", response.uploadURL);
-                          // Save the URL for later use in onComplete
-                          setCurrentUploadUrl(response.uploadURL);
+                          // Save the URL in ref for later use in onComplete (avoids stale closure)
+                          currentUploadUrlRef.current = response.uploadURL;
                           return {
                             method: "PUT" as const,
                             url: response.uploadURL,
@@ -220,9 +220,9 @@ export default function GalleryEditor() {
                         }}
                         onComplete={async (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
                           if (result.successful && result.successful.length > 0) {
-                            // Use the saved presigned URL - ACL will be set after form submission
-                            console.log("[GalleryEditor] Upload complete, using saved presigned URL:", currentUploadUrl);
-                            form.setValue("imageUrl", currentUploadUrl);
+                            // Use the saved presigned URL from ref - ACL will be set after form submission
+                            console.log("[GalleryEditor] Upload complete, using saved presigned URL:", currentUploadUrlRef.current);
+                            form.setValue("imageUrl", currentUploadUrlRef.current);
                             toast({ 
                               title: "წარმატება", 
                               description: "ფოტო აიტვირთა" 

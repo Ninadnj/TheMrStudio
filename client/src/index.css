@@ -23,7 +23,7 @@
   --opaque-button-border-intensity: -8;
   --elevate-1: rgba(0,0,0, .03);
   --elevate-2: rgba(0,0,0, .08);
-  --background: 0 0% 96%;              /* Off-white #F5F5F5 */
+  --background: 0deg 8.64% 68.24%;              /* Off-white #F5F5F5 */
   --foreground: 0 0% 4%;               /* Rich black #0B0B0B */
   --border: 0 0% 91%;                  /* Light grey for borders */
   --card: 0 0% 100%;                   /* Pure white cards */
@@ -44,7 +44,7 @@
   --primary-foreground: 0 0% 4%;
   --secondary: 0 0% 94%;
   --secondary-foreground: 0 0% 4%;
-  --muted: 0 0% 96%;
+  --muted: 0deg 25.93% 89.41%;
   --muted-foreground: 0 0% 42%;
   --accent: 30 15% 61%;                /* Warm Taupe accent #A89B8E */
   --accent-foreground: 0 0% 4%;

@@ -1,36 +1,19 @@
 import { Sparkles, TrendingUp } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { motion, useInView } from "framer-motion";
-import { useRef, useMemo } from "react";
+import { motion } from "framer-motion";
+import { useRef } from "react";
 import type { Trend } from "@shared/schema";
 
 export default function TrendsSection() {
   const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { once: false, amount: 0.1 });
 
   const { data: trends = [], isLoading } = useQuery<Trend[]>({
     queryKey: ["/api/trends"],
   });
 
-  const trendsByCategory = useMemo(() => {
-    const grouped: Record<string, Trend[]> = {};
-    trends.forEach(trend => {
-      if (!grouped[trend.category]) {
-        grouped[trend.category] = [];
-      }
-      grouped[trend.category].push(trend);
-    });
-    Object.keys(grouped).forEach(category => {
-      grouped[category].sort((a, b) => a.order.localeCompare(b.order));
-    });
-    return grouped;
-  }, [trends]);
-
-  const categories = Object.keys(trendsByCategory).sort();
-
   if (isLoading) {
     return (
-      <section className="py-20 lg:py-32 bg-background">
+      <section className="py-12 bg-background">
         <div className="max-w-7xl mx-auto px-6 text-center">
           <p className="text-muted-foreground">იტვირთება ტრენდები...</p>
         </div>
@@ -42,89 +25,93 @@ export default function TrendsSection() {
     return null; // Don't show section if no trends
   }
 
+  // Sort trends by order
+  const sortedTrends = [...trends].sort((a, b) => a.order.localeCompare(b.order));
+
   return (
-    <section ref={sectionRef} className="py-20 lg:py-32 bg-background">
+    <section ref={sectionRef} className="py-12 lg:py-16 bg-background">
       <div className="max-w-7xl mx-auto px-6">
-        {/* Section Header */}
+        {/* Compact Header */}
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-8"
           initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <TrendingUp className="w-8 h-8 text-theme-accent" />
-            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl text-foreground">
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <TrendingUp className="w-6 h-6 text-theme-accent" />
+            <h2 className="font-display text-2xl md:text-3xl lg:text-4xl text-foreground">
               რა არის ახლა ტრენდში
             </h2>
           </div>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-sm text-muted-foreground">
             What's Trendy Now
           </p>
         </motion.div>
 
-        {/* Trends by Category */}
-        <div className="space-y-20">
-          {categories.map((category, categoryIndex) => (
-            <div key={category}>
-              <motion.h3
-                className="font-display text-2xl md:text-3xl mb-8 text-foreground flex items-center gap-3"
+        {/* Single Compact Block with Images Grid and Text */}
+        <motion.div
+          className="bg-card border border-border rounded-2xl overflow-hidden"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          {/* Images Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 p-4">
+            {sortedTrends.map((trend, index) => (
+              <motion.div
+                key={trend.id}
+                className="group relative aspect-square rounded-lg overflow-hidden bg-muted"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
+                data-testid={`trend-image-${trend.id}`}
+              >
+                <img
+                  src={trend.imageUrl}
+                  alt={trend.title}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  loading="lazy"
+                />
+                {/* Hover Overlay with Title */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
+                  <p className="text-white text-xs font-medium line-clamp-2">
+                    {trend.title}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Text Content Block */}
+          <div className="px-6 pb-6 space-y-4">
+            {sortedTrends.map((trend, index) => (
+              <motion.div
+                key={`text-${trend.id}`}
+                className="border-l-2 border-theme-accent pl-4"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: categoryIndex * 0.1 }}
+                transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
+                data-testid={`trend-text-${trend.id}`}
               >
-                <Sparkles className="w-6 h-6 text-theme-accent" />
-                {category}
-              </motion.h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {trendsByCategory[category].map((trend, index) => (
-                  <motion.div
-                    key={trend.id}
-                    className="group relative bg-card border-2 rounded-xl overflow-hidden hover-elevate active-elevate-2"
-                    style={{ borderColor: '#A89B8E33' }}
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: 0.6,
-                      delay: categoryIndex * 0.1 + index * 0.08,
-                      ease: [0.25, 0.46, 0.45, 0.94],
-                    }}
-                    data-testid={`trend-card-${trend.id}`}
-                  >
-                    {/* Image */}
-                    <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                      <img
-                        src={trend.imageUrl}
-                        alt={trend.title}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        loading="lazy"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    </div>
-
-                    {/* Content */}
-                    <div className="p-6">
-                      <h4 className="font-display text-xl mb-3 text-foreground group-hover:text-theme-accent transition-colors duration-300">
-                        {trend.title}
-                      </h4>
-                      <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
-                        {trend.description}
-                      </p>
-                    </div>
-
-                    {/* Decorative Corner */}
-                    <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div className="bg-theme-accent/20 backdrop-blur-sm rounded-full p-2">
-                        <Sparkles className="w-4 h-4 text-theme-accent" />
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
+                <div className="flex items-center gap-2 mb-1">
+                  <Sparkles className="w-4 h-4 text-theme-accent" />
+                  <h3 className="font-display text-base md:text-lg text-foreground">
+                    {trend.title}
+                  </h3>
+                </div>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {trend.description}
+                </p>
+                {trend.category && (
+                  <span className="inline-block mt-2 text-xs text-theme-accent font-medium">
+                    {trend.category}
+                  </span>
+                )}
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </section>
   );

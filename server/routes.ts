@@ -72,14 +72,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Calculate all blocked time slots based on booking duration
       const bookedTimesSet = new Set<string>();
       
-      // IMPORTANT: Only count CONFIRMED bookings (not pending or rejected)
-      // Also filter by staffId if provided
+      // IMPORTANT: Only count PENDING bookings from database
+      // Confirmed bookings are checked via Google Calendar (single source of truth)
+      // This ensures manual calendar deletions free up slots automatically
       const relevantBookings = bookings.filter(b => {
-        const isConfirmed = b.status === 'confirmed';
+        const isPending = b.status === 'pending';
         const matchesStaff = staffId && typeof staffId === "string" 
           ? b.staffId === staffId 
           : true;
-        return isConfirmed && matchesStaff;
+        return isPending && matchesStaff;
       });
       
       for (const booking of relevantBookings) {

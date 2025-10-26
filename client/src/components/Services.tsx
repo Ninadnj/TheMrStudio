@@ -54,7 +54,7 @@ export default function Services() {
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.8 }}
         >
-          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl mb-6 text-foreground">
+          <h2 className="font-display text-2xl md:text-3xl lg:text-4xl mb-6 text-foreground">
             {servicesSection?.title || "ჩვენი სერვისები"}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">

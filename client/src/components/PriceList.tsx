@@ -258,7 +258,7 @@ export default function PriceList() {
         <div className={`text-center mb-12 transition-all duration-700 ${
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}>
-          <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl mb-3 text-foreground font-normal">
+          <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl mb-3 text-foreground font-normal">
             სერვისების ფასები
           </h2>
           <p className="text-base text-muted-foreground/80 tracking-wide">

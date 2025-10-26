@@ -35,6 +35,7 @@ export default function ServicesEditor() {
     mutationFn: (data: any) => apiRequest("POST", "/api/admin/services", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/services"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/services"] });
       toast({ title: "Success", description: "Service created successfully" });
       form.reset({
         category: "",
@@ -50,6 +51,7 @@ export default function ServicesEditor() {
     mutationFn: ({ id, data }: { id: string; data: any }) => apiRequest("PUT", `/api/admin/services/${id}`, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/services"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/services"] });
       toast({ title: "Success", description: "Service updated successfully" });
       setEditingId(null);
       form.reset({
@@ -66,6 +68,7 @@ export default function ServicesEditor() {
     mutationFn: (id: string) => apiRequest("DELETE", `/api/admin/services/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/services"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/services"] });
       toast({ title: "Success", description: "Service deleted successfully" });
     },
   });

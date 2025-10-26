@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import type { Service } from "@shared/schema";
 
 type PriceListItem = {
   id: number;
@@ -11,7 +13,7 @@ type PriceListItem = {
   items: Array<{ name: string; price: number | string }>;
 };
 
-const priceLists: PriceListItem[] = [
+const staticPriceLists: PriceListItem[] = [
   {
     id: 1,
     category: "მანიკური / პედიკური",
@@ -142,6 +144,39 @@ export default function PriceList() {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
 
+  // Fetch services from API
+  const { data: services = [], isLoading } = useQuery<Service[]>({
+    queryKey: ["/api/services"],
+  });
+
+  // Group services by category and transform to PriceListItem format
+  const priceLists: PriceListItem[] = (() => {
+    if (services.length === 0) return staticPriceLists;
+
+    const grouped = services.reduce((acc, service) => {
+      if (!acc[service.category]) {
+        acc[service.category] = [];
+      }
+      acc[service.category].push(service);
+      return acc;
+    }, {} as Record<string, Service[]>);
+
+    return Object.entries(grouped).map(([category, items], index) => {
+      // Sort items by order field
+      const sortedItems = [...items].sort((a, b) => a.order.localeCompare(b.order));
+      
+      return {
+        id: index + 1,
+        category,
+        accentOpacity: `opacity-${100 - index * 5}` as const,
+        items: sortedItems.map(service => ({
+          name: service.name,
+          price: service.price,
+        })),
+      };
+    });
+  })();
+
   const checkScrollButtons = () => {
     if (!scrollContainerRef.current) return;
     
@@ -171,7 +206,7 @@ export default function PriceList() {
       container.removeEventListener('scroll', checkScrollButtons);
       window.removeEventListener('resize', checkScrollButtons);
     };
-  }, [priceLists.length]);
+  }, [services.length]);
 
   useEffect(() => {
     const section = sectionRef.current;

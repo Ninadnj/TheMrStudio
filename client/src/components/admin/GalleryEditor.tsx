@@ -39,7 +39,17 @@ export default function GalleryEditor() {
 
   const createMutation = useMutation({
     mutationFn: (data: any) => apiRequest("POST", "/api/admin/gallery", data),
-    onSuccess: () => {
+    onSuccess: async (createdImage: any) => {
+      // Always set ACL policy and get stable URL for uploaded images
+      if (createdImage.imageUrl) {
+        try {
+          await apiRequest("PUT", `/api/admin/gallery-images/${createdImage.id}/image`, {
+            imageUrl: createdImage.imageUrl,
+          });
+        } catch (error) {
+          console.error("Failed to set ACL policy:", error);
+        }
+      }
       queryClient.invalidateQueries({ queryKey: ["/api/admin/gallery"] });
       queryClient.invalidateQueries({ queryKey: ["/api/gallery"] });
       toast({ title: "წარმატება", description: "ფოტო დაემატა გალერეას" });
@@ -49,7 +59,17 @@ export default function GalleryEditor() {
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: any }) => apiRequest("PUT", `/api/admin/gallery/${id}`, data),
-    onSuccess: () => {
+    onSuccess: async (updatedImage: any, variables) => {
+      // Always set ACL policy and get stable URL for uploaded images
+      if (updatedImage.imageUrl) {
+        try {
+          await apiRequest("PUT", `/api/admin/gallery-images/${variables.id}/image`, {
+            imageUrl: updatedImage.imageUrl,
+          });
+        } catch (error) {
+          console.error("Failed to set ACL policy:", error);
+        }
+      }
       queryClient.invalidateQueries({ queryKey: ["/api/admin/gallery"] });
       queryClient.invalidateQueries({ queryKey: ["/api/gallery"] });
       toast({ title: "წარმატება", description: "ფოტო განახლდა" });
@@ -174,9 +194,9 @@ export default function GalleryEditor() {
                         }}
                         onComplete={async (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
                           if (result.successful && result.successful.length > 0) {
-                            const objectPath = result.successful[0]?.uploadURL?.split('?')[0].split('/').slice(-2).join('/');
-                            const publicUrl = `/objects/${objectPath}`;
-                            form.setValue("imageUrl", publicUrl);
+                            // Save the presigned URL directly - ACL will be set after form submission
+                            const presignedUrl = result.successful[0]?.uploadURL;
+                            form.setValue("imageUrl", presignedUrl);
                             toast({ 
                               title: "წარმატება", 
                               description: "ფოტო აიტვირთა" 

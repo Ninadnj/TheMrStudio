@@ -51,7 +51,17 @@ export default function TrendsEditor() {
     mutationFn: async (data: InsertTrend) => {
       return await apiRequest("POST", "/api/admin/trends", data);
     },
-    onSuccess: () => {
+    onSuccess: async (createdTrend: any) => {
+      // Always set ACL policy and get stable URL for uploaded images
+      if (createdTrend.imageUrl) {
+        try {
+          await apiRequest("PUT", `/api/admin/trends/${createdTrend.id}/image`, {
+            imageUrl: createdTrend.imageUrl,
+          });
+        } catch (error) {
+          console.error("Failed to set ACL policy:", error);
+        }
+      }
       queryClient.invalidateQueries({ queryKey: ["/api/admin/trends"] });
       queryClient.invalidateQueries({ queryKey: ["/api/trends"] });
       toast({
@@ -74,7 +84,17 @@ export default function TrendsEditor() {
     mutationFn: async ({ id, data }: { id: string; data: Partial<InsertTrend> }) => {
       return await apiRequest("PUT", `/api/admin/trends/${id}`, data);
     },
-    onSuccess: () => {
+    onSuccess: async (updatedTrend: any, variables) => {
+      // Always set ACL policy and get stable URL for uploaded images
+      if (updatedTrend.imageUrl) {
+        try {
+          await apiRequest("PUT", `/api/admin/trends/${variables.id}/image`, {
+            imageUrl: updatedTrend.imageUrl,
+          });
+        } catch (error) {
+          console.error("Failed to set ACL policy:", error);
+        }
+      }
       queryClient.invalidateQueries({ queryKey: ["/api/admin/trends"] });
       queryClient.invalidateQueries({ queryKey: ["/api/trends"] });
       toast({
@@ -87,7 +107,7 @@ export default function TrendsEditor() {
     onError: (error: any) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to update trend",
+        description: "Failed to update trend",
         variant: "destructive",
       });
     },
@@ -257,9 +277,9 @@ export default function TrendsEditor() {
                           }}
                           onComplete={async (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
                             if (result.successful && result.successful.length > 0) {
-                              const objectPath = result.successful[0]?.uploadURL?.split('?')[0].split('/').slice(-2).join('/');
-                              const publicUrl = `/objects/${objectPath}`;
-                              form.setValue("imageUrl", publicUrl);
+                              // Save the presigned URL directly - ACL will be set after form submission
+                              const presignedUrl = result.successful[0]?.uploadURL;
+                              form.setValue("imageUrl", presignedUrl);
                               toast({ 
                                 title: "Success", 
                                 description: "Image uploaded successfully" 

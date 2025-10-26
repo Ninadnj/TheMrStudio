@@ -31,8 +31,7 @@ export function BookingsEditor() {
 
   const approveMutation = useMutation({
     mutationFn: async (id: string) => {
-      const res = await apiRequest("POST", `/api/admin/bookings/${id}/approve`, {});
-      return res.json();
+      return await apiRequest("POST", `/api/admin/bookings/${id}/approve`, {});
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/bookings/pending"] });
@@ -53,8 +52,7 @@ export function BookingsEditor() {
 
   const rejectMutation = useMutation({
     mutationFn: async ({ id, reason }: { id: string; reason?: string }) => {
-      const res = await apiRequest("POST", `/api/admin/bookings/${id}/reject`, { reason });
-      return res.json();
+      return await apiRequest("POST", `/api/admin/bookings/${id}/reject`, { reason });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/bookings/pending"] });
@@ -76,8 +74,7 @@ export function BookingsEditor() {
 
   const modifyMutation = useMutation({
     mutationFn: async ({ id, time, duration }: { id: string; time?: string; duration?: string }) => {
-      const res = await apiRequest("PUT", `/api/admin/bookings/${id}/modify`, { time, duration });
-      return res.json();
+      return await apiRequest("PUT", `/api/admin/bookings/${id}/modify`, { time, duration });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/bookings/pending"] });
@@ -99,12 +96,19 @@ export function BookingsEditor() {
     },
   });
 
-  const handleModify = () => {
+  const handleModify = (andApprove: boolean = false) => {
     if (!modifyBooking) return;
     modifyMutation.mutate({
       id: modifyBooking.id,
       time: modifyTime || undefined,
       duration: modifyDuration || undefined,
+    }, {
+      onSuccess: () => {
+        if (andApprove) {
+          // After modifying, approve the booking
+          approveMutation.mutate(modifyBooking.id);
+        }
+      }
     });
   };
 
@@ -286,8 +290,21 @@ export function BookingsEditor() {
             <Button variant="outline" onClick={() => setModifyBooking(null)}>
               Cancel
             </Button>
-            <Button onClick={handleModify} disabled={modifyMutation.isPending} data-testid="button-confirm-modify">
-              Save Changes
+            <Button 
+              variant="outline" 
+              onClick={() => handleModify(false)} 
+              disabled={modifyMutation.isPending || approveMutation.isPending} 
+              data-testid="button-confirm-modify"
+            >
+              Save Changes Only
+            </Button>
+            <Button 
+              onClick={() => handleModify(true)} 
+              disabled={modifyMutation.isPending || approveMutation.isPending} 
+              data-testid="button-modify-approve"
+            >
+              <Check className="w-4 h-4 mr-1" />
+              Save & Approve
             </Button>
           </DialogFooter>
         </DialogContent>

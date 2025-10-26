@@ -30,6 +30,7 @@ import type { UploadResult } from "@uppy/core";
 export default function TrendsEditor() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [currentUploadUrl, setCurrentUploadUrl] = useState<string>("");
   const { toast } = useToast();
 
   const { data: trends = [], isLoading } = useQuery<Trend[]>({
@@ -282,6 +283,8 @@ export default function TrendsEditor() {
                           maxFileSize={10485760}
                           onGetUploadParameters={async () => {
                             const response = await apiRequest("POST", "/api/objects/upload", {});
+                            // Save the URL for later use in onComplete
+                            setCurrentUploadUrl(response.uploadURL);
                             return {
                               method: "PUT" as const,
                               url: response.uploadURL,
@@ -289,10 +292,9 @@ export default function TrendsEditor() {
                           }}
                           onComplete={async (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
                             if (result.successful && result.successful.length > 0) {
-                              // Save the presigned URL directly - ACL will be set after form submission
-                              const presignedUrl = result.successful[0]?.uploadURL;
-                              console.log("[TrendsEditor] Upload complete, presigned URL:", presignedUrl);
-                              form.setValue("imageUrl", presignedUrl);
+                              // Use the saved presigned URL - ACL will be set after form submission
+                              console.log("[TrendsEditor] Upload complete, using saved presigned URL:", currentUploadUrl);
+                              form.setValue("imageUrl", currentUploadUrl);
                               toast({ 
                                 title: "Success", 
                                 description: "Image uploaded successfully" 

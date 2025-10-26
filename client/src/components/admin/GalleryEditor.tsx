@@ -23,6 +23,7 @@ const GALLERY_CATEGORIES = [
 export default function GalleryEditor() {
   const { toast } = useToast();
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [currentUploadUrl, setCurrentUploadUrl] = useState<string>("");
 
   const { data: images = [] } = useQuery<GalleryImage[]>({
     queryKey: ["/api/admin/gallery"],
@@ -210,6 +211,8 @@ export default function GalleryEditor() {
                           const response = await apiRequest("POST", "/api/objects/upload", {});
                           console.log("[GalleryEditor] Received upload response:", response);
                           console.log("[GalleryEditor] Upload URL:", response.uploadURL);
+                          // Save the URL for later use in onComplete
+                          setCurrentUploadUrl(response.uploadURL);
                           return {
                             method: "PUT" as const,
                             url: response.uploadURL,
@@ -217,10 +220,9 @@ export default function GalleryEditor() {
                         }}
                         onComplete={async (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
                           if (result.successful && result.successful.length > 0) {
-                            // Save the presigned URL directly - ACL will be set after form submission
-                            const presignedUrl = result.successful[0]?.uploadURL;
-                            console.log("[GalleryEditor] Upload complete, presigned URL:", presignedUrl);
-                            form.setValue("imageUrl", presignedUrl);
+                            // Use the saved presigned URL - ACL will be set after form submission
+                            console.log("[GalleryEditor] Upload complete, using saved presigned URL:", currentUploadUrl);
+                            form.setValue("imageUrl", currentUploadUrl);
                             toast({ 
                               title: "წარმატება", 
                               description: "ფოტო აიტვირთა" 

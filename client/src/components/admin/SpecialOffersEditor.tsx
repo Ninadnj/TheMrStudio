@@ -220,15 +220,26 @@ export default function SpecialOffersEditor() {
             </p>
           ) : (
             <div className="space-y-4">
-              {offers.map((offer) => (
-                <Card key={offer.id} className="border-2" data-testid={`offer-card-${offer.id}`}>
+              {offers.map((offer) => {
+                const isExpired = offer.expiryDate && new Date(offer.expiryDate) < new Date();
+                return (
+                <Card key={offer.id} className={`border-2 ${isExpired ? 'border-destructive/50 bg-destructive/5' : ''}`} data-testid={`offer-card-${offer.id}`}>
                   <CardContent className="pt-6">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
-                        <p className="text-sm font-medium mb-2">{offer.message}</p>
+                        <div className="flex items-center gap-2 mb-2">
+                          <p className="text-sm font-medium">{offer.message}</p>
+                          {isExpired && (
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-destructive/20 text-destructive font-medium">
+                              EXPIRED
+                            </span>
+                          )}
+                        </div>
                         <div className="flex items-center gap-4 text-xs text-muted-foreground">
                           {offer.expiryDate && (
-                            <span>Expires: {new Date(offer.expiryDate).toLocaleDateString()}</span>
+                            <span className={isExpired ? 'text-destructive font-medium' : ''}>
+                              Expires: {new Date(offer.expiryDate).toLocaleDateString()}
+                            </span>
                           )}
                           {offer.link && <span>Link: {offer.link}</span>}
                         </div>
@@ -256,7 +267,8 @@ export default function SpecialOffersEditor() {
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+                );
+              })}
             </div>
           )}
         </CardContent>

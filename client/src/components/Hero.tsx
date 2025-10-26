@@ -87,7 +87,7 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 0.2 }}
         >
           <span style={{ opacity: 0.3 }}>THE </span>
-          <span className="font-bold">MR</span>
+          <span>MR</span>
           <br/>
           <span style={{ opacity: 0.3 }}>Studio</span>
         </motion.h1>

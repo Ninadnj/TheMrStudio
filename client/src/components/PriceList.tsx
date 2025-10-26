@@ -311,7 +311,7 @@ export default function PriceList() {
                             data-testid={`price-item-${list.id}-${index}`}
                           >
                             <span className="text-sm text-foreground">{item.name}</span>
-                            <span className="text-sm font-medium" style={{ color: 'var(--theme-accent)' }}>
+                            <span className="text-sm" style={{ color: 'var(--theme-accent)' }}>
                               {item.price ? (typeof item.price === 'number' ? `${item.price} ₾` : item.price) : '—'}
                             </span>
                           </div>

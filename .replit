@@ -35,6 +35,10 @@ localPort = 36173
 externalPort = 5173
 
 [[ports]]
+localPort = 36969
+externalPort = 8000
+
+[[ports]]
 localPort = 38755
 externalPort = 3001
 
@@ -83,4 +87,4 @@ args = "npm run dev"
 waitForPort = 5000
 
 [agent]
-integrations = ["javascript_mem_db:1.0.0", "javascript_gemini:1.0.0", "google-calendar:1.0.0"]
+integrations = ["javascript_mem_db:1.0.0", "javascript_gemini:1.0.0", "google-calendar:1.0.0", "javascript_object_storage:1.0.0"]

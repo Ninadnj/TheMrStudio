@@ -23,6 +23,8 @@ import {
 } from "./auth";
 import { createCalendarEvent } from "./google-calendar";
 import { sendNewBookingNotification } from "./email-notifications";
+import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
+import { ObjectPermission } from "./objectAcl";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
@@ -687,6 +689,147 @@ ${booking.notes ? `Notes: ${booking.notes}` : ''}
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ error: "Failed to delete trend" });
+    }
+  });
+
+  // Object Storage Routes - Reference: javascript_object_storage blueprint
+  
+  // Get upload URL for admin image uploads (protected)
+  app.post("/api/objects/upload", requireAuth, async (req, res) => {
+    try {
+      const objectStorageService = new ObjectStorageService();
+      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+      res.json({ uploadURL });
+    } catch (error) {
+      console.error("Error getting upload URL:", error);
+      res.status(500).json({ error: "Failed to get upload URL" });
+    }
+  });
+
+  // Serve uploaded images with ACL check
+  app.get("/objects/:objectPath(*)", async (req, res) => {
+    const objectStorageService = new ObjectStorageService();
+    try {
+      const objectFile = await objectStorageService.getObjectEntityFile(req.path);
+      const canAccess = await objectStorageService.canAccessObjectEntity({
+        objectFile,
+        requestedPermission: ObjectPermission.READ,
+      });
+      if (!canAccess) {
+        return res.sendStatus(401);
+      }
+      objectStorageService.downloadObject(objectFile, res);
+    } catch (error) {
+      if (error instanceof ObjectNotFoundError) {
+        return res.sendStatus(404);
+      }
+      console.error("Error serving object:", error);
+      return res.sendStatus(500);
+    }
+  });
+
+  // Set ACL policy after image upload (for gallery images)
+  app.put("/api/admin/gallery-images/:id/image", requireAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { imageUrl } = req.body;
+      
+      if (!imageUrl) {
+        return res.status(400).json({ error: "imageUrl is required" });
+      }
+
+      // Get admin user ID from session
+      const userId = req.session.userId || "admin";
+
+      const objectStorageService = new ObjectStorageService();
+      const objectPath = await objectStorageService.trySetObjectEntityAclPolicy(
+        imageUrl,
+        {
+          owner: userId,
+          visibility: "public", // Gallery images are publicly accessible
+        }
+      );
+
+      // Update gallery image in database
+      const galleryImage = await storage.updateGalleryImage(id, { imageUrl: objectPath });
+      if (!galleryImage) {
+        return res.status(404).json({ error: "Gallery image not found" });
+      }
+
+      res.json({ objectPath, galleryImage });
+    } catch (error) {
+      console.error("Error setting gallery image:", error);
+      res.status(500).json({ error: "Failed to set gallery image" });
+    }
+  });
+
+  // Set ACL policy after image upload (for hero background)
+  app.put("/api/admin/hero/background-image", requireAuth, async (req, res) => {
+    try {
+      const { imageUrl } = req.body;
+      
+      if (!imageUrl) {
+        return res.status(400).json({ error: "imageUrl is required" });
+      }
+
+      // Get admin user ID from session
+      const userId = req.session.userId || "admin";
+
+      const objectStorageService = new ObjectStorageService();
+      const objectPath = await objectStorageService.trySetObjectEntityAclPolicy(
+        imageUrl,
+        {
+          owner: userId,
+          visibility: "public", // Hero images are publicly accessible
+        }
+      );
+
+      // Update hero content in database
+      const heroContent = await storage.getHeroContent();
+      if (heroContent) {
+        const updated = await storage.updateHeroContent({ backgroundImage: objectPath });
+        res.json({ objectPath, heroContent: updated });
+      } else {
+        res.status(404).json({ error: "Hero content not found" });
+      }
+    } catch (error) {
+      console.error("Error setting hero background image:", error);
+      res.status(500).json({ error: "Failed to set hero background image" });
+    }
+  });
+
+  // Set ACL policy after image upload (for trend images)
+  app.put("/api/admin/trends/:id/image", requireAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { imageUrl } = req.body;
+      
+      if (!imageUrl) {
+        return res.status(400).json({ error: "imageUrl is required" });
+      }
+
+      // Get admin user ID from session
+      const userId = req.session.userId || "admin";
+
+      const objectStorageService = new ObjectStorageService();
+      const objectPath = await objectStorageService.trySetObjectEntityAclPolicy(
+        imageUrl,
+        {
+          owner: userId,
+          visibility: "public", // Trend images are publicly accessible
+        }
+      );
+
+      // Update trend in database
+      const trend = await storage.updateTrend(id, { imageUrl: objectPath });
+      if (!trend) {
+        return res.status(404).json({ error: "Trend not found" });
+      }
+
+      res.json({ objectPath, trend });
+    } catch (error) {
+      console.error("Error setting trend image:", error);
+      res.status(500).json({ error: "Failed to set trend image" });
     }
   });
 

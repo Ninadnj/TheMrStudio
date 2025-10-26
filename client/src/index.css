@@ -205,7 +205,7 @@
   /* Ultra-Modern Typography */
   .font-display {
     font-family: var(--font-serif);
-    font-weight: 600;
+    font-weight: 400;
     letter-spacing: -0.02em;
     line-height: 1.1;
   }

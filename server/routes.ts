@@ -94,17 +94,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
             continue;
           }
           
-          // Calculate which hourly slots this booking overlaps
+          // Calculate which 30-minute slots this booking overlaps
           const startMinutes = hours * 60 + (minutes || 0);
           const endMinutes = startMinutes + durationMinutes;
           
-          // Find first and last hour slots that this booking touches
-          const startHour = Math.floor(startMinutes / 60);
-          const endHour = Math.floor((endMinutes - 1) / 60);
+          // Block all 30-minute slots from start to end
+          // Round down to nearest 30-minute slot for start
+          const firstSlotMinutes = Math.floor(startMinutes / 30) * 30;
+          // Round up to include the slot where booking ends
+          const lastSlotMinutes = Math.ceil(endMinutes / 30) * 30;
           
-          // Block all hours from start to end (inclusive)
-          for (let hour = startHour; hour <= endHour; hour++) {
-            const slotTime = `${hour.toString().padStart(2, '0')}:00`;
+          for (let slotMinutes = firstSlotMinutes; slotMinutes < lastSlotMinutes; slotMinutes += 30) {
+            const slotHours = Math.floor(slotMinutes / 60);
+            const slotMins = slotMinutes % 60;
+            const slotTime = `${slotHours.toString().padStart(2, '0')}:${slotMins.toString().padStart(2, '0')}`;
             bookedTimesSet.add(slotTime);
           }
         } catch (bookingError) {

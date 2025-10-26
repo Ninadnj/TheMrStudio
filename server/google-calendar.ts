@@ -186,21 +186,27 @@ export async function getCalendarBusySlots(
             
             const [startHours, startMinutes] = tbilisiTimeStr.split(':').map(Number);
             
-            // Calculate which hourly slots this busy period overlaps
+            // Calculate which 30-minute slots this busy period overlaps
             const startMinutesFromMidnight = startHours * 60 + startMinutes;
             const endMinutesFromMidnight = startMinutesFromMidnight + durationMinutes;
             
-            // Block all hours from start to end (inclusive)
-            const startHour = Math.floor(startMinutesFromMidnight / 60);
-            const endHour = Math.floor((endMinutesFromMidnight - 1) / 60);
+            // Block all 30-minute slots from start to end
+            // Round down to nearest 30-minute slot for start
+            const firstSlotMinutes = Math.floor(startMinutesFromMidnight / 30) * 30;
+            // Round up to include the slot where booking ends
+            const lastSlotMinutes = Math.ceil(endMinutesFromMidnight / 30) * 30;
             
             // Log for debugging
-            console.log(`Calendar busy slot: ${busyPeriod.start} → Tbilisi ${tbilisiTimeStr} → blocking hours ${startHour}-${endHour}`);
-            
-            for (let hour = startHour; hour <= endHour; hour++) {
-              const slotTime = `${hour.toString().padStart(2, '0')}:00`;
+            const blockedSlots: string[] = [];
+            for (let slotMinutes = firstSlotMinutes; slotMinutes < lastSlotMinutes; slotMinutes += 30) {
+              const slotHours = Math.floor(slotMinutes / 60);
+              const slotMins = slotMinutes % 60;
+              const slotTime = `${slotHours.toString().padStart(2, '0')}:${slotMins.toString().padStart(2, '0')}`;
               busySlots.add(slotTime);
+              blockedSlots.push(slotTime);
             }
+            
+            console.log(`Calendar busy slot: ${busyPeriod.start} → Tbilisi ${tbilisiTimeStr} → blocking slots: ${blockedSlots.join(', ')}`);
           }
         }
       }

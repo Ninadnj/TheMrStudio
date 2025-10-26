@@ -70,7 +70,7 @@ export default function TrendsSection() {
               <motion.h3
                 className="font-display text-2xl md:text-3xl mb-8 text-foreground flex items-center gap-3"
                 initial={{ opacity: 0, x: -20 }}
-                animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: categoryIndex * 0.1 }}
               >
                 <Sparkles className="w-6 h-6 text-theme-accent" />
@@ -84,7 +84,7 @@ export default function TrendsSection() {
                     className="group relative bg-card border-2 rounded-xl overflow-hidden hover-elevate active-elevate-2"
                     style={{ borderColor: '#A89B8E33' }}
                     initial={{ opacity: 0, y: 30 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
                     transition={{
                       duration: 0.6,
                       delay: categoryIndex * 0.1 + index * 0.08,

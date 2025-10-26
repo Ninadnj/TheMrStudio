@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import type { HeroContent } from "@shared/schema";
+import type { HeroContent, SpecialOffer } from "@shared/schema";
 import heroBackground from "@assets/dnj0209_Stylized_illustration_of_a_fashionable_woman_wearing__c8336757-5e7e-4c3b-8d06-de464e7c4e40_1_1759491029908.png";
 
 export default function Hero() {
@@ -12,6 +12,10 @@ export default function Hero() {
   
   const { data: heroContent } = useQuery<HeroContent>({
     queryKey: ["/api/hero-content"],
+  });
+
+  const { data: specialOffer } = useQuery<SpecialOffer | null>({
+    queryKey: ["/api/special-offers/active"],
   });
   
   const parallaxY = useTransform(scrollY, [0, 1000], [0, 300]);
@@ -93,7 +97,7 @@ export default function Hero() {
         </motion.h1>
         
         <motion.p 
-          className="font-sans text-2xl md:text-3xl mb-6 font-light text-white/90" 
+          className="font-sans text-xl md:text-2xl mb-6 font-light text-white/90" 
           style={{ letterSpacing: '0.02em' }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -109,15 +113,38 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 0.6 }}
         />
         
-        <motion.p 
-          className="text-lg md:text-xl max-w-lg mx-auto mb-14 leading-relaxed text-white/85 font-light" 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-        >
-          პროფესიონალური ფრჩხილები და ლაზერული პროცედურები<br/>
-          <span className="text-sm text-white/70">Professional nail art & laser treatments</span>
-        </motion.p>
+        {specialOffer ? (
+          <motion.div 
+            className="text-lg md:text-xl max-w-2xl mx-auto mb-14 leading-relaxed text-white/90 font-light text-center" 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+            data-testid="hero-special-offer"
+          >
+            {specialOffer.link ? (
+              <a 
+                href={specialOffer.link} 
+                className="hover:text-theme-accent transition-colors duration-300"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {specialOffer.message}
+              </a>
+            ) : (
+              <span>{specialOffer.message}</span>
+            )}
+          </motion.div>
+        ) : (
+          <motion.p 
+            className="text-lg md:text-xl max-w-2xl mx-auto mb-14 leading-relaxed text-white/85 font-light text-center" 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+          >
+            პროფესიონალური ფრჩხილები და ლაზერული პროცედურები<br/>
+            <span className="text-base text-white/70">Professional nail art & laser treatments</span>
+          </motion.p>
+        )}
         
         <motion.div 
           className="flex flex-col sm:flex-row gap-4 justify-center items-center"

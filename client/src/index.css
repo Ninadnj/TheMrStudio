@@ -99,10 +99,10 @@
   --opaque-button-border-intensity: 9;
   --elevate-1: rgba(255,255,255, .04);
   --elevate-2: rgba(255,255,255, .09);
-  --background: 20 14% 4%;               /* Rich black #0B0B0B */
+  --background: 0deg 2% 19.61%;               /* Rich black #0B0B0B */
   --foreground: 45 25% 91%;              /* Off-white #F5F5F5 */
   --border: 20 14% 15%;
-  --card: 20 14% 8%;                    /* Slightly elevated black */
+  --card: 0deg 4.35% 18.04%;                    /* Slightly elevated black */
   --card-foreground: 45 25% 85%;
   --card-border: 0 0% 14%;
   --sidebar: 20 14% 8%;

@@ -54,10 +54,10 @@ export default function Services() {
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.8 }}
         >
-          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl mb-8 text-foreground">
+          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl mb-6 text-foreground">
             {servicesSection?.title || "ჩვენი სერვისები"}
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             {servicesSection?.subtitle || "Our Services"}
           </p>
         </motion.div>
@@ -83,10 +83,10 @@ export default function Services() {
                 <div className="group border border-border/50 rounded-xl bg-card/40 backdrop-blur-sm p-12 h-full cursor-pointer overflow-hidden relative">
                   <div className="absolute inset-0 bg-gradient-to-br from-theme-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   <div className="relative flex flex-col items-center text-center">
-                    <h3 className="font-display text-4xl text-foreground mb-6 tracking-tight">
+                    <h3 className="font-display text-2xl md:text-3xl text-foreground mb-6 tracking-tight">
                       {category}
                     </h3>
-                    <p className="text-lg text-muted-foreground leading-relaxed">
+                    <p className="text-base text-muted-foreground leading-relaxed">
                       {categoryDescriptions[category] || ""}
                     </p>
                   </div>

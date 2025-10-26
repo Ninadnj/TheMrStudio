@@ -223,8 +223,8 @@ export default function Gallery() {
                       }}
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{
-                        opacity: isInView && !isTransitioning ? 1 : 0,
-                        scale: isInView && !isTransitioning ? 1 : 0.95,
+                        opacity: !isTransitioning ? 1 : 0,
+                        scale: !isTransitioning ? 1 : 0.95,
                         rotateX: rotation.x,
                         rotateY: rotation.y,
                       }}

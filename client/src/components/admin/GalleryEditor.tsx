@@ -202,7 +202,10 @@ export default function GalleryEditor() {
                         maxNumberOfFiles={1}
                         maxFileSize={10485760}
                         onGetUploadParameters={async () => {
+                          console.log("[GalleryEditor] Requesting upload URL from backend");
                           const response = await apiRequest("POST", "/api/objects/upload", {});
+                          console.log("[GalleryEditor] Received upload response:", response);
+                          console.log("[GalleryEditor] Upload URL:", response.uploadURL);
                           return {
                             method: "PUT" as const,
                             url: response.uploadURL,

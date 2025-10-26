@@ -2,11 +2,17 @@ import { Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import type { HeroContent } from "@shared/schema";
 import heroBackground from "@assets/dnj0209_Stylized_illustration_of_a_fashionable_woman_wearing__c8336757-5e7e-4c3b-8d06-de464e7c4e40_1_1759491029908.png";
 
 export default function Hero() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const { scrollY } = useScroll();
+  
+  const { data: heroContent } = useQuery<HeroContent>({
+    queryKey: ["/api/hero-content"],
+  });
   
   const parallaxY = useTransform(scrollY, [0, 1000], [0, 300]);
   const opacity = useTransform(scrollY, [0, 500], [1, 0]);
@@ -45,7 +51,7 @@ export default function Hero() {
         style={{ y: parallaxY }}
       >
         <motion.img 
-          src={heroBackground}
+          src={heroContent?.backgroundImage || heroBackground}
           alt="Elegant Fashion"
           className="w-full h-full object-cover opacity-30"
           initial={{ scale: 1.1 }}

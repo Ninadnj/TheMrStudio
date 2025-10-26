@@ -10,7 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { Plus, Trash2, Image as ImageIcon } from "lucide-react";
+import { Plus, Trash2, Image as ImageIcon, Upload } from "lucide-react";
+import { ObjectUploader } from "@/components/ObjectUploader";
+import type { UploadResult } from "@uppy/core";
 
 const GALLERY_CATEGORIES = [
   { value: "ფრჩხილები", label: "ფრჩხილები (Nails)" },
@@ -156,9 +158,36 @@ export default function GalleryEditor() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Image URL</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="https://..." data-testid="input-image-url" />
-                    </FormControl>
+                    <div className="flex gap-2">
+                      <FormControl>
+                        <Input {...field} placeholder="https://..." data-testid="input-image-url" />
+                      </FormControl>
+                      <ObjectUploader
+                        maxNumberOfFiles={1}
+                        maxFileSize={10485760}
+                        onGetUploadParameters={async () => {
+                          const response = await apiRequest("POST", "/api/objects/upload", {});
+                          return {
+                            method: "PUT" as const,
+                            url: response.uploadURL,
+                          };
+                        }}
+                        onComplete={async (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
+                          if (result.successful && result.successful.length > 0) {
+                            const objectPath = result.successful[0]?.uploadURL?.split('?')[0].split('/').slice(-2).join('/');
+                            const publicUrl = `/objects/${objectPath}`;
+                            form.setValue("imageUrl", publicUrl);
+                            toast({ 
+                              title: "წარმატება", 
+                              description: "ფოტო აიტვირთა" 
+                            });
+                          }
+                        }}
+                      >
+                        <Upload className="w-4 h-4 mr-2" />
+                        Upload
+                      </ObjectUploader>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}

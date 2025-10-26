@@ -22,8 +22,10 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertTrendSchema, type Trend, type InsertTrend } from "@shared/schema";
-import { Plus, Edit, Trash2, Save, X } from "lucide-react";
+import { Plus, Edit, Trash2, Save, X, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { ObjectUploader } from "@/components/ObjectUploader";
+import type { UploadResult } from "@uppy/core";
 
 export default function TrendsEditor() {
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -235,13 +237,40 @@ export default function TrendsEditor() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Image URL</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="https://images.unsplash.com/..."
-                          data-testid="input-trend-image-url"
-                        />
-                      </FormControl>
+                      <div className="flex gap-2">
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="https://images.unsplash.com/..."
+                            data-testid="input-trend-image-url"
+                          />
+                        </FormControl>
+                        <ObjectUploader
+                          maxNumberOfFiles={1}
+                          maxFileSize={10485760}
+                          onGetUploadParameters={async () => {
+                            const response = await apiRequest("POST", "/api/objects/upload", {});
+                            return {
+                              method: "PUT" as const,
+                              url: response.uploadURL,
+                            };
+                          }}
+                          onComplete={async (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
+                            if (result.successful && result.successful.length > 0) {
+                              const objectPath = result.successful[0]?.uploadURL?.split('?')[0].split('/').slice(-2).join('/');
+                              const publicUrl = `/objects/${objectPath}`;
+                              form.setValue("imageUrl", publicUrl);
+                              toast({ 
+                                title: "Success", 
+                                description: "Image uploaded successfully" 
+                              });
+                            }
+                          }}
+                        >
+                          <Upload className="w-4 h-4 mr-2" />
+                          Upload
+                        </ObjectUploader>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}

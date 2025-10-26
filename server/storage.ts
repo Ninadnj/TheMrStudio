@@ -41,7 +41,7 @@ export interface IStorage {
   modifyBooking(id: string, updates: { time?: string; duration?: string }): Promise<Booking | undefined>;
   
   getHeroContent(): Promise<HeroContent | undefined>;
-  updateHeroContent(content: InsertHeroContent): Promise<HeroContent>;
+  updateHeroContent(content: Partial<InsertHeroContent>): Promise<HeroContent>;
   
   getAllServices(): Promise<Service[]>;
   createService(service: InsertService): Promise<Service>;
@@ -340,7 +340,7 @@ export class MemStorage implements IStorage {
     return heroContent;
   }
 
-  async updateHeroContent(content: InsertHeroContent): Promise<HeroContent> {
+  async updateHeroContent(content: Partial<InsertHeroContent>): Promise<HeroContent> {
     const existing = await this.getHeroContent();
     if (existing) {
       const [updated] = await db.update(heroContentTable)
@@ -349,7 +349,8 @@ export class MemStorage implements IStorage {
         .returning();
       return updated;
     } else {
-      const [created] = await db.insert(heroContentTable).values(content).returning();
+      // For creation, we need all required fields
+      const [created] = await db.insert(heroContentTable).values(content as InsertHeroContent).returning();
       return created;
     }
   }

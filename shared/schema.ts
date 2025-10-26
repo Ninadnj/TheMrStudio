@@ -74,6 +74,7 @@ export const heroContent = pgTable("hero_content", {
   subtitle: text("subtitle").notNull(),
   description: text("description").notNull(),
   tagline: text("tagline").notNull(),
+  backgroundImage: text("background_image"),
 });
 
 export const insertHeroContentSchema = createInsertSchema(heroContent).omit({

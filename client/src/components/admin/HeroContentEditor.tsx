@@ -9,6 +9,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
+import { ObjectUploader } from "@/components/ObjectUploader";
+import type { UploadResult } from "@uppy/core";
+import { Image, Upload } from "lucide-react";
 
 export default function HeroContentEditor() {
   const { toast } = useToast();
@@ -119,6 +122,59 @@ export default function HeroContentEditor() {
                 </FormItem>
               )}
             />
+
+            <div className="space-y-4 pt-4 border-t">
+              <div className="flex items-center justify-between">
+                <div>
+                  <FormLabel>Background Image</FormLabel>
+                  <p className="text-sm text-muted-foreground">Upload a hero background image (persists across republishing)</p>
+                </div>
+                <ObjectUploader
+                  maxNumberOfFiles={1}
+                  maxFileSize={10485760}
+                  onGetUploadParameters={async () => {
+                    const response = await apiRequest("POST", "/api/objects/upload", {});
+                    return {
+                      method: "PUT" as const,
+                      url: response.uploadURL,
+                    };
+                  }}
+                  onComplete={async (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
+                    if (result.successful[0]) {
+                      const uploadURL = result.successful[0].uploadURL;
+                      try {
+                        await apiRequest("PUT", "/api/admin/hero/background-image", {
+                          imageUrl: uploadURL,
+                        });
+                        queryClient.invalidateQueries({ queryKey: ["/api/admin/hero-content"] });
+                        toast({
+                          title: "Success",
+                          description: "Background image uploaded successfully",
+                        });
+                      } catch (error) {
+                        toast({
+                          title: "Error",
+                          description: "Failed to save background image",
+                          variant: "destructive",
+                        });
+                      }
+                    }
+                  }}
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  Upload Background Image
+                </ObjectUploader>
+              </div>
+              
+              {heroContent?.backgroundImage && (
+                <div className="flex items-center gap-2 p-3 bg-muted rounded-md">
+                  <Image className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground truncate flex-1">
+                    {heroContent.backgroundImage}
+                  </span>
+                </div>
+              )}
+            </div>
 
             <Button
               type="submit"

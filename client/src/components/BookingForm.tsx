@@ -104,10 +104,12 @@ export default function BookingForm() {
       });
       setDate(undefined);
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error('Booking error:', error);
+      const errorMessage = error?.message || "რაღაც არასწორად მოხდა. გთხოვთ სცადოთ ხელახლა";
       toast({
         title: "დაჯავშნა ვერ მოხერხდა",
-        description: "რაღაც არასწორად მოხდა. გთხოვთ სცადოთ ხელახლა",
+        description: errorMessage,
         variant: "destructive",
       });
     },

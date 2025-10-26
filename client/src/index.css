@@ -23,29 +23,29 @@
   --opaque-button-border-intensity: -8;
   --elevate-1: rgba(0,0,0, .03);
   --elevate-2: rgba(0,0,0, .08);
-  --background: 0 0% 3.53%;              /* Off-white #F5F5F5 */
-  --foreground: 0 0% 92.16%;               /* Rich black #0B0B0B */
-  --border: 0 0% 16.86%;                  /* Light grey for borders */
-  --card: 300 4.35% 6.67%;                   /* Pure white cards */
-  --card-foreground: 0 0% 100%;
-  --card-border: 0 0% 92%;
-  --sidebar: 45 25% 97%;
-  --sidebar-foreground: 20 14% 17%;
-  --sidebar-border: 45 15% 80%;
-  --sidebar-primary: 9 75% 61%;       /* Warm Taupe accent #A89B8E */
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 25 45% 80%;
-  --sidebar-accent-foreground: 20 14% 17%;
-  --sidebar-ring: 9 75% 61%;
-  --popover: 45 25% 97%;
-  --popover-foreground: 0 0% 100%;
-  --popover-border: 0 0% 91%;
-  --primary: 0 0% 96.08%;               /* Warm Taupe accent #A89B8E */
-  --primary-foreground: 0 0% 5.1%;
-  --secondary: 0 0% 92.16%;
-  --secondary-foreground: 0 0% 5.1%;
-  --muted: 0 0% 25.1%;
-  --muted-foreground: 0 0% 67.06%;
+  --background: 0 0% 96.08%;              /* Off-white #F5F5F5 */
+  --foreground: 0 0% 4.31%;               /* Rich black #0B0B0B */
+  --border: 0 0% 90.98%;                  /* Light grey for borders */
+  --card: 0 0% 100%;                   /* Pure white cards */
+  --card-foreground: 0 0% 4.31%;
+  --card-border: 0 0% 90.98%;
+  --sidebar: 0 0% 100%;
+  --sidebar-foreground: 0 0% 4.31%;
+  --sidebar-border: 0 0% 90.98%;
+  --sidebar-primary: 27 10% 65.88%;       /* Warm Taupe accent #A89B8E */
+  --sidebar-primary-foreground: 0 0% 4.31%;
+  --sidebar-accent: 0 0% 96.08%;
+  --sidebar-accent-foreground: 0 0% 4.31%;
+  --sidebar-ring: 27 10% 65.88%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 4.31%;
+  --popover-border: 0 0% 90.98%;
+  --primary: 27 10% 65.88%;               /* Warm Taupe accent #A89B8E */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 0 0% 96.08%;
+  --secondary-foreground: 0 0% 4.31%;
+  --muted: 0 0% 96.08%;
+  --muted-foreground: 0 0% 45.49%;
   --accent: 0 0% 92.16%;                /* Warm Taupe accent #A89B8E */
   --accent-foreground: 0 0% 0%;
   --destructive: 0deg 2.52% 23.33%;

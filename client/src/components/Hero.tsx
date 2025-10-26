@@ -46,8 +46,8 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Warm gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#2A2520] to-[#3A3530]" />
+      {/* Warm gradient background - Using warm taupe tones */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#1A1410] to-[#2A221C]" />
       
       {/* Background Image with Parallax - Subtle atmospheric effect */}
       <motion.div 
@@ -154,7 +154,10 @@ export default function Hero() {
         >
           <Button 
             size="lg"
-            className="bg-theme-accent hover:bg-[#B8967C] text-white min-w-[200px] font-medium tracking-wide magnetic-button ripple-effect shadow-lg"
+            className="bg-theme-accent text-white min-w-[200px] font-medium tracking-wide magnetic-button ripple-effect shadow-lg"
+            style={{ backgroundColor: 'var(--theme-accent)' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--theme-accent-hover)'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--theme-accent)'}
             onClick={handleBookClick}
             data-testid="button-book-appointment"
           >

@@ -279,8 +279,7 @@ export default function PriceList() {
                 <Card 
                   key={list.id}
                   data-price-card
-                  className="flex-shrink-0 w-[90vw] md:w-[45vw] lg:w-[30vw] max-w-sm overflow-hidden hover-elevate transition-all duration-300 cursor-pointer snap-start border-2"
-                  style={{ borderColor: '#A89B8E33' }}
+                  className="flex-shrink-0 w-[90vw] md:w-[45vw] lg:w-[30vw] max-w-sm overflow-hidden hover-elevate transition-all duration-300 cursor-pointer snap-start border-2 border-primary/20"
                   data-testid={`card-price-${list.id}`}
                   onClick={() => setExpandedCard(expandedCard === list.id ? null : list.id)}
                 >

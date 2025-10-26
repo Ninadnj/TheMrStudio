@@ -33,7 +33,7 @@
   --sidebar-foreground: 0 0% 4.31%;
   --sidebar-border: 0 0% 90.98%;
   --sidebar-primary: 27 10% 65.88%;       /* Warm Taupe accent #A89B8E */
-  --sidebar-primary-foreground: 0 0% 4.31%;
+  --sidebar-primary-foreground: 0 0% 100%;
   --sidebar-accent: 0 0% 96.08%;
   --sidebar-accent-foreground: 0 0% 4.31%;
   --sidebar-ring: 27 10% 65.88%;
@@ -46,8 +46,8 @@
   --secondary-foreground: 0 0% 4.31%;
   --muted: 0 0% 96.08%;
   --muted-foreground: 0 0% 45.49%;
-  --accent: 0 0% 92.16%;                /* Warm Taupe accent #A89B8E */
-  --accent-foreground: 0 0% 0%;
+  --accent: 27 10% 65.88%;                /* Warm Taupe accent #A89B8E */
+  --accent-foreground: 0 0% 100%;
   --destructive: 0deg 2.52% 23.33%;
   --destructive-foreground: 0 0% 100%;
   --input: 0 0% 16.86%;
@@ -108,22 +108,22 @@
   --sidebar: 20 14% 8%;
   --sidebar-foreground: 45 25% 85%;
   --sidebar-border: 20 14% 15%;
-  --sidebar-primary: 9 75% 61%;       /* Warm Taupe accent */
-  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-primary: 27 10% 65.88%;       /* Warm Taupe accent #A89B8E */
+  --sidebar-primary-foreground: 0 0% 4.31%;
   --sidebar-accent: 25 45% 20%;
   --sidebar-accent-foreground: 45 25% 85%;
-  --sidebar-ring: 9 75% 61%;
+  --sidebar-ring: 27 10% 65.88%;
   --popover: 20 14% 4%;
   --popover-foreground: 45 25% 91%;
   --popover-border: 0 0% 14%;
-  --primary: 7.5deg 4.94% 68.24%;               /* Warm Taupe accent */
-  --primary-foreground: 0 0% 100%;
+  --primary: 27 10% 65.88%;               /* Warm Taupe accent #A89B8E */
+  --primary-foreground: 0 0% 4.31%;
   --secondary: 30 15% 52%;
   --secondary-foreground: 0 0% 100%;
   --muted: 20 14% 15%;
   --muted-foreground: 0deg 1.86% 31.57%;        /* Neutral grey #BDBDBD */
-  --accent: 9.23deg 5.63% 45.29%;                /* Warm Taupe accent */
-  --accent-foreground: 45 25% 85%;
+  --accent: 27 10% 65.88%;                /* Warm Taupe accent #A89B8E */
+  --accent-foreground: 0 0% 4.31%;
   --destructive: 0deg 4.35% 72.94%;
   --destructive-foreground: 0 0% 100%;
   --input: 20 14% 18%;

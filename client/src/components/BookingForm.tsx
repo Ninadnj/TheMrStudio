@@ -80,8 +80,7 @@ export default function BookingForm() {
 
   const createBookingMutation = useMutation({
     mutationFn: async (bookingData: any) => {
-      const res = await apiRequest("POST", "/api/bookings", bookingData);
-      return await res.json();
+      return await apiRequest("POST", "/api/bookings", bookingData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ 

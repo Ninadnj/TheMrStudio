@@ -1,14 +1,8 @@
-import { Sparkles, Hand, Star, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState, useMemo, type PointerEvent } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion, useInView, useMotionValue, useTransform } from "framer-motion";
 import type { GalleryImage } from "@shared/schema";
-
-const categoryIcons: Record<string, any> = {
-  "ფრჩხილები": Hand,
-  "ლაზერი": Sparkles,
-  "კოსმეტოლოგია": Star,
-};
 
 // Bento grid pattern - defines which images should be larger
 const getBentoPattern = (index: number): string => {
@@ -171,7 +165,6 @@ export default function Gallery() {
                 ყველა / All
               </button>
               {categories.map((category) => {
-                const Icon = categoryIcons[category] || Hand;
                 return (
                   <button
                     key={category}
@@ -185,14 +178,13 @@ export default function Gallery() {
                         }, 150);
                       }
                     }}
-                    className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 flex items-center gap-2 magnetic-button ${
+                    className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 magnetic-button ${
                       selectedCategory === category
                         ? 'bg-theme-accent text-white scale-105'
                         : 'bg-card hover-elevate border border-border text-foreground'
                     }`}
                     data-testid={`filter-${category}`}
                   >
-                    <Icon className="w-4 h-4" />
                     {category}
                   </button>
                 );
@@ -262,11 +254,6 @@ export default function Gallery() {
                                 {image.category}
                               </span>
                             </div>
-                          </div>
-                        </div>
-                        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <div className="bg-white/20 backdrop-blur-sm rounded-full p-2">
-                            <Sparkles className="w-4 h-4 text-white" />
                           </div>
                         </div>
                       </div>

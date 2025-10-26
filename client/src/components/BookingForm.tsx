@@ -63,10 +63,13 @@ export default function BookingForm() {
   const formattedDate = date ? format(date, "yyyy-MM-dd") : null;
 
   const { data: availabilityData } = useQuery<{ bookedTimes: string[] }>({
-    queryKey: ["/api/bookings/availability", formattedDate],
+    queryKey: ["/api/bookings/availability", formattedDate, formData.staffId],
     queryFn: async () => {
       if (!formattedDate) return { bookedTimes: [] };
-      const response = await fetch(`/api/bookings/availability?date=${formattedDate}`);
+      const url = formData.staffId 
+        ? `/api/bookings/availability?date=${formattedDate}&staffId=${formData.staffId}`
+        : `/api/bookings/availability?date=${formattedDate}`;
+      const response = await fetch(url);
       if (!response.ok) throw new Error("Failed to fetch availability");
       return response.json();
     },

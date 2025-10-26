@@ -61,7 +61,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get available time slots for a specific date
   app.get("/api/bookings/availability", async (req, res) => {
     try {
-      const { date } = req.query;
+      const { date, staffId } = req.query;
       
       if (!date || typeof date !== "string") {
         return res.status(400).json({ error: "Date parameter is required" });
@@ -72,7 +72,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Calculate all blocked time slots based on booking duration
       const bookedTimesSet = new Set<string>();
       
-      for (const booking of bookings) {
+      // Only count bookings for the selected staff member if staffId is provided
+      const relevantBookings = staffId && typeof staffId === "string"
+        ? bookings.filter(b => b.staffId === staffId)
+        : bookings;
+      
+      for (const booking of relevantBookings) {
         try {
           const [hours, minutes] = booking.time.split(':').map(Number);
           const durationMinutes = parseInt(booking.duration);
@@ -102,12 +107,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      // Also check Google Calendar for all staff members
+      // Check Google Calendar - only for the selected staff member if provided
       try {
-        const staff = await storage.getAllStaff();
-        const calendarIds = staff
-          .filter(s => s.calendarId)
-          .map(s => s.calendarId as string);
+        let calendarIds: string[] = [];
+        
+        if (staffId && typeof staffId === "string") {
+          // Only check the selected staff member's calendar
+          const selectedStaff = await storage.getStaffById(staffId);
+          if (selectedStaff?.calendarId) {
+            calendarIds = [selectedStaff.calendarId];
+          }
+        } else {
+          // No staff selected - check all calendars (fallback for compatibility)
+          const staff = await storage.getAllStaff();
+          calendarIds = staff
+            .filter(s => s.calendarId)
+            .map(s => s.calendarId as string);
+        }
         
         if (calendarIds.length > 0) {
           const { getCalendarBusySlots } = await import('./google-calendar.js');

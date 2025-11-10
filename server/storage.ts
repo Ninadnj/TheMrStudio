@@ -38,9 +38,10 @@ export interface IStorage {
   getBookingById(id: string): Promise<Booking | undefined>;
   getPendingBookings(): Promise<Booking[]>;
   getConfirmedBookings(): Promise<Booking[]>;
-  approveBooking(id: string): Promise<Booking | undefined>;
+  approveBooking(id: string, calendarEventId?: string): Promise<Booking | undefined>;
   rejectBooking(id: string, reason?: string): Promise<Booking | undefined>;
   modifyBooking(id: string, updates: { time?: string; duration?: string }): Promise<Booking | undefined>;
+  deleteBooking(id: string): Promise<boolean>;
   
   getHeroContent(): Promise<HeroContent | undefined>;
   updateHeroContent(content: Partial<InsertHeroContent>): Promise<HeroContent>;
@@ -312,9 +313,13 @@ export class MemStorage implements IStorage {
     return await db.select().from(bookingsTable).where(eq(bookingsTable.status, "confirmed"));
   }
 
-  async approveBooking(id: string): Promise<Booking | undefined> {
+  async approveBooking(id: string, calendarEventId?: string): Promise<Booking | undefined> {
+    const updateData: any = { status: "confirmed", rejectionReason: null };
+    if (calendarEventId) {
+      updateData.calendarEventId = calendarEventId;
+    }
     const [updated] = await db.update(bookingsTable)
-      .set({ status: "confirmed", rejectionReason: null })
+      .set(updateData)
       .where(eq(bookingsTable.id, id))
       .returning();
     return updated;
@@ -338,6 +343,11 @@ export class MemStorage implements IStorage {
       .where(eq(bookingsTable.id, id))
       .returning();
     return updated;
+  }
+
+  async deleteBooking(id: string): Promise<boolean> {
+    const result = await db.delete(bookingsTable).where(eq(bookingsTable.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
   }
 
   async getHeroContent(): Promise<HeroContent | undefined> {

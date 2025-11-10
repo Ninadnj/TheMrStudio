@@ -96,6 +96,27 @@ export async function createCalendarEvent(
   }
 }
 
+// Delete a calendar event
+export async function deleteCalendarEvent(
+  calendarId: string,
+  eventId: string
+) {
+  try {
+    const calendar = await getUncachableGoogleCalendarClient();
+    
+    await calendar.events.delete({
+      calendarId,
+      eventId,
+      sendUpdates: 'all', // Send cancellation notifications
+    });
+
+    console.log(`Deleted calendar event ${eventId} from calendar ${calendarId}`);
+  } catch (error) {
+    console.error('Error deleting calendar event:', error);
+    throw error;
+  }
+}
+
 // Check availability for a specific calendar on a given date
 export async function checkCalendarAvailability(
   calendarId: string,

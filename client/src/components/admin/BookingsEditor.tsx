@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Check, X, Edit, Clock } from "lucide-react";
+import { Check, X, Edit, Clock, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import type { Booking } from "@shared/schema";
 
@@ -96,6 +96,27 @@ export function BookingsEditor() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return await apiRequest("DELETE", `/api/admin/bookings/${id}`, {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/bookings/pending"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/bookings/confirmed"] });
+      toast({
+        title: "Booking Deleted",
+        description: "The booking and calendar event have been removed.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete booking",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleModify = (andApprove: boolean = false) => {
     if (!modifyBooking) return;
     modifyMutation.mutate({
@@ -166,7 +187,7 @@ export function BookingsEditor() {
             <p className="text-sm">{booking.notes}</p>
           </div>
         )}
-        {isPending && (
+        {isPending ? (
           <div className="flex gap-2 pt-2">
             <Button
               size="sm"
@@ -199,6 +220,24 @@ export function BookingsEditor() {
             >
               <X className="w-4 h-4 mr-1" />
               Reject
+            </Button>
+          </div>
+        ) : (
+          <div className="flex gap-2 pt-2">
+            <Button
+              size="sm"
+              variant="destructive"
+              className="flex-1"
+              onClick={() => {
+                if (confirm(`Are you sure you want to delete this booking for ${booking.fullName}? This will also remove the event from Google Calendar.`)) {
+                  deleteMutation.mutate(booking.id);
+                }
+              }}
+              disabled={deleteMutation.isPending}
+              data-testid={`button-delete-${booking.id}`}
+            >
+              <Trash2 className="w-4 h-4 mr-1" />
+              Delete
             </Button>
           </div>
         )}

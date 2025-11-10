@@ -46,6 +46,7 @@ export const bookings = pgTable("bookings", {
   status: text("status").notNull().default("pending"),
   rejectionReason: text("rejection_reason"),
   notes: text("notes"),
+  calendarEventId: text("calendar_event_id"),
 });
 
 export const insertBookingSchema = createInsertSchema(bookings).omit({

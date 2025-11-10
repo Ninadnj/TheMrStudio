@@ -207,20 +207,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/bookings/:id/approve", requireAuth, async (req, res) => {
     try {
       const { id } = req.params;
-      const booking = await storage.approveBooking(id);
       
-      if (!booking) {
+      // Get booking first to check staff
+      const existingBooking = await storage.getBookingById(id);
+      if (!existingBooking) {
         return res.status(404).json({ error: "Booking not found" });
       }
 
-      // Create Google Calendar event when approved
-      if (booking.staffId) {
-        const staff = await storage.getStaffById(booking.staffId);
+      let calendarEventId: string | undefined;
+
+      // Create Google Calendar event before approving
+      if (existingBooking.staffId) {
+        const staff = await storage.getStaffById(existingBooking.staffId);
         
         if (staff?.calendarId) {
           try {
-            const [year, month, day] = booking.date.split('-');
-            const [hours, minutes] = booking.time.split(':');
+            const [year, month, day] = existingBooking.date.split('-');
+            const [hours, minutes] = existingBooking.time.split(':');
             
             const offsetMinutes = 4 * 60;
             const startUtc = Date.UTC(
@@ -231,39 +234,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
               parseInt(minutes)
             ) - offsetMinutes * 60 * 1000;
             
-            const durationMs = parseInt(booking.duration) * 60 * 1000;
+            const durationMs = parseInt(existingBooking.duration) * 60 * 1000;
             const endUtc = startUtc + durationMs;
             
             const startDateTime = new Date(startUtc).toISOString();
             const endDateTime = new Date(endUtc).toISOString();
             
-            const summary = `${booking.service} - ${booking.fullName}`;
+            const summary = `${existingBooking.service} - ${existingBooking.fullName}`;
             const description = `
 Booking Details:
-Client: ${booking.fullName}
-Phone: ${booking.phone}
-Email: ${booking.email}
-Service: ${booking.service}
-Staff: ${booking.staffName}
-Duration: ${booking.duration} minutes
-${booking.notes ? `Notes: ${booking.notes}` : ''}
+Client: ${existingBooking.fullName}
+Phone: ${existingBooking.phone}
+Email: ${existingBooking.email}
+Service: ${existingBooking.service}
+Staff: ${existingBooking.staffName}
+Duration: ${existingBooking.duration} minutes
+${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
             `.trim();
             
-            await createCalendarEvent(
+            const calendarEvent = await createCalendarEvent(
               staff.calendarId,
               summary,
               description,
               startDateTime,
               endDateTime,
-              booking.email
+              existingBooking.email
             );
             
-            console.log(`Calendar event created for approved booking ${id}`);
+            if (calendarEvent?.id) {
+              calendarEventId = calendarEvent.id;
+            }
+            
+            console.log(`Calendar event ${calendarEventId} created for approved booking ${id}`);
           } catch (calendarError) {
             console.error('Failed to create calendar event:', calendarError);
           }
         }
       }
+      
+      // Approve booking and store calendar event ID
+      const booking = await storage.approveBooking(id, calendarEventId);
       
       res.json(booking);
     } catch (error) {
@@ -301,6 +311,44 @@ ${booking.notes ? `Notes: ${booking.notes}` : ''}
       res.json(booking);
     } catch (error) {
       res.status(500).json({ error: "Failed to modify booking" });
+    }
+  });
+
+  app.delete("/api/admin/bookings/:id", requireAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      // Get booking details before deleting
+      const booking = await storage.getBookingById(id);
+      if (!booking) {
+        return res.status(404).json({ error: "Booking not found" });
+      }
+
+      // If booking is confirmed, delete the calendar event
+      if (booking.status === 'confirmed' && booking.calendarEventId && booking.staffId) {
+        const staff = await storage.getStaffById(booking.staffId);
+        if (staff?.calendarId) {
+          try {
+            const { deleteCalendarEvent } = await import('./google-calendar.js');
+            await deleteCalendarEvent(staff.calendarId, booking.calendarEventId);
+            console.log(`Deleted calendar event ${booking.calendarEventId} for booking ${id}`);
+          } catch (calendarError) {
+            console.error('Failed to delete calendar event:', calendarError);
+            // Continue with booking deletion even if calendar deletion fails
+          }
+        }
+      }
+
+      // Delete booking from database
+      const deleted = await storage.deleteBooking(id);
+      if (!deleted) {
+        return res.status(500).json({ error: "Failed to delete booking" });
+      }
+      
+      res.json({ success: true, message: "Booking deleted successfully" });
+    } catch (error) {
+      console.error('Delete booking error:', error);
+      res.status(500).json({ error: "Failed to delete booking" });
     }
   });
 

@@ -22,7 +22,7 @@ The design embodies sophisticated minimalism, inspired by premium beauty brands,
 
 ### Feature Specifications
 - **Multi-Staff Booking System**: Allows clients to select services and staff, with smart filtering and an admin approval workflow. Supports Google Calendar integration for real-time availability and event creation.
-- **Booking Management Admin Panel**: Dedicated "Bookings" tab for managing pending and confirmed bookings, allowing admins to approve, reject, or modify requests.
+- **Booking Management Admin Panel**: Dedicated "Bookings" tab for managing pending and confirmed bookings, allowing admins to approve, reject, modify, or delete requests. Delete functionality removes both the booking record and the associated Google Calendar event.
 - **Services Display**: Showcases 60+ bilingual Georgian/English services, organized by expandable categories in a responsive grid.
 - **Photo Gallery**: Features three categories (Nails, Laser, Cosmetology) with expandable sections and a responsive image grid.
 - **Trends Section**: A dynamic "What's Trendy Now" section for lookbooks and seasonal highlights, fully customizable and managed via the admin panel with bilingual support for headings and content.

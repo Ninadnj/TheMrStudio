@@ -96,7 +96,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const relevantBookings = bookings.filter(b => {
         const isPending = b.status === 'pending';
         const matchesStaff = staffId && typeof staffId === "string" 
-          ? staffIdsWithSameCalendar.includes(b.staffId)
+          ? staffIdsWithSameCalendar.includes(b.staffId ?? '')
           : true;
         return isPending && matchesStaff;
       });

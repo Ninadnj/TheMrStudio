@@ -72,13 +72,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Calculate all blocked time slots based on booking duration
       const bookedTimesSet = new Set<string>();
       
+      // IMPORTANT: Find all staff members who share the same calendar
+      // This handles cases where multiple staff entries (e.g., Manicure/Pedicure) share one calendar
+      let staffIdsWithSameCalendar: string[] = [];
+      if (staffId && typeof staffId === "string") {
+        const selectedStaff = await storage.getStaffById(staffId);
+        if (selectedStaff?.calendarId) {
+          // Find all staff with the same calendar ID
+          const allStaff = await storage.getAllStaff();
+          staffIdsWithSameCalendar = allStaff
+            .filter(s => s.calendarId === selectedStaff.calendarId)
+            .map(s => s.id);
+          
+          console.log(`Staff ${selectedStaff.name} shares calendar with ${staffIdsWithSameCalendar.length} staff member(s)`);
+        } else {
+          staffIdsWithSameCalendar = [staffId];
+        }
+      }
+      
       // IMPORTANT: Only count PENDING bookings from database
       // Confirmed bookings are checked via Google Calendar (single source of truth)
       // This ensures manual calendar deletions free up slots automatically
       const relevantBookings = bookings.filter(b => {
         const isPending = b.status === 'pending';
         const matchesStaff = staffId && typeof staffId === "string" 
-          ? b.staffId === staffId 
+          ? staffIdsWithSameCalendar.includes(b.staffId)
           : true;
         return isPending && matchesStaff;
       });

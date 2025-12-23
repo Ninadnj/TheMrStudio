@@ -25,10 +25,10 @@ interface ObjectUploaderProps {
 interface UppyFile {
   id: string;
   name: string;
-  type: string;
-  data: File | Blob;
-  size: number;
-  [key: string]: any;
+  type?: string;
+  data?: File | Blob;
+  size?: number;
+  [key: string]: unknown;
 }
 
 /**

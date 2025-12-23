@@ -3,6 +3,14 @@ import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertGalleryImageSchema, type GalleryImage } from "@shared/schema";
+import { z } from "zod";
+
+// Enhanced schema with proper validation for required fields
+const galleryFormSchema = insertGalleryImageSchema.extend({
+  category: z.string().min(1, "აირჩიეთ კატეგორია"),
+  imageUrl: z.string().min(1, "ატვირთეთ ფოტო"),
+  order: z.string().min(1, "შეიყვანეთ რიგითი ნომერი"),
+});
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -30,7 +38,7 @@ export default function GalleryEditor() {
   });
 
   const form = useForm({
-    resolver: zodResolver(insertGalleryImageSchema),
+    resolver: zodResolver(galleryFormSchema),
     defaultValues: {
       category: "",
       imageUrl: "",
@@ -219,13 +227,27 @@ export default function GalleryEditor() {
                           };
                         }}
                         onComplete={async (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
+                          console.log("[GalleryEditor] Upload result:", result);
                           if (result.successful && result.successful.length > 0) {
-                            // Use the saved presigned URL from ref - ACL will be set after form submission
-                            console.log("[GalleryEditor] Upload complete, using saved presigned URL:", currentUploadUrlRef.current);
-                            form.setValue("imageUrl", currentUploadUrlRef.current);
+                            const uploadedFile = result.successful[0];
+                            console.log("[GalleryEditor] Uploaded file:", uploadedFile);
+                            console.log("[GalleryEditor] Upload URL used:", currentUploadUrlRef.current);
+                            
+                            // Get the object path from the presigned URL (remove query params)
+                            const presignedUrl = currentUploadUrlRef.current;
+                            console.log("[GalleryEditor] Setting form imageUrl to:", presignedUrl);
+                            
+                            form.setValue("imageUrl", presignedUrl, { shouldValidate: true });
                             toast({ 
                               title: "წარმატება", 
-                              description: "ფოტო აიტვირთა" 
+                              description: "ფოტო აიტვირთა. დააჭირეთ 'Add Image' შესანახად." 
+                            });
+                          } else if (result.failed && result.failed.length > 0) {
+                            console.error("[GalleryEditor] Upload failed:", result.failed);
+                            toast({ 
+                              title: "შეცდომა", 
+                              description: "ფოტოს ატვირთვა ვერ მოხერხდა",
+                              variant: "destructive"
                             });
                           }
                         }}

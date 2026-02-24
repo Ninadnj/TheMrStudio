@@ -134,32 +134,33 @@ export default function HeroContentEditor() {
                 <ObjectUploader
                   maxNumberOfFiles={1}
                   maxFileSize={10485760}
-                  onGetUploadParameters={async () => {
-                    const response = await apiRequest("POST", "/api/objects/upload", {});
-                    // Save the URL in ref for later use in onComplete (avoids stale closure)
-                    currentUploadUrlRef.current = response.uploadURL;
-                    return {
-                      method: "PUT" as const,
-                      url: response.uploadURL,
-                    };
-                  }}
-                  onComplete={async (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
-                    if (result.successful[0]) {
-                      // Use the saved presigned URL from ref
-                      try {
-                        await apiRequest("PUT", "/api/admin/hero/background-image", {
-                          imageUrl: currentUploadUrlRef.current,
-                        });
-                        queryClient.invalidateQueries({ queryKey: ["/api/admin/hero-content"] });
-                        toast({
-                          title: "Success",
-                          description: "Background image uploaded successfully",
-                        });
-                      } catch (error) {
+                  onComplete={(result) => {
+                    if (result.successful && result.successful.length > 0) {
+                      const filePath = result.successful[0].response?.body?.uploadURL;
+                      if (filePath) {
+                        (async () => {
+                          try {
+                            await apiRequest("PUT", "/api/admin/hero/background-image", {
+                              imageUrl: filePath,
+                            });
+                            queryClient.invalidateQueries({ queryKey: ["/api/admin/hero-content"] });
+                            toast({
+                              title: "Success",
+                              description: "Background image uploaded successfully",
+                            });
+                          } catch (error) {
+                            toast({
+                              title: "Error",
+                              description: "Failed to save background image",
+                              variant: "destructive",
+                            });
+                          }
+                        })();
+                      } else {
                         toast({
                           title: "Error",
-                          description: "Failed to save background image",
-                          variant: "destructive",
+                          description: "Failed to get image path",
+                          variant: "destructive"
                         });
                       }
                     }
@@ -169,7 +170,7 @@ export default function HeroContentEditor() {
                   Upload Background Image
                 </ObjectUploader>
               </div>
-              
+
               {heroContent?.backgroundImage && (
                 <div className="flex items-center gap-2 p-3 bg-muted rounded-md">
                   <Image className="w-4 h-4 text-muted-foreground" />

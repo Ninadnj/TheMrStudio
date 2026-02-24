@@ -1,8 +1,8 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { 
-  insertBookingSchema, 
+import {
+  insertBookingSchema,
   chatRequestSchema,
   insertHeroContentSchema,
   insertServiceSchema,
@@ -16,18 +16,41 @@ import {
 } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import { chatWithGemini } from "./gemini-chat";
-import { 
-  loginHandler, 
-  logoutHandler, 
-  checkAuthHandler, 
-  requireAuth 
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+import {
+  loginHandler,
+  logoutHandler,
+  checkAuthHandler,
+  requireAuth
 } from "./auth";
 import { createCalendarEvent } from "./google-calendar";
-import { sendNewBookingNotification } from "./email-notifications";
-import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
+import {
+  sendNewBookingNotification,
+  sendBookingConfirmationToClient,
+  sendBookingRejectionToClient
+} from "./email-notifications";
 import { ObjectPermission } from "./objectAcl";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Setup multer for local file uploads
+  const uploadDir = process.env.PRIVATE_OBJECT_DIR || ".local/storage/uploads";
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+
+  const storageConfig = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, uniqueSuffix + path.extname(file.originalname));
+    }
+  });
+
+  const upload = multer({ storage: storageConfig });
   // Auth routes
   app.post("/api/admin/login", loginHandler);
   app.post("/api/admin/logout", logoutHandler);
@@ -37,15 +60,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const validatedData = insertBookingSchema.parse(req.body);
       const booking = await storage.createBooking(validatedData);
-      
+
       // No calendar event is created here - it happens only on admin approval
-      
+
       // Send email notification to admin if configured
       const settings = await storage.getSiteSettings();
       if (settings?.adminEmail) {
         await sendNewBookingNotification(booking, settings.adminEmail);
       }
-      
+
       res.status(201).json(booking);
     } catch (error: any) {
       if (error.name === "ZodError") {
@@ -62,16 +85,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/bookings/availability", async (req, res) => {
     try {
       const { date, staffId } = req.query;
-      
+
       if (!date || typeof date !== "string") {
         return res.status(400).json({ error: "Date parameter is required" });
       }
 
       const bookings = await storage.getBookingsByDate(date);
-      
+
       // Calculate all blocked time slots based on booking duration
       const bookedTimesSet = new Set<string>();
-      
+
       // IMPORTANT: Find all staff members who share the same calendar
       // This handles cases where multiple staff entries (e.g., Manicure/Pedicure) share one calendar
       let staffIdsWithSameCalendar: string[] = [];
@@ -83,45 +106,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
           staffIdsWithSameCalendar = allStaff
             .filter(s => s.calendarId === selectedStaff.calendarId)
             .map(s => s.id);
-          
+
           console.log(`Staff ${selectedStaff.name} shares calendar with ${staffIdsWithSameCalendar.length} staff member(s)`);
         } else {
           staffIdsWithSameCalendar = [staffId];
         }
       }
-      
+
       // IMPORTANT: Only count PENDING bookings from database
       // Confirmed bookings are checked via Google Calendar (single source of truth)
       // This ensures manual calendar deletions free up slots automatically
       const relevantBookings = bookings.filter(b => {
         const isPending = b.status === 'pending';
-        const matchesStaff = staffId && typeof staffId === "string" 
+        const matchesStaff = staffId && typeof staffId === "string"
           ? staffIdsWithSameCalendar.includes(b.staffId ?? '')
           : true;
         return isPending && matchesStaff;
       });
-      
+
       for (const booking of relevantBookings) {
         try {
           const [hours, minutes] = booking.time.split(':').map(Number);
           const durationMinutes = parseInt(booking.duration);
-          
+
           // Validate duration is a valid number
           if (isNaN(durationMinutes) || durationMinutes <= 0) {
             console.error(`Invalid duration for booking ${booking.id}: ${booking.duration}`);
             continue;
           }
-          
+
           // Calculate which 30-minute slots this booking overlaps
           const startMinutes = hours * 60 + (minutes || 0);
           const endMinutes = startMinutes + durationMinutes;
-          
+
           // Block all 30-minute slots from start to end
           // Round down to nearest 30-minute slot for start
           const firstSlotMinutes = Math.floor(startMinutes / 30) * 30;
           // Round up to include the slot where booking ends
           const lastSlotMinutes = Math.ceil(endMinutes / 30) * 30;
-          
+
           for (let slotMinutes = firstSlotMinutes; slotMinutes < lastSlotMinutes; slotMinutes += 30) {
             const slotHours = Math.floor(slotMinutes / 60);
             const slotMins = slotMinutes % 60;
@@ -133,11 +156,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           continue;
         }
       }
-      
+
       // Check Google Calendar - only for the selected staff member if provided
       try {
         let calendarIds: string[] = [];
-        
+
         if (staffId && typeof staffId === "string") {
           // Only check the selected staff member's calendar
           const selectedStaff = await storage.getStaffById(staffId);
@@ -151,23 +174,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
             .filter(s => s.calendarId)
             .map(s => s.calendarId as string);
         }
-        
+
         if (calendarIds.length > 0) {
           const { getCalendarBusySlots } = await import('./google-calendar.js');
           const calendarBusySlots = await getCalendarBusySlots(calendarIds, date);
-          
+
           // Merge calendar busy slots with database bookings
           calendarBusySlots.forEach(slot => bookedTimesSet.add(slot));
-          
+
           console.log(`Checked ${calendarIds.length} Google Calendars, found ${calendarBusySlots.size} busy slots`);
         }
       } catch (calendarError) {
         // Log error but don't fail the request - fallback to database bookings only
         console.error('Error checking Google Calendar availability:', calendarError);
       }
-      
+
       const bookedTimes = Array.from(bookedTimesSet);
-      
+
       res.json({ bookedTimes });
     } catch (error) {
       console.error('Availability endpoint error:', error);
@@ -207,7 +230,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/bookings/:id/approve", requireAuth, async (req, res) => {
     try {
       const { id } = req.params;
-      
+
       // Get booking first to check staff
       const existingBooking = await storage.getBookingById(id);
       if (!existingBooking) {
@@ -219,12 +242,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create Google Calendar event before approving
       if (existingBooking.staffId) {
         const staff = await storage.getStaffById(existingBooking.staffId);
-        
+
         if (staff?.calendarId) {
           try {
             const [year, month, day] = existingBooking.date.split('-');
             const [hours, minutes] = existingBooking.time.split(':');
-            
+
             const offsetMinutes = 4 * 60;
             const startUtc = Date.UTC(
               parseInt(year),
@@ -233,13 +256,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
               parseInt(hours),
               parseInt(minutes)
             ) - offsetMinutes * 60 * 1000;
-            
+
             const durationMs = parseInt(existingBooking.duration) * 60 * 1000;
             const endUtc = startUtc + durationMs;
-            
+
             const startDateTime = new Date(startUtc).toISOString();
             const endDateTime = new Date(endUtc).toISOString();
-            
+
             const summary = `${existingBooking.service} - ${existingBooking.fullName}`;
             const description = `
 Booking Details:
@@ -251,7 +274,7 @@ Staff: ${existingBooking.staffName}
 Duration: ${existingBooking.duration} minutes
 ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
             `.trim();
-            
+
             const calendarEvent = await createCalendarEvent(
               staff.calendarId,
               summary,
@@ -260,21 +283,26 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
               endDateTime,
               existingBooking.email
             );
-            
+
             if (calendarEvent?.id) {
               calendarEventId = calendarEvent.id;
             }
-            
+
             console.log(`Calendar event ${calendarEventId} created for approved booking ${id}`);
           } catch (calendarError) {
             console.error('Failed to create calendar event:', calendarError);
           }
         }
       }
-      
+
       // Approve booking and store calendar event ID
       const booking = await storage.approveBooking(id, calendarEventId);
-      
+
+      if (booking) {
+        // Notify client
+        await sendBookingConfirmationToClient(booking);
+      }
+
       res.json(booking);
     } catch (error) {
       console.error('Approve booking error:', error);
@@ -287,11 +315,16 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
       const { id } = req.params;
       const { reason } = req.body;
       const booking = await storage.rejectBooking(id, reason);
-      
+
       if (!booking) {
         return res.status(404).json({ error: "Booking not found" });
       }
-      
+
+      // Notify client
+      if (booking) {
+        await sendBookingRejectionToClient(booking, reason);
+      }
+
       res.json(booking);
     } catch (error) {
       res.status(500).json({ error: "Failed to reject booking" });
@@ -303,11 +336,11 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
       const { id } = req.params;
       const { time, duration } = req.body;
       const booking = await storage.modifyBooking(id, { time, duration });
-      
+
       if (!booking) {
         return res.status(404).json({ error: "Booking not found" });
       }
-      
+
       res.json(booking);
     } catch (error) {
       res.status(500).json({ error: "Failed to modify booking" });
@@ -317,7 +350,7 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
   app.delete("/api/admin/bookings/:id", requireAuth, async (req, res) => {
     try {
       const { id } = req.params;
-      
+
       // Get booking details before deleting
       const booking = await storage.getBookingById(id);
       if (!booking) {
@@ -344,7 +377,7 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
       if (!deleted) {
         return res.status(500).json({ error: "Failed to delete booking" });
       }
-      
+
       res.json({ success: true, message: "Booking deleted successfully" });
     } catch (error) {
       console.error('Delete booking error:', error);
@@ -370,7 +403,7 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
   });
 
   // Admin content management routes (protected)
-  
+
   // Hero content
   app.get("/api/admin/hero-content", requireAuth, async (req, res) => {
     try {
@@ -527,10 +560,10 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
   app.put("/api/admin/staff/:id", requireAuth, async (req, res) => {
     try {
       const { id } = req.params;
-      
+
       // Validate the update data - partial schema since not all fields required for update
       const validatedData = insertStaffSchema.partial().parse(req.body);
-      
+
       const staffMember = await storage.updateStaff(id, validatedData);
       if (!staffMember) {
         return res.status(404).json({ error: "Staff member not found" });
@@ -812,109 +845,80 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
     }
   });
 
-  // Object Storage Routes - Reference: javascript_object_storage blueprint
-  
-  // Get upload URL for admin image uploads (protected)
-  app.post("/api/objects/upload", requireAuth, async (req, res) => {
+  // Object Storage Routes - Replaced Replit sidecar logic with standard local upload
+
+  // Handle direct file uploads from admin
+  app.post("/api/objects/upload", requireAuth, upload.single('file'), async (req, res) => {
     try {
-      const objectStorageService = new ObjectStorageService();
-      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
-      res.json({ uploadURL });
+      if (!req.file) {
+        return res.status(400).json({ error: "No file uploaded" });
+      }
+
+      // Return the URL path to access the file
+      const objectId = req.file.filename;
+      const objectPath = `/objects/uploads/${objectId}`;
+
+      console.log(`[Upload] File saved directly: ${objectPath}`);
+      res.json({ uploadURL: objectPath, success: true });
     } catch (error) {
-      console.error("Error getting upload URL:", error);
-      res.status(500).json({ error: "Failed to get upload URL" });
+      console.error("Error processing local upload:", error);
+      res.status(500).json({ error: "Failed to upload file" });
     }
   });
 
-  // Serve uploaded images with ACL check
-  app.get("/objects/:objectPath(*)", async (req, res) => {
-    const objectStorageService = new ObjectStorageService();
-    try {
-      const objectFile = await objectStorageService.getObjectEntityFile(req.path);
-      const canAccess = await objectStorageService.canAccessObjectEntity({
-        objectFile,
-        requestedPermission: ObjectPermission.READ,
-      });
-      if (!canAccess) {
-        return res.sendStatus(401);
-      }
-      objectStorageService.downloadObject(objectFile, res);
-    } catch (error) {
-      if (error instanceof ObjectNotFoundError) {
-        return res.sendStatus(404);
-      }
-      console.error("Error serving object:", error);
-      return res.sendStatus(500);
+  // Serve uploaded images directly from local storage
+  app.get("/objects/uploads/:objectId", (req, res) => {
+    const objectId = req.params.objectId;
+    const filePath = path.join(process.cwd(), uploadDir, objectId);
+
+    if (fs.existsSync(filePath)) {
+      res.sendFile(filePath);
+    } else {
+      res.status(404).send("File not found");
     }
   });
 
-  // Set ACL policy after image upload (for gallery images)
+  // Set ACL policy after image upload (for gallery images - Mocked for local disk)
   app.put("/api/admin/gallery-images/:id/image", requireAuth, async (req, res) => {
     try {
       const { id } = req.params;
       const { imageUrl } = req.body;
-      
+
       console.log(`[ACL Route] Setting ACL for gallery image ${id}, imageUrl:`, imageUrl);
-      
+
       if (!imageUrl) {
         return res.status(400).json({ error: "imageUrl is required" });
       }
 
-      // Get admin user ID from session
-      const userId = req.session.userId || "admin";
-
-      const objectStorageService = new ObjectStorageService();
-      const objectPath = await objectStorageService.trySetObjectEntityAclPolicy(
-        imageUrl,
-        {
-          owner: userId,
-          visibility: "public", // Gallery images are publicly accessible
-        }
-      );
-      
-      console.log(`[ACL Route] ACL set successfully, objectPath:`, objectPath);
-
-      // Update gallery image in database
-      const galleryImage = await storage.updateGalleryImage(id, { imageUrl: objectPath });
+      // Update gallery image in database directly
+      const galleryImage = await storage.updateGalleryImage(id, { imageUrl });
       console.log(`[ACL Route] Database updated, galleryImage:`, galleryImage);
-      
+
       if (!galleryImage) {
         return res.status(404).json({ error: "Gallery image not found" });
       }
 
-      res.json({ objectPath, galleryImage });
+      res.json({ objectPath: imageUrl, galleryImage });
     } catch (error) {
       console.error("Error setting gallery image:", error);
       res.status(500).json({ error: "Failed to set gallery image" });
     }
   });
 
-  // Set ACL policy after image upload (for hero background)
+  // Set ACL policy after image upload (for hero background - Mocked for local disk)
   app.put("/api/admin/hero/background-image", requireAuth, async (req, res) => {
     try {
       const { imageUrl } = req.body;
-      
+
       if (!imageUrl) {
         return res.status(400).json({ error: "imageUrl is required" });
       }
 
-      // Get admin user ID from session
-      const userId = req.session.userId || "admin";
-
-      const objectStorageService = new ObjectStorageService();
-      const objectPath = await objectStorageService.trySetObjectEntityAclPolicy(
-        imageUrl,
-        {
-          owner: userId,
-          visibility: "public", // Hero images are publicly accessible
-        }
-      );
-
-      // Update hero content in database
+      // Update hero content in database directly
       const heroContent = await storage.getHeroContent();
       if (heroContent) {
-        const updated = await storage.updateHeroContent({ backgroundImage: objectPath });
-        res.json({ objectPath, heroContent: updated });
+        const updated = await storage.updateHeroContent({ backgroundImage: imageUrl });
+        res.json({ objectPath: imageUrl, heroContent: updated });
       } else {
         res.status(404).json({ error: "Hero content not found" });
       }
@@ -924,35 +928,23 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
     }
   });
 
-  // Set ACL policy after image upload (for trend images)
+  // Set ACL policy after image upload (for trend images - Mocked for local disk)
   app.put("/api/admin/trends/:id/image", requireAuth, async (req, res) => {
     try {
       const { id } = req.params;
       const { imageUrl } = req.body;
-      
+
       if (!imageUrl) {
         return res.status(400).json({ error: "imageUrl is required" });
       }
 
-      // Get admin user ID from session
-      const userId = req.session.userId || "admin";
-
-      const objectStorageService = new ObjectStorageService();
-      const objectPath = await objectStorageService.trySetObjectEntityAclPolicy(
-        imageUrl,
-        {
-          owner: userId,
-          visibility: "public", // Trend images are publicly accessible
-        }
-      );
-
-      // Update trend in database
-      const trend = await storage.updateTrend(id, { imageUrl: objectPath });
+      // Update trend in database directly
+      const trend = await storage.updateTrend(id, { imageUrl });
       if (!trend) {
         return res.status(404).json({ error: "Trend not found" });
       }
 
-      res.json({ objectPath, trend });
+      res.json({ objectPath: imageUrl, trend });
     } catch (error) {
       console.error("Error setting trend image:", error);
       res.status(500).json({ error: "Failed to set trend image" });

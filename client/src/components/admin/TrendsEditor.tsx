@@ -21,12 +21,12 @@ import {
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { 
-  insertTrendSchema, 
-  type Trend, 
+import {
+  insertTrendSchema,
+  type Trend,
   type InsertTrend,
   type TrendsSection,
-  type InsertTrendsSection 
+  type InsertTrendsSection
 } from "@shared/schema";
 import { Plus, Edit, Trash2, Save, X, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -425,24 +425,23 @@ export default function TrendsEditor() {
                         <ObjectUploader
                           maxNumberOfFiles={1}
                           maxFileSize={10485760}
-                          onGetUploadParameters={async () => {
-                            const response = await apiRequest("POST", "/api/objects/upload", {});
-                            // Save the URL in ref for later use in onComplete (avoids stale closure)
-                            currentUploadUrlRef.current = response.uploadURL;
-                            return {
-                              method: "PUT" as const,
-                              url: response.uploadURL,
-                            };
-                          }}
                           onComplete={async (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
                             if (result.successful && result.successful.length > 0) {
-                              // Use the saved presigned URL from ref - ACL will be set after form submission
-                              console.log("[TrendsEditor] Upload complete, using saved presigned URL:", currentUploadUrlRef.current);
-                              form.setValue("imageUrl", currentUploadUrlRef.current);
-                              toast({ 
-                                title: "Success", 
-                                description: "Image uploaded successfully" 
-                              });
+                              const filePath = result.successful[0].response?.body?.uploadURL;
+                              if (filePath) {
+                                console.log("[TrendsEditor] Upload complete, using local path:", filePath);
+                                form.setValue("imageUrl", filePath as string);
+                                toast({
+                                  title: "Success",
+                                  description: "Image uploaded successfully"
+                                });
+                              } else {
+                                toast({
+                                  title: "Error",
+                                  description: "Failed to get image path",
+                                  variant: "destructive"
+                                });
+                              }
                             }
                           }}
                         >

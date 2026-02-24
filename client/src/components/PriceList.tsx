@@ -1,364 +1,278 @@
-import { useState, useRef, useEffect } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import type { Service } from "@shared/schema";
+import { cn } from "@/lib/utils";
 
 type PriceListItem = {
-  id: number;
+  id: string;
   category: string;
-  subtitle?: string;
-  accentOpacity: string;
-  items: Array<{ name: string; price: number | string }>;
+  subtitle: string;
+  icon: string;
+  color: string;
+  items: Array<{ name: string; nameKa: string; price: number | string }>;
 };
 
 const staticPriceLists: PriceListItem[] = [
   {
-    id: 1,
-    category: "მანიკური / პედიკური",
-    accentOpacity: "opacity-100",
+    id: "nails",
+    category: "ფრჩხილები",
+    subtitle: "მანიკური / პედიკური",
+    icon: "✦",
+    color: "from-[#D4B483]/20 to-[#A89B8E]/10",
     items: [
-      { name: "გელ-ლაქი ნუნების მოწესრიგებით", price: 35 },
-      { name: "გელ ლაქი ნუნების აწევით", price: 25 },
-      { name: "გამაგრება", price: 45 },
-      { name: "გამაგრების მოხსნა, გამაგრება", price: 55 },
-      { name: "დაგრძელება", price: 80 },
-      { name: "დაგრძელების კორექცია", price: 70 },
-      { name: "გელ-ლაქის მოხსნა", price: 5 },
-      { name: "გამაგრების მოხსნა", price: 10 },
-      { name: "1 ფრჩხილის გამაგრება", price: 4 },
-      { name: "1 ფრჩხილის დაგრძელება", price: 7 },
-      { name: "პედიკური კლასიკური", price: 40 },
-      { name: "პედიკური გელ-ლაქით", price: 55 },
-      { name: "გელ-ლაქის მოხსნა და ფორმის მოცემა", price: 10 },
-      { name: "გელ-ლაქის გადასმა ნუნების აწევით", price: 30 },
-      { name: "ფრენჩი", price: 5 },
-      { name: "ქრომი", price: 10 },
-      { name: "სტიკრები", price: "1 ლარიდან" }
-    ]
+      { name: "Gel Polish + Cuticle Care", nameKa: "გელ-ლაქი + კუტიკულის მოვლა", price: 35 },
+      { name: "Gel Polish + Cuticle Removal", nameKa: "გელ-ლაქი + კუტიკულის მოცილება", price: 25 },
+      { name: "Strengthening (Gel)", nameKa: "გამაგრება (გელი)", price: 45 },
+      { name: "Extension", nameKa: "დაგრძელება", price: 80 },
+      { name: "Correction", nameKa: "კორექცია", price: 70 },
+      { name: "Gel Removal", nameKa: "გელის მოხსნა", price: 5 },
+      { name: "Pedicure (Classic)", nameKa: "პედიკური (კლასიკური)", price: 40 },
+      { name: "Pedicure (Gel Polish)", nameKa: "პედიკური (გელ-ლაქი)", price: 55 },
+    ],
   },
   {
-    id: 2,
-    category: "ლაზერული ეპილაცია – ქალებისთვის",
-    subtitle: "Laser Epilation – Women",
-    accentOpacity: "opacity-80",
+    id: "laser-women",
+    category: "ლაზერი (ქალბ.)",
+    subtitle: "ლაზერული ეპილაცია — ქალბატონები",
+    icon: "◈",
+    color: "from-[#8B7355]/20 to-[#6B5A45]/10",
     items: [
-      { name: "მთლიანი სახე / Full Face", price: 20 },
-      { name: "მთლიანი სახე+ყელი / Full Face+Neck", price: 25 },
-      { name: "შუბლი / Forehead", price: 10 },
-      { name: "ნიკაპი / Chin", price: 5 },
-      { name: "ღაბაბი / Under Chin", price: 5 },
-      { name: "ნიკაპი+ღაბაბი / Chin+Under Chin", price: 8 },
-      { name: "ზედა ტუჩი / Upper Lip", price: 5 },
-      { name: "ბაკები / Sideburns", price: 10 },
-      { name: "ლოყები / Cheeks", price: 10 },
-      { name: "წარბის გადაბმის ზონა / Parts of Eyebrow Adhesion", price: 5 },
-      { name: "ცხვირის ნესტო + ყურები", price: 10 },
-      { name: "კისერი (უკნიდან) / Neck (from the back)", price: 10 },
-      { name: "ყელი / Neck (from the front)", price: 10 },
-      { name: "კეფა / Between Head and Neck", price: 10 },
-      { name: "გულ-მკერდი / Chest", price: 20 },
-      { name: "დვრილები / Breastfeeding part", price: 5 },
-      { name: "მკერდის შუა ხაზი / The Middle Line of The Breast", price: 10 },
-      { name: "მუცელი / Abdomen", price: 18 },
-      { name: "მუცლის თეთრი ხაზი / Abdomen Line", price: 8 },
-      { name: "ზედაპირული ბიკინი / Bikini", price: 10 },
-      { name: "ღრმა ბიკინი ანუსით / Full Bikini", price: 25 },
-      { name: "დუნდულები / Buttocks", price: 15 },
-      { name: "უკანა ტანი (ანუსი) / Anus", price: 5 },
-      { name: "მთლიანი ფეხები / Full Legs", price: 30 },
-      { name: "ზურგი / Full Back", price: 25 },
-      { name: "წელი / Lower Back", price: 18 },
-      { name: "ხელები სრულად / Full Hands", price: 25 },
-      { name: "ნახევარი ხელი / Half Hand", price: 15 },
-      { name: "იღლიები / Armpit", price: 10 },
-      { name: "ხელის მტევნები+თითები / Hands+Fingers", price: 8 }
-    ]
+      { name: "Full Body (Economy Package)", nameKa: "მთელი სხეული (ეკონომ პაკეტი)", price: 75 },
+      { name: "Full Body + Face", nameKa: "მთელი სხეული + სახე", price: 85 },
+      { name: "Full Face", nameKa: "მთელი სახე", price: 20 },
+      { name: "Full Legs", nameKa: "ფეხები (მთელი)", price: 30 },
+      { name: "Full Arms", nameKa: "ხელები (მთელი)", price: 25 },
+      { name: "Deep Bikini", nameKa: "ბიკინი (ღრმა)", price: 25 },
+      { name: "Armpits", nameKa: "იღლიები", price: 10 },
+    ],
   },
   {
-    id: 3,
-    category: "ლაზერული ეპილაცია – მამაკაცებისთვის",
-    subtitle: "Laser Epilation – Men",
-    accentOpacity: "opacity-90",
+    id: "laser-men",
+    category: "ლაზერი (მამ.)",
+    subtitle: "ლაზერული ეპილაცია — მამაკაცები",
+    icon: "◈",
+    color: "from-[#6B5A45]/20 to-[#4A3D30]/10",
     items: [
-      { name: "მთლიანი სხეული / Full Body", price: 75 },
-      { name: "მთლიანი ზურგი / Full Back", price: 50 },
-      { name: "კისერი / Neck (from back)", price: 15 },
-      { name: "ყელი / Neck (from front)", price: 12 },
-      { name: "ღაწვი / Beard/Chin", price: 15 },
-      { name: "ღაწვი, ყელი და კისერი / Beard, Neck and Back Neck", price: 35 },
-      { name: "ხელი + იღლია / Hand + Armpit", price: 40 },
-      { name: "გულ-მკერდი / Chest", price: 30 },
-      { name: "ბეჭები / Calves", price: 30 },
-      { name: "მხრები / Shoulders", price: 20 },
-      { name: "მუცელი / Abdomen", price: 30 },
-      { name: "წელი / Lower Back", price: 30 },
-      { name: "ფეხები / Legs", price: 50 },
-      { name: "სახე / Face", price: 30 },
-      { name: "შუბლი / Forehead", price: 15 },
-      { name: "წარბებს შორის / Between Eyebrows", price: 5 }
-    ]
+      { name: "Full Body", nameKa: "მთელი სხეული", price: 75 },
+      { name: "Full Back", nameKa: "ზურგი (მთელი)", price: 50 },
+      { name: "Chest", nameKa: "მკერდი", price: 30 },
+      { name: "Abdomen", nameKa: "მუცელი", price: 30 },
+      { name: "Legs", nameKa: "ფეხები", price: 50 },
+      { name: "Face / Beard Line", nameKa: "სახე / წვერის კონტური", price: 30 },
+    ],
   },
   {
-    id: 4,
-    category: "კოსმეტოლოგია / ინექციები",
-    subtitle: "Cosmetology / Injectables",
-    accentOpacity: "opacity-70",
+    id: "cosmetology",
+    category: "კოსმეტოლოგია",
+    subtitle: "სახის კოსმეტოლოგია / ინექციები",
+    icon: "✧",
+    color: "from-[#C4A882]/20 to-[#9A8170]/10",
     items: [
-      { name: "ფილერი Juvederm", price: 500 },
-      { name: "ფილერი ReMedium", price: 250 },
-      { name: "ფილერი Replengen", price: 250 },
-      { name: "ბოტოქსი NABOTA", price: 250 },
-      { name: "ბოტოქსი Metox", price: 250 },
-      { name: "ბუსტერი Karisma", price: 500 },
-      { name: "ბუსტერი Revitrane", price: 500 },
-      { name: "ბუსტერი Profhilo", price: 500 },
-      { name: "ბიორევიტალიზაცია RRC", price: 100 },
-      { name: "ბიორევიტალიზაცია ჰეარონი", price: 250 },
-      { name: "მეზოთერაპია / Mesotherapy", price: 100 },
-      { name: "პილინგი / Peeling", price: 100 },
-      { name: "პლაზმო / Plasmo", price: 70 },
-      { name: "პაპილომის მოწვა / Papilloma Removal", price: 15 }
-    ]
+      { name: "Juvederm Filler", nameKa: "ჯუვედერმ ფილერი", price: 500 },
+      { name: "ReMedium Filler", nameKa: "რიმედიუმ ფილერი", price: 250 },
+      { name: "Botox (NABOTA)", nameKa: "ბოტოქსი (NABOTA)", price: 250 },
+      { name: "Biorevitalization", nameKa: "ბიორევიტალიზაცია", price: 100 },
+      { name: "Mesotherapy", nameKa: "მეზოთერაპია", price: 100 },
+      { name: "Face Peeling", nameKa: "სახის პილინგი", price: 100 },
+    ],
   },
-  {
-    id: 5,
-    category: "ეკონომ პაკეტი",
-    subtitle: "Economy Package",
-    accentOpacity: "opacity-85",
-    items: [
-      { name: "მთლიანი სხეული / Full Body", price: 75 },
-      { name: "მთლიანი სხეული + სახე / Full Body + Face", price: 85 },
-      { name: "4 ძირითადი ზონა: ხელი, ფეხი, სრული ბიკინი, იღლია / 4 Main Zones: Hands, Legs, Full Bikini, Armpits", price: 55 }
-    ]
-  }
 ];
 
 export default function PriceList() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [expandedCard, setExpandedCard] = useState<number | null>(null);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
-  const [isVisible, setIsVisible] = useState(false);
-  const sectionRef = useRef<HTMLDivElement>(null);
+  const [activeCategory, setActiveCategory] = useState<string>(staticPriceLists[0].id);
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
-  // Fetch services from API
-  const { data: services = [], isLoading } = useQuery<Service[]>({
+  const { data: services = [] } = useQuery<Service[]>({
     queryKey: ["/api/services"],
   });
 
-  // Group services by category and transform to PriceListItem format
-  const priceLists: PriceListItem[] = (() => {
-    if (services.length === 0) return staticPriceLists;
-
-    const grouped = services.reduce((acc, service) => {
-      if (!acc[service.category]) {
-        acc[service.category] = [];
-      }
-      acc[service.category].push(service);
-      return acc;
-    }, {} as Record<string, Service[]>);
-
-    return Object.entries(grouped).map(([category, items], index) => {
-      // Sort items by order field
-      const sortedItems = [...items].sort((a, b) => a.order.localeCompare(b.order));
-      
-      return {
-        id: index + 1,
-        category,
-        accentOpacity: `opacity-${100 - index * 5}` as const,
-        items: sortedItems.map(service => ({
-          name: service.name,
-          price: service.price,
-        })),
-      };
-    });
-  })();
-
-  const checkScrollButtons = () => {
-    if (!scrollContainerRef.current) return;
-    
-    const container = scrollContainerRef.current;
-    const { scrollLeft, scrollWidth, clientWidth } = container;
-    
-    setCanScrollLeft(scrollLeft > 10);
-    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
-    
-    const cardWidth = container.querySelector('[data-price-card]')?.clientWidth || 0;
-    if (cardWidth > 0) {
-      const gap = 24;
-      const activeIndex = Math.round(scrollLeft / (cardWidth + gap));
-      setCurrentIndex(Math.min(activeIndex, priceLists.length - 1));
+  const scrollToCategory = (id: string) => {
+    const element = document.getElementById(`category-${id}`);
+    if (element) {
+      const offset = 120;
+      const bodyRect = document.body.getBoundingClientRect().top;
+      const elementRect = element.getBoundingClientRect().top;
+      const elementPosition = elementRect - bodyRect;
+      const offsetPosition = elementPosition - offset;
+      window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+      setActiveCategory(id);
     }
   };
 
   useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    checkScrollButtons();
-    container.addEventListener('scroll', checkScrollButtons, { passive: true });
-    window.addEventListener('resize', checkScrollButtons);
-    
-    return () => {
-      container.removeEventListener('scroll', checkScrollButtons);
-      window.removeEventListener('resize', checkScrollButtons);
-    };
-  }, [services.length]);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveCategory(entry.target.id.replace("category-", ""));
+          }
+        });
       },
-      { threshold: 0.1 }
+      { rootMargin: "-20% 0px -60% 0px" }
     );
 
-    observer.observe(section);
+    staticPriceLists.forEach((list) => {
+      const element = document.getElementById(`category-${list.id}`);
+      if (element) observer.observe(element);
+    });
+
     return () => observer.disconnect();
   }, []);
 
-  const scroll = (direction: 'left' | 'right') => {
-    if (!scrollContainerRef.current) return;
-    
-    const container = scrollContainerRef.current;
-    const cardWidth = container.querySelector('[data-price-card]')?.clientWidth || 0;
-    const scrollAmount = cardWidth + 24; // card width + gap
-    
-    if (direction === 'left') {
-      container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-      setCurrentIndex(Math.max(0, currentIndex - 1));
-    } else {
-      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-      setCurrentIndex(Math.min(priceLists.length - 1, currentIndex + 1));
-    }
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
   };
 
-  const scrollToCard = (index: number) => {
-    if (!scrollContainerRef.current) return;
-    
-    const container = scrollContainerRef.current;
-    const cardWidth = container.querySelector('[data-price-card]')?.clientWidth || 0;
-    const scrollAmount = index * (cardWidth + 24); // index * (card width + gap)
-    
-    container.scrollTo({ left: scrollAmount, behavior: 'smooth' });
-    setCurrentIndex(index);
+  const itemVariants = {
+    hidden: { opacity: 0, x: -10 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.4, ease: "easeOut" } },
   };
 
   return (
-    <section id="prices" className="py-20 lg:py-32 bg-background" ref={sectionRef}>
+    <section id="prices" className="relative bg-background py-24 lg:py-36">
+      {/* Subtle top border */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--theme-accent)]/30 to-transparent" />
+
       <div className="max-w-7xl mx-auto px-6">
-        <div className={`text-center mb-12 transition-all duration-700 ${
-          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-        }`}>
-          <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl mb-3 text-foreground font-normal">
-            სერვისების ფასები
-          </h2>
-          <p className="text-base text-muted-foreground/80 tracking-wide">
-            Price Lists
-          </p>
+
+        {/* Mobile Header */}
+        <div className="lg:hidden mb-12 text-center">
+          <span className="text-theme-muted tracking-widest text-xs uppercase mb-2 block">სერვისი / ფასი</span>
+          <h2 className="font-display text-4xl mb-4 text-foreground">ფასები</h2>
         </div>
 
-        <div className={`relative transition-all duration-700 delay-200 ${
-          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-        }`}>
-          <div 
-            ref={scrollContainerRef}
-            className="overflow-x-auto overflow-y-visible scrollbar-hide snap-x snap-mandatory"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-          >
-            <div className="flex gap-6 pb-4">
-              {priceLists.map((list) => (
-                <Card 
-                  key={list.id}
-                  data-price-card
-                  className="flex-shrink-0 w-[90vw] md:w-[45vw] lg:w-[30vw] max-w-sm overflow-hidden hover-elevate transition-all duration-300 cursor-pointer snap-start border-2 border-primary/20"
-                  data-testid={`card-price-${list.id}`}
-                  onClick={() => setExpandedCard(expandedCard === list.id ? null : list.id)}
-                >
-                  <div className="aspect-[4/3] relative overflow-hidden flex items-center justify-center bg-card">
-                    <div className={`absolute top-0 left-0 w-12 h-1 ${list.accentOpacity}`} style={{ backgroundColor: 'var(--theme-accent)' }}></div>
-                    <div className="text-center px-6">
-                      <h3 className="font-serif text-2xl text-foreground mb-2">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
+
+          {/* Sticky Sidebar */}
+          <div className="lg:col-span-4 lg:relative">
+            <div className="sticky top-24 z-30">
+
+              {/* Desktop Title */}
+              <div className="hidden lg:block mb-12">
+                <span className="text-theme-muted tracking-widest text-xs uppercase mb-4 block">სერვისი / ფასი</span>
+                <h2 className="font-display text-5xl text-foreground leading-none">
+                  სერვისების<br />
+                  <span className="italic opacity-60 font-light">ფასები</span>
+                </h2>
+              </div>
+
+              {/* Category Navigation */}
+              <nav className="flex lg:flex-col gap-3 overflow-x-auto pb-4 lg:pb-0 scrollbar-hide">
+                {staticPriceLists.map((list) => (
+                  <button
+                    key={list.id}
+                    onClick={() => scrollToCategory(list.id)}
+                    className={cn(
+                      `flex items-center gap-4 group transition-all duration-300 min-w-max lg:min-w-0 text-left px-4 py-4 rounded-none border`,
+                      activeCategory === list.id
+                        ? "border-[var(--theme-accent)] bg-[var(--theme-accent)] text-[#09090b]"
+                        : "border-[var(--theme-accent)]/20 hover:border-[var(--theme-accent)] bg-transparent text-foreground/50"
+                    )}
+                  >
+                    <span className={cn(
+                      "font-mono text-lg transition-all duration-300 hidden md:block",
+                      activeCategory === list.id ? "text-[#09090b]" : "text-foreground/30"
+                    )}>
+                      0{staticPriceLists.indexOf(list) + 1}
+                    </span>
+                    <div className="text-left">
+                      <span className={cn(
+                        "text-sm lg:text-base font-mono uppercase tracking-widest block transition-all duration-300",
+                        activeCategory === list.id ? "text-[#09090b]" : "text-foreground/50 group-hover:text-foreground/80"
+                      )}>
                         {list.category}
-                      </h3>
-                      {list.subtitle && (
-                        <p className="text-sm text-muted-foreground/80 mb-3 tracking-wide">
-                          {list.subtitle}
-                        </p>
-                      )}
-                      <p className="text-sm text-muted-foreground tracking-wide">
-                        დააჭირეთ ფასების სანახავად
-                      </p>
+                      </span>
                     </div>
-                  </div>
-                  
-                  {expandedCard === list.id && (
-                    <div className="p-6 border-t border-border bg-card">
-                      <div className="space-y-3">
-                        {list.items.map((item, index) => (
-                          <div 
-                            key={index} 
-                            className="flex justify-between items-center py-2"
-                            data-testid={`price-item-${list.id}-${index}`}
-                          >
-                            <span className="text-sm text-foreground">{item.name}</span>
-                            <span className="text-sm" style={{ color: 'var(--theme-accent)' }}>
-                              {item.price ? (typeof item.price === 'number' ? `${item.price} ₾` : item.price) : '—'}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </Card>
-              ))}
+                  </button>
+                ))}
+              </nav>
+
+              {/* Booking CTA below nav */}
+              <div className="hidden lg:block mt-12 pt-8 border-t border-border/40">
+                <p className="text-xs text-foreground/40 font-sans mb-4 leading-relaxed">
+                  ფასები შეიძლება განსხვავდებოდეს. დეტალებისთვის დაგვიკავშირდით.
+                </p>
+                <button
+                  onClick={() => document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" })}
+                  className="text-sm text-theme-accent font-medium tracking-wider uppercase transition-opacity hover:opacity-70 flex items-center gap-2"
+                >
+                  <span>დაჯავშნა</span>
+                  <span className="text-lg leading-none">→</span>
+                </button>
+              </div>
             </div>
           </div>
 
-          {canScrollLeft && (
-            <Button
-              size="icon"
-              variant="outline"
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 backdrop-blur-sm"
-              onClick={() => scroll('left')}
-              data-testid="button-scroll-left"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </Button>
-          )}
+          {/* Service Items */}
+          <div className="lg:col-span-8 space-y-20">
+            {staticPriceLists.map((list, listIdx) => (
+              <motion.div
+                key={list.id}
+                id={`category-${list.id}`}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                className="scroll-mt-32"
+              >
+                {/* Brutalist Category Header */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between border-b-2 border-[var(--theme-accent)] pb-4 mb-8 mt-16 first:mt-0 gap-4">
+                  <div className="flex items-center gap-6">
+                    <span className="font-mono text-3xl md:text-5xl text-[var(--theme-accent)]">0{listIdx + 1}</span>
+                    <h3 className="font-display text-4xl md:text-6xl text-foreground uppercase tracking-tighter">
+                      {list.category}
+                    </h3>
+                  </div>
+                  <span className="font-mono text-xs text-[var(--theme-accent)] tracking-widest uppercase">
+                    {list.subtitle}
+                  </span>
+                </div>
 
-          {canScrollRight && (
-            <Button
-              size="icon"
-              variant="outline"
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 backdrop-blur-sm"
-              onClick={() => scroll('right')}
-              data-testid="button-scroll-right"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </Button>
-          )}
-        </div>
+                {/* Ledger Items */}
+                <motion.div
+                  className="space-y-0"
+                  variants={containerVariants}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                >
+                  {list.items.map((item, itemIdx) => (
+                    <motion.div
+                      key={itemIdx}
+                      variants={itemVariants}
+                      className="group flex flex-col md:flex-row md:items-end justify-between gap-2 md:gap-6 py-4 md:py-6 border-b border-[var(--theme-accent)]/20 hover:border-[var(--theme-accent)] transition-colors duration-300 cursor-default"
+                    >
+                      <div className="flex flex-col">
+                        <span className="text-xl md:text-2xl font-sans font-medium text-foreground tracking-tight uppercase">
+                          {item.name}
+                        </span>
+                        <span className="text-xs md:text-sm font-mono text-foreground/50 tracking-widest uppercase mt-1">
+                          {item.nameKa}
+                        </span>
+                      </div>
+                      <div className="hidden md:block flex-1 border-b border-dashed border-foreground/10 mb-2 group-hover:border-[var(--theme-accent)]/50 transition-colors duration-300" />
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-xs font-mono text-foreground/40 uppercase tracking-widest">₾</span>
+                        <span className="text-lg md:text-xl font-mono text-foreground group-hover:text-[var(--theme-accent)] transition-colors duration-300">
+                          {typeof item.price === "number" ? item.price.toFixed(2) : item.price}
+                        </span>
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </motion.div>
+            ))}
 
-        <div className="flex justify-center gap-2 mt-8">
-          {priceLists.map((_, index) => (
-            <button
-              key={index}
-              className={`w-2 h-2 rounded-full transition-all ${
-                index === currentIndex ? 'bg-primary w-8' : 'bg-border'
-              }`}
-              onClick={() => scrollToCard(index)}
-              data-testid={`indicator-${index}`}
-            />
-          ))}
+            {/* Bottom Note */}
+            <div className="pt-4 text-center lg:text-left">
+              <p className="text-xs text-foreground/30 font-sans">
+                * ყველა ფასი მითითებულია ლარში (₾). ფასები შეიძლება შეიცვალოს.
+              </p>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>

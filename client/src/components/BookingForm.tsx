@@ -17,15 +17,16 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
+import { format, isToday, isBefore, startOfToday, setHours, setMinutes } from "date-fns";
+import { ka } from "date-fns/locale";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { Service, Staff } from "@shared/schema";
 
 const timeSlots = [
-  "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", 
-  "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", 
+  "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30",
+  "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30",
   "18:00", "18:30"
 ];
 
@@ -68,7 +69,7 @@ export default function BookingForm() {
     queryKey: ["/api/bookings/availability", formattedDate, formData.staffId],
     queryFn: async () => {
       if (!formattedDate) return { bookedTimes: [] };
-      const url = formData.staffId 
+      const url = formData.staffId
         ? `/api/bookings/availability?date=${formattedDate}&staffId=${formData.staffId}`
         : `/api/bookings/availability?date=${formattedDate}`;
       const response = await fetch(url);
@@ -81,16 +82,34 @@ export default function BookingForm() {
   });
 
   const bookedTimes = availabilityData?.bookedTimes || [];
-  const availableTimes = timeSlots.filter((time) => !bookedTimes.includes(time));
+
+  const availableTimes = useMemo(() => {
+    let times = timeSlots.filter((time) => !bookedTimes.includes(time));
+
+    // If selecting today, filter out past times and add lead time
+    if (date && isToday(date)) {
+      const now = new Date();
+      // Add 1 hour lead time for same-day bookings to give staff time to prepare
+      const minBookingTime = new Date(now.getTime() + 60 * 60 * 1000);
+
+      times = times.filter((time) => {
+        const [hours, minutes] = time.split(":").map(Number);
+        const slotTime = setMinutes(setHours(new Date(date), hours), minutes);
+        return isBefore(minBookingTime, slotTime);
+      });
+    }
+
+    return times;
+  }, [bookedTimes, date]);
 
   const createBookingMutation = useMutation({
     mutationFn: async (bookingData: any) => {
       return await apiRequest("POST", "/api/bookings", bookingData);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ 
+      queryClient.invalidateQueries({
         queryKey: ["/api/bookings/availability"],
-        exact: false 
+        exact: false
       });
       toast({
         title: "მოთხოვნა გაგზავნილია!",
@@ -107,6 +126,7 @@ export default function BookingForm() {
         notes: ""
       });
       setDate(undefined);
+      // Let the popover close naturally if it was open, but here we just reset state
     },
     onError: (error: any) => {
       console.error('Booking error:', error);
@@ -138,7 +158,7 @@ export default function BookingForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!date || !formData.time) {
       toast({
         title: "არასრული ინფორმაცია",
@@ -174,207 +194,209 @@ export default function BookingForm() {
   };
 
   return (
-    <section id="booking" className="py-20 lg:py-32 bg-card" ref={sectionRef}>
-      <div className="max-w-3xl mx-auto px-6">
-        <div className={`text-center mb-12 transition-all duration-700 ${
-          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-        }`}>
-          <h2 className="font-serif text-2xl md:text-3xl lg:text-4xl mb-4 text-card-foreground font-normal">
-            დაჯავშნეთ თქვენი ვიზიტი
-          </h2>
-          <p className="text-base text-muted-foreground tracking-wide">
-            დაჯავშნეთ სასურველი პროცედურა და ჩვენ ყველაფერზე ვიზრუნებთ
-          </p>
-        </div>
+    <section id="booking" className="dark section-spacing relative bg-[#0C0A09]" ref={sectionRef}>
+      {/* Background Texture */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
+        backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.8\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")',
+      }} />
 
-        <form onSubmit={handleSubmit} className={`space-y-6 transition-all duration-700 delay-200 ${
-          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-        }`}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label htmlFor="fullName">სახელი გვარი *</Label>
-              <Input
-                id="fullName"
-                placeholder="მაგ: სახელი გვარი"
-                value={formData.fullName}
-                onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                required
-                data-testid="input-full-name"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="email">ელ. ფოსტა *</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="example@email.com"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                required
-                data-testid="input-email"
-              />
-            </div>
+      <div className="editorial-max-width">
+        <div className="max-w-4xl mx-auto">
+          <div className={`text-center mb-12 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+            <span className="text-white/50 tracking-kicker text-xs md:text-sm block mb-4 uppercase">კონციერჯი</span>
+            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl mb-4 text-white font-normal">
+              დაჯავშნისმოთხოვნა
+            </h2>
+            <p className="text-base md:text-lg text-theme-muted max-w-lg mx-auto font-light leading-relaxed">
+              აირჩიეთ სასურველი სერვისი და დრო. დადასტურებთ მოგერავე დროით დაგიკავშირდებთ.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label htmlFor="phone">ტელეფონის ნომერი *</Label>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="+995 555 123 456"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                required
-                data-testid="input-phone"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="serviceCategory">სერვისის კატეგორია *</Label>
-              <Select
-                value={formData.serviceCategory}
-                onValueChange={(value) => setFormData({ ...formData, serviceCategory: value, staffId: "" })}
-              >
-                <SelectTrigger id="serviceCategory" data-testid="select-service-category">
-                  <SelectValue placeholder="აირჩიეთ კატეგორია" />
-                </SelectTrigger>
-                <SelectContent>
-                  {serviceCategories.map((category) => (
-                    <SelectItem key={category.value} value={category.value}>
-                      {category.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <input type="hidden" name="serviceCategory" value={formData.serviceCategory} required />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="serviceDetails">რა პროცედურა გსურთ? *</Label>
-            <Textarea
-              id="serviceDetails"
-              placeholder="მაგ: გელ ლაქი ნუნების აწევით, თეთრი ფერი"
-              className="min-h-[100px] resize-none"
-              value={formData.serviceDetails}
-              onChange={(e) => setFormData({ ...formData, serviceDetails: e.target.value })}
-              required
-              data-testid="textarea-service-details"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="staff">აირჩიეთ სპეციალისტი *</Label>
-            <Select
-              value={formData.staffId}
-              onValueChange={(value) => setFormData({ ...formData, staffId: value })}
-              disabled={!formData.serviceCategory || staffLoading}
-            >
-              <SelectTrigger id="staff" data-testid="select-staff">
-                <SelectValue placeholder={
-                  !formData.serviceCategory 
-                    ? "ჯერ აირჩიეთ კატეგორია" 
-                    : staffLoading 
-                    ? "იტვირთება სპეციალისტები..." 
-                    : availableStaff.length === 0 
-                    ? "სპეციალისტი არ მოიძებნა" 
-                    : "აირჩიეთ სპეციალისტი"
-                } />
-              </SelectTrigger>
-              <SelectContent>
-                {availableStaff.map((staff) => (
-                  <SelectItem key={staff.id} value={staff.id}>
-                    {staff.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <input type="hidden" name="staffId" value={formData.staffId} required />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label>სასურველი თარიღი *</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                    data-testid="button-date-picker"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "PPP") : "აირჩიეთ თარიღი"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    initialFocus
-                    disabled={(date) => {
-                      const today = new Date();
-                      today.setHours(0, 0, 0, 0);
-                      return date < today;
-                    }}
+          <div className={`glass-card p-8 md:p-12 rounded-sm transition-all duration-700 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+            <form onSubmit={handleSubmit} className="space-y-12">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+                <div className="space-y-2 group">
+                  <Label htmlFor="fullName" className="text-xs uppercase tracking-widest text-theme-muted group-focus-within:text-theme-accent transition-colors">სახელი და გვარი</Label>
+                  <Input
+                    id="fullName"
+                    className="input-underline text-lg h-12 px-0 bg-transparent text-white placeholder:text-white/20 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none border-b border-white/10"
+                    placeholder="შეიყვანეთ თქვენი სახელი და გვარი"
+                    value={formData.fullName}
+                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                    required
+                    data-testid="input-full-name"
                   />
-                </PopoverContent>
-              </Popover>
-              <input type="hidden" name="date" value={date ? format(date, "yyyy-MM-dd") : ""} required />
-            </div>
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="time">სასურველი დრო *</Label>
-              <Select
-                value={formData.time}
-                onValueChange={(value) => setFormData({ ...formData, time: value })}
-                disabled={!date}
-              >
-                <SelectTrigger id="time" data-testid="select-time">
-                  <SelectValue placeholder={date ? "აირჩიეთ დრო" : "ჯერ აირჩიეთ თარიღი"} />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableTimes.length === 0 && date ? (
-                    <div className="px-2 py-6 text-center text-sm text-muted-foreground">
-                      ყველა დრო დაჯავშნილია ამ თარიღისთვის
-                    </div>
-                  ) : (
-                    availableTimes.map((time) => (
-                      <SelectItem key={time} value={time}>
-                        {time}
+                <div className="space-y-2 group">
+                  <Label htmlFor="email" className="text-xs uppercase tracking-widest text-theme-muted group-focus-within:text-theme-accent transition-colors">ელ. ფოსტა</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    className="input-underline text-lg h-12 px-0 bg-transparent text-white placeholder:text-white/20 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none border-b border-white/10"
+                    placeholder="example@email.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    required
+                    data-testid="input-email"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+                <div className="space-y-2 group">
+                  <Label htmlFor="phone" className="text-xs uppercase tracking-widest text-theme-muted group-focus-within:text-theme-accent transition-colors">ტელეფონის ნომერი</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    className="input-underline text-lg h-12 px-0 bg-transparent text-white placeholder:text-white/20 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none border-b border-white/10"
+                    placeholder="+995 555 000 000"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    required
+                    data-testid="input-phone"
+                  />
+                </div>
+
+                <div className="space-y-2 group">
+                  <Label htmlFor="serviceCategory" className="text-xs uppercase tracking-widest text-theme-muted group-focus-within:text-theme-accent transition-colors">სერვისის კატეგორია</Label>
+                  <Select
+                    value={formData.serviceCategory}
+                    onValueChange={(value) => setFormData({ ...formData, serviceCategory: value, staffId: "" })}
+                  >
+                    <SelectTrigger id="serviceCategory" className="input-underline text-lg h-12 px-0 bg-transparent text-white border-b border-white/10 focus:ring-0 focus:ring-offset-0 rounded-none shadow-none">
+                      <SelectValue placeholder="კატეგორიის არჩევა" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {serviceCategories.map((category) => (
+                        <SelectItem key={category.value} value={category.value}>
+                          {category.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-2 group">
+                <Label htmlFor="serviceDetails" className="text-xs uppercase tracking-widest text-theme-muted group-focus-within:text-theme-accent transition-colors">პროცედურის დეტალები</Label>
+                <Textarea
+                  id="serviceDetails"
+                  placeholder="აიღწერეთ სასურველი პროცედურა..."
+                  className="input-underline text-lg min-h-[80px] px-0 bg-transparent text-white placeholder:text-white/20 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none resize-none border-b border-white/10"
+                  value={formData.serviceDetails}
+                  onChange={(e) => setFormData({ ...formData, serviceDetails: e.target.value })}
+                  required
+                  data-testid="textarea-service-details"
+                />
+              </div>
+
+              <div className="space-y-2 group">
+                <Label htmlFor="staff" className="text-xs uppercase tracking-widest text-theme-muted group-focus-within:text-theme-accent transition-colors">სპეციალისტი</Label>
+                <Select
+                  value={formData.staffId}
+                  onValueChange={(value) => setFormData({ ...formData, staffId: value })}
+                  disabled={!formData.serviceCategory || staffLoading}
+                >
+                  <SelectTrigger id="staff" className="input-underline text-lg h-12 px-0 bg-transparent text-white border-b border-white/10 focus:ring-0 focus:ring-offset-0 rounded-none shadow-none disabled:opacity-50">
+                    <SelectValue placeholder={
+                      !formData.serviceCategory
+                        ? "ჯერ აირჩიეთ კატეგორია"
+                        : staffLoading
+                          ? "იტვირთება..."
+                          : availableStaff.length === 0
+                            ? "სპეციალისტი არ მოიႾენება"
+                            : "სპეციალისტის არჩევა"
+                    } />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableStaff.map((staff) => (
+                      <SelectItem key={staff.id} value={staff.id}>
+                        {staff.name}
                       </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
-              <input type="hidden" name="time" value={formData.time} required />
-            </div>
-          </div>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="notes">დამატებითი შენიშვნები</Label>
-            <Textarea
-              id="notes"
-              placeholder="პერსონალური შენიშვნა"
-              className="min-h-[120px] resize-none"
-              value={formData.notes}
-              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              data-testid="textarea-notes"
-            />
-          </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+                <div className="space-y-2 group">
+                  <Label className="text-xs uppercase tracking-widest text-theme-muted group-focus-within:text-theme-accent transition-colors">თარიღი</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className={`w-full justify-start text-left font-normal text-lg h-12 px-0 bg-transparent rounded-none border-b border-white/10 hover:bg-transparent hover:text-theme-accent ${!date && "text-white/40"
+                          }`}
+                      >
+                        <CalendarIcon className="mr-3 h-5 w-5 opacity-50" />
+                        {date ? format(date, "PPP", { locale: ka }) : "აირჩიეთ თარიღი"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0 border-none bg-theme-surface/95 backdrop-blur-xl" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={date}
+                        onSelect={setDate}
+                        initialFocus
+                        locale={ka}
+                        disabled={(date) => isBefore(date, startOfToday())}
+                        className="rounded-md border border-white/10"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
 
-          <Button
-            type="submit"
-            size="lg"
-            className="w-full bg-theme-accent font-medium tracking-wide"
-            disabled={createBookingMutation.isPending}
-            data-testid="button-book-appointment"
-          >
-            {createBookingMutation.isPending ? "იგზავნება..." : "დაჯავშნა"}
-          </Button>
-        </form>
+                <div className="space-y-2 group">
+                  <Label htmlFor="time" className="text-xs uppercase tracking-widest text-theme-muted group-focus-within:text-theme-accent transition-colors">დრო</Label>
+                  <Select
+                    value={formData.time}
+                    onValueChange={(value) => setFormData({ ...formData, time: value })}
+                    disabled={!date || !formData.staffId}
+                  >
+                    <SelectTrigger id="time" className="input-underline text-lg h-12 px-0 bg-transparent text-white border-b border-white/10 focus:ring-0 focus:ring-offset-0 rounded-none shadow-none disabled:opacity-50">
+                      <SelectValue placeholder="დროის არჩევა" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableTimes.length === 0 && date ? (
+                        <div className="px-2 py-6 text-center text-sm text-muted-foreground">
+                          სრულად დაჯავშნული
+                        </div>
+                      ) : (
+                        availableTimes.map((time) => (
+                          <SelectItem key={time} value={time}>
+                            {time}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-2 group">
+                <Label htmlFor="notes" className="text-xs uppercase tracking-widest text-theme-muted group-focus-within:text-theme-accent transition-colors">დამატებითი შენიშვნელობები</Label>
+                <Textarea
+                  id="notes"
+                  placeholder="სპეცსაილური სახითხოები ან სურვილები?"
+                  className="input-underline text-lg min-h-[80px] px-0 bg-transparent text-white placeholder:text-white/20 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none resize-none border-b border-white/10"
+                  value={formData.notes}
+                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                />
+              </div>
+
+              <Button
+                type="submit"
+                size="lg"
+                className="w-full h-14 bg-theme-accent hover:bg-theme-accent-hover text-white font-medium tracking-widest uppercase text-sm magnetic-button mt-8"
+                disabled={createBookingMutation.isPending}
+                data-testid="button-book-appointment"
+              >
+                {createBookingMutation.isPending ? "გაგზავნა..." : "დადასტურეთ დაჯავშნა"}
+              </Button>
+            </form>
+          </div>
+        </div>
       </div>
     </section>
   );

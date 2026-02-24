@@ -3,17 +3,13 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 import Uppy from "@uppy/core";
 import { DashboardModal } from "@uppy/react";
-import AwsS3 from "@uppy/aws-s3";
+import XHRUpload from "@uppy/xhr-upload";
 import type { UploadResult } from "@uppy/core";
 import { Button } from "@/components/ui/button";
 
 interface ObjectUploaderProps {
   maxNumberOfFiles?: number;
   maxFileSize?: number;
-  onGetUploadParameters: () => Promise<{
-    method: "PUT";
-    url: string;
-  }>;
   onComplete?: (
     result: UploadResult<Record<string, unknown>, Record<string, unknown>>
   ) => void;
@@ -21,35 +17,13 @@ interface ObjectUploaderProps {
   children: ReactNode;
 }
 
-// Uppy File type for getUploadParameters
-interface UppyFile {
-  id: string;
-  name: string;
-  type?: string;
-  data?: File | Blob;
-  size?: number;
-  [key: string]: unknown;
-}
-
 /**
  * A file upload component that renders as a button and provides a modal interface for
- * file management.
- * 
- * Features:
- * - Renders as a customizable button that opens a file upload modal
- * - Provides a modal interface for:
- *   - File selection
- *   - File preview
- *   - Upload progress tracking
- *   - Upload status display
- * 
- * The component uses Uppy under the hood to handle all file upload functionality.
- * All file management features are automatically handled by the Uppy dashboard modal.
+ * file management. Uses XHRUpload instead of AWS S3 for direct local server uploads.
  */
 export function ObjectUploader({
   maxNumberOfFiles = 1,
   maxFileSize = 10485760, // 10MB default
-  onGetUploadParameters,
   onComplete,
   buttonClassName,
   children,
@@ -64,16 +38,12 @@ export function ObjectUploader({
       },
       autoProceed: false,
     })
-      .use(AwsS3, {
-        shouldUseMultipart: false,
-        getUploadParameters: async (file: UppyFile) => {
-          console.log("[ObjectUploader] Getting upload parameters for file:", file.name);
-          const params = await onGetUploadParameters();
-          console.log("[ObjectUploader] Upload parameters:", params);
-          return params;
-        },
+      .use(XHRUpload, {
+        endpoint: "/api/objects/upload",
+        fieldName: "file",
+        formData: true,
       })
-      .on("complete", (result) => {
+      .on("complete", (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
         console.log("[ObjectUploader] Upload complete:", result);
         onComplete?.(result);
         setShowModal(false);

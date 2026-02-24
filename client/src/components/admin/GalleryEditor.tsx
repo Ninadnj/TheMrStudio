@@ -214,38 +214,33 @@ export default function GalleryEditor() {
                       <ObjectUploader
                         maxNumberOfFiles={1}
                         maxFileSize={10485760}
-                        onGetUploadParameters={async () => {
-                          console.log("[GalleryEditor] Requesting upload URL from backend");
-                          const response = await apiRequest("POST", "/api/objects/upload", {});
-                          console.log("[GalleryEditor] Received upload response:", response);
-                          console.log("[GalleryEditor] Upload URL:", response.uploadURL);
-                          // Save the URL in ref for later use in onComplete (avoids stale closure)
-                          currentUploadUrlRef.current = response.uploadURL;
-                          return {
-                            method: "PUT" as const,
-                            url: response.uploadURL,
-                          };
-                        }}
                         onComplete={async (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
                           console.log("[GalleryEditor] Upload result:", result);
                           if (result.successful && result.successful.length > 0) {
                             const uploadedFile = result.successful[0];
                             console.log("[GalleryEditor] Uploaded file:", uploadedFile);
-                            console.log("[GalleryEditor] Upload URL used:", currentUploadUrlRef.current);
-                            
-                            // Get the object path from the presigned URL (remove query params)
-                            const presignedUrl = currentUploadUrlRef.current;
-                            console.log("[GalleryEditor] Setting form imageUrl to:", presignedUrl);
-                            
-                            form.setValue("imageUrl", presignedUrl, { shouldValidate: true });
-                            toast({ 
-                              title: "წარმატება", 
-                              description: "ფოტო აიტვირთა. დააჭირეთ 'Add Image' შესანახად." 
-                            });
+
+                            // Get the object path from the upload response
+                            const filePath = uploadedFile.response?.body?.uploadURL;
+
+                            if (filePath) {
+                              console.log("[GalleryEditor] Setting form imageUrl to:", filePath);
+                              form.setValue("imageUrl", filePath as string, { shouldValidate: true });
+                              toast({
+                                title: "წარმატება",
+                                description: "ფოტო აიტვირთა. დააჭირეთ 'Add Image' შესანახად."
+                              });
+                            } else {
+                              toast({
+                                title: "შეცდომა",
+                                description: "ფოტოს ლინკი ვერ მოიძებნა",
+                                variant: "destructive"
+                              });
+                            }
                           } else if (result.failed && result.failed.length > 0) {
                             console.error("[GalleryEditor] Upload failed:", result.failed);
-                            toast({ 
-                              title: "შეცდომა", 
+                            toast({
+                              title: "შეცდომა",
                               description: "ფოტოს ატვირთვა ვერ მოხერხდა",
                               variant: "destructive"
                             });

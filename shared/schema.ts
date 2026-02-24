@@ -49,7 +49,10 @@ export const bookings = pgTable("bookings", {
   calendarEventId: text("calendar_event_id"),
 });
 
-export const insertBookingSchema = createInsertSchema(bookings).omit({
+export const insertBookingSchema = createInsertSchema(bookings, {
+  duration: z.string().default("90"),
+  status: z.string().default("pending"),
+}).omit({
   id: true,
 });
 

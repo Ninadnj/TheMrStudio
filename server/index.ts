@@ -1,3 +1,5 @@
+import { config } from "dotenv";
+config();
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
@@ -14,34 +16,47 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+const isProduction = process.env.NODE_ENV === "production";
+
 // Ensure SESSION_SECRET is set for security
 if (!process.env.SESSION_SECRET) {
+  if (isProduction) {
+    console.error("❌ FATAL: SESSION_SECRET must be set in production!");
+    process.exit(1);
+  }
   console.warn("⚠️  WARNING: SESSION_SECRET not set! Using default (insecure for production)");
-  console.warn("⚠️  Set SESSION_SECRET environment variable for production use");
 }
 
-// Setup PostgreSQL session store for persistent sessions
-const PgSession = connectPgSimple(session);
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+// Security headers middleware
+app.use((req, res, next) => {
+  // Strict Transport Security (HTTPS only in production)
+  if (isProduction) {
+    res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  }
+  // Prevent clickjacking
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  // Prevent MIME-type sniffing
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  // Referrer policy
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  // Content Security Policy
+  res.setHeader(
+    "Content-Security-Policy",
+    [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",      // Vite HMR needs unsafe-eval in dev
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "font-src 'self' https://fonts.gstatic.com https://fonts.cdnfonts.com",
+      "img-src 'self' data: blob: https://storage.googleapis.com",
+      "connect-src 'self' https://*.neon.tech wss://*.neon.tech",
+      "frame-ancestors 'self'",
+    ].join("; ")
+  );
+  next();
+});
 
-app.use(
-  session({
-    store: new PgSession({
-      pool,
-      tableName: 'session',
-      createTableIfMissing: true,
-    }),
-    secret: process.env.SESSION_SECRET || "dev-secret-change-in-production",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: false, // Temporarily disable to test
-      httpOnly: true,
-      sameSite: "lax",
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    },
-  })
-);
+// Session store will be initialized inside the async block
+let sessionStore: any;
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -74,6 +89,38 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Setup session store
+  if (process.env.DATABASE_URL) {
+    const PgSession = connectPgSimple(session);
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+    sessionStore = new PgSession({
+      pool,
+      tableName: 'session',
+      createTableIfMissing: true,
+    });
+  } else {
+    const MemoryStore = (await import("memorystore")).default(session);
+    sessionStore = new MemoryStore({
+      checkPeriod: 86400000 // prune expired entries every 24h
+    });
+  }
+
+  app.use(
+    session({
+      store: sessionStore,
+      secret: process.env.SESSION_SECRET || "dev-secret-change-in-production",
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        secure: isProduction, // HTTPS only in production
+        httpOnly: true,
+        sameSite: "lax",
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      },
+    })
+  );
+
+  // Initialize admin user (works for both Database and MemStorage)
   await initializeAdmin();
   const server = await registerRoutes(app);
 
@@ -94,15 +141,11 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 5000 if not specified.
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = parseInt(process.env.PORT || '5000', 10);
+  // Use PORT from environment for deployment platforms, default to 5002 (avoid MacOS AirPlay on 5000)
+  const port = parseInt(process.env.PORT || "5002", 10);
   server.listen({
     port,
-    host: "0.0.0.0",
-    reusePort: true,
+    host: "0.0.0.0",  // Accept external connections
   }, () => {
     log(`serving on port ${port}`);
   });

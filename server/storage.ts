@@ -1,5 +1,5 @@
-import { 
-  type User, type InsertUser, 
+import {
+  type User, type InsertUser,
   type Booking, type InsertBooking,
   type HeroContent, type InsertHeroContent,
   type Service, type InsertService,
@@ -25,9 +25,6 @@ import {
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 
-// modify the interface with any CRUD methods
-// you might need
-
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
@@ -42,236 +39,51 @@ export interface IStorage {
   rejectBooking(id: string, reason?: string): Promise<Booking | undefined>;
   modifyBooking(id: string, updates: { time?: string; duration?: string }): Promise<Booking | undefined>;
   deleteBooking(id: string): Promise<boolean>;
-  
+
   getHeroContent(): Promise<HeroContent | undefined>;
   updateHeroContent(content: Partial<InsertHeroContent>): Promise<HeroContent>;
-  
+
   getAllServices(): Promise<Service[]>;
   createService(service: InsertService): Promise<Service>;
   updateService(id: string, service: Partial<InsertService>): Promise<Service | undefined>;
   deleteService(id: string): Promise<boolean>;
-  
+
   getSiteSettings(): Promise<SiteSettings | undefined>;
   updateSiteSettings(settings: InsertSiteSettings): Promise<SiteSettings>;
-  
+
   getAllStaff(): Promise<Staff[]>;
   getStaffById(id: string): Promise<Staff | undefined>;
   getStaffByCategory(category: string): Promise<Staff[]>;
   createStaff(staff: InsertStaff): Promise<Staff>;
   updateStaff(id: string, staff: Partial<InsertStaff>): Promise<Staff | undefined>;
   deleteStaff(id: string): Promise<boolean>;
-  
+
   getAllGalleryImages(): Promise<GalleryImage[]>;
   getGalleryImagesByCategory(category: string): Promise<GalleryImage[]>;
   createGalleryImage(image: InsertGalleryImage): Promise<GalleryImage>;
-  updateGalleryImage(id: string, updates: Partial<InsertGalleryImage>): Promise<GalleryImage | undefined>;
+  updateGalleryImage(id: string, updates: Partial<InsertGalleryImage>): Partial<GalleryImage | undefined> | Promise<GalleryImage | undefined>;
   deleteGalleryImage(id: string): Promise<boolean>;
-  
+
   getServicesSection(): Promise<ServicesSection | undefined>;
   updateServicesSection(content: InsertServicesSection): Promise<ServicesSection>;
-  
+
   getAllSpecialOffers(): Promise<SpecialOffer[]>;
   getActiveSpecialOffer(): Promise<SpecialOffer | undefined>;
   createSpecialOffer(offer: InsertSpecialOffer): Promise<SpecialOffer>;
   updateSpecialOffer(id: string, updates: Partial<InsertSpecialOffer>): Promise<SpecialOffer | undefined>;
   deleteSpecialOffer(id: string): Promise<boolean>;
-  
+
   getAllTrends(): Promise<Trend[]>;
   getTrendsByCategory(category: string): Promise<Trend[]>;
   createTrend(trend: InsertTrend): Promise<Trend>;
   updateTrend(id: string, updates: Partial<InsertTrend>): Promise<Trend | undefined>;
   deleteTrend(id: string): Promise<boolean>;
-  
+
   getTrendsSection(): Promise<TrendsSection | undefined>;
   updateTrendsSection(content: InsertTrendsSection): Promise<TrendsSection>;
 }
 
-export class MemStorage implements IStorage {
-  constructor() {
-    this.seedDatabase();
-  }
-
-  private async seedDatabase() {
-    try {
-      const existingHero = await db.select().from(heroContentTable).limit(1);
-      if (existingHero.length > 0) {
-        return;
-      }
-
-      await db.insert(heroContentTable).values({
-        mainTitle: "THE MR",
-        subtitle: "Nail & Laser Studio",
-        description: "Expert nail artistry and advanced laser treatments in an elegant, modern setting",
-        tagline: "Where Beauty Meets Precision",
-      });
-
-      await db.insert(siteSettingsTable).values({
-        address: "თბილისი, დიდი დიღომი, ასმათის ქუჩა",
-        phone: "+995 599 999 999",
-        email: "info@themrstudio.ge",
-        hours: "Mon-Sat: 10:00 AM - 8:00 PM",
-        adminEmail: null,
-      });
-
-      await db.insert(staffTable).values([
-        {
-          name: "მარიამი",
-          serviceCategory: "Nail",
-          calendarId: "5a628b97225c40af603e9c5080f8fc88f8a7fcadbd61c7df1657af6cf7e20311@group.calendar.google.com",
-          order: "1"
-        },
-        {
-          name: "რიტა",
-          serviceCategory: "Nail",
-          calendarId: "be60a59a51dee66edc5846a870e1aa11bd454898854ea78763b704e1e2754b83@group.calendar.google.com",
-          order: "2"
-        },
-        {
-          name: "სალომე",
-          serviceCategory: "Epilation",
-          calendarId: "d9df0557df5863cbcd507d62463b61fd15d746bf42d71f1fc66e191d04af0130@group.calendar.google.com",
-          order: "3"
-        },
-        {
-          name: "ComingSoon",
-          serviceCategory: "Cosmetology",
-          calendarId: "7b14cf445638512bbfc3cbcbd7eb457be404170b14f605d3646380a4a8b2e033@group.calendar.google.com",
-          order: "4"
-        }
-      ]);
-    
-    // Initialize services with real pricing
-    const epilationServices = [
-      { name: "მთლიანი სახე / Full Face", price: "20 ₾", order: "01" },
-      { name: "მთლიანი სახე+ყელი / Full Face+Neck", price: "25 ₾", order: "02" },
-      { name: "შუბლი / Forehead", price: "10 ₾", order: "03" },
-      { name: "ნიკაპი / Chin", price: "5 ₾", order: "04" },
-      { name: "ღაბაბი / Under Chin", price: "5 ₾", order: "05" },
-      { name: "ნიკაპი+ღაბაბი / Chin+Under Chin", price: "8 ₾", order: "06" },
-      { name: "ზედა ტუჩი / Upper Lip", price: "5 ₾", order: "07" },
-      { name: "ბაკები / Sideburns", price: "10 ₾", order: "08" },
-      { name: "ლოყები / Cheeks", price: "10 ₾", order: "09" },
-      { name: "წარბის გადაბმის ზონა / Eyebrow Adhesion", price: "5 ₾", order: "10" },
-      { name: "ცხვირის ნესტო + ყურები / Nose+Ears", price: "10 ₾", order: "11" },
-      { name: "კისერი (უკნიდან) / Neck (back)", price: "10 ₾", order: "12" },
-      { name: "ყელი / Neck (front)", price: "10 ₾", order: "13" },
-      { name: "კეფა / Between Head and Neck", price: "10 ₾", order: "14" },
-      { name: "გულ-მკერდი / Chest", price: "20 ₾", order: "15" },
-      { name: "დვრილები / Breastfeeding part", price: "5 ₾", order: "16" },
-      { name: "მკერდის შუა ხაზი / Middle Line of Breast", price: "10 ₾", order: "17" },
-      { name: "მუცელი / Abdomen", price: "18 ₾", order: "18" },
-      { name: "მუცლის თეთრი ხაზი / Abdomen Line", price: "8 ₾", order: "19" },
-      { name: "ზედაპირული ბიკინი / Bikini", price: "10 ₾", order: "20" },
-      { name: "ღრმა ბიკინი / Full Bikini", price: "25 ₾", order: "21" },
-      { name: "დუნდულები / Buttocks", price: "15 ₾", order: "22" },
-      { name: "უკანა ტანი (ანუსი) / Anus", price: "5 ₾", order: "23" },
-      { name: "მთლიანი ფეხები / Full Legs", price: "30 ₾", order: "24" },
-      { name: "ზურგი / Full Back", price: "25 ₾", order: "25" },
-      { name: "წელი / Lower Back", price: "18 ₾", order: "26" },
-      { name: "ხელები სრულად / Full Hands", price: "25 ₾", order: "27" },
-      { name: "ნახევარი ხელი / Half Hand", price: "15 ₾", order: "28" },
-      { name: "იღლიები / Armpit", price: "10 ₾", order: "29" },
-      { name: "ხელის მტევნები+თითები / Hands+Fingers", price: "8 ₾", order: "30" },
-      { name: "მთლიანი სხეული / Full Body", price: "75 ₾", order: "31" },
-    ];
-    
-    const epilationMenServices = [
-      { name: "მთლიანი ზურგი (კაცები) / Full Back (Men)", price: "50 ₾", order: "40" },
-      { name: "კისერი (კაცები) / Neck (Men)", price: "15 ₾", order: "41" },
-      { name: "ყელი (კაცები) / Throat (Men)", price: "12 ₾", order: "42" },
-      { name: "ღაწვი (კაცები) / Jaw (Men)", price: "15 ₾", order: "43" },
-      { name: "ხელი + იღლია (კაცები) / Hand+Armpit (Men)", price: "40 ₾", order: "44" },
-      { name: "გულ-მკერდი (კაცები) / Chest (Men)", price: "30 ₾", order: "45" },
-      { name: "ბეჭები (კაცები) / Calves (Men)", price: "30 ₾", order: "46" },
-      { name: "მხრები (კაცები) / Shoulders (Men)", price: "20 ₾", order: "47" },
-      { name: "მუცელი (კაცები) / Abdomen (Men)", price: "30 ₾", order: "48" },
-      { name: "წელი (კაცები) / Waist (Men)", price: "30 ₾", order: "49" },
-      { name: "ფეხები (კაცები) / Legs (Men)", price: "50 ₾", order: "50" },
-      { name: "სახე (კაცები) / Face (Men)", price: "30 ₾", order: "51" },
-      { name: "შუბლი (კაცები) / Forehead (Men)", price: "15 ₾", order: "52" },
-      { name: "წარბებს შორის (კაცები) / Between Eyebrows (Men)", price: "5 ₾", order: "53" },
-    ];
-    
-    const manicureServices = [
-      { name: "გელ-ლაქი ნუნების მოწესრიგებით / Gel Polish with Nail Trim", price: "35 ₾", order: "60" },
-      { name: "გელ ლაქი ნუნების აწევით / Gel Polish with Nail Lift", price: "25 ₾", order: "61" },
-      { name: "გამაგრება / Strengthening", price: "45 ₾", order: "62" },
-      { name: "გამაგრების მოხსნა, გამაგრება / Removal+Strengthening", price: "55 ₾", order: "63" },
-      { name: "დაგრძელება / Extension", price: "80 ₾", order: "64" },
-      { name: "დაგრძელების კორექცია / Extension Correction", price: "70 ₾", order: "65" },
-      { name: "გელ-ლაქის მოხსნა / Gel Polish Removal", price: "5 ₾", order: "66" },
-      { name: "გამაგრების მოხსნა / Strengthening Removal", price: "10 ₾", order: "67" },
-      { name: "1 ფრჩხილის გამაგრება / 1 Nail Strengthening", price: "4 ₾", order: "68" },
-      { name: "1 ფრჩხილის დაგრძელება / 1 Nail Extension", price: "7 ₾", order: "69" },
-    ];
-    
-    const pedicureServices = [
-      { name: "პედიკური კლასიკური / Classic Pedicure", price: "40 ₾", order: "70" },
-      { name: "პედიკური გელ-ლაქით / Pedicure with Gel Polish", price: "55 ₾", order: "71" },
-      { name: "გელ-ლაქის მოხსნა და ფორმის მოცემა / Gel Removal+Shape", price: "10 ₾", order: "72" },
-      { name: "გელ-ლაქის გადასმა ნუნების აწევით / Gel Reapplication with Lift", price: "30 ₾", order: "73" },
-    ];
-    
-    const designServices = [
-      { name: "ფრენჩი / French", price: "5 ₾", order: "80" },
-      { name: "ქრომი / Chrome", price: "10 ₾", order: "81" },
-      { name: "სტიკრები / Stickers", price: "1+ ₾", order: "82" },
-    ];
-
-      const servicesData = [
-        ...epilationServices.map(s => ({
-          category: "Epilation",
-          name: s.name,
-          description: "ლაზერული ეპილაცია / Laser Hair Removal",
-          price: s.price,
-          order: s.order,
-        })),
-        ...epilationMenServices.map(s => ({
-          category: "Epilation",
-          name: s.name,
-          description: "ლაზერული ეპილაცია მამაკაცებისთვის / Laser Hair Removal for Men",
-          price: s.price,
-          order: s.order,
-        })),
-        ...manicureServices.map(s => ({
-          category: "Nail",
-          name: s.name,
-          description: "მანიკიური / Manicure",
-          price: s.price,
-          order: s.order,
-        })),
-        ...pedicureServices.map(s => ({
-          category: "Nail",
-          name: s.name,
-          description: "პედიკიური / Pedicure",
-          price: s.price,
-          order: s.order,
-        })),
-        ...designServices.map(s => ({
-          category: "Nail",
-          name: s.name,
-          description: "ფრჩხილების დიზაინი / Nail Design",
-          price: s.price,
-          order: s.order,
-        }))
-      ];
-
-      await db.insert(servicesTable).values(servicesData);
-    
-      await db.insert(servicesSectionTable).values({
-        title: "ჩვენი სერვისები",
-        subtitle: "Our Services",
-        categoryDescriptions: JSON.stringify({
-          "მანიკური / პედიკური": "Professional nail care using premium gel polishes and advanced techniques. Our manicure and pedicure services include nail strengthening, extensions, and artistic designs.",
-          "ლაზერული ეპილაცია": "Advanced laser hair removal technology with safe and effective treatments. Our laser systems provide long-lasting results with minimal discomfort.",
-          "კოსმეტოლოგია": "Professional skincare and beauty treatments using modern techniques and high-quality products for optimal results."
-        })
-      });
-    } catch (error) {
-      console.error("Error seeding database:", error);
-    }
-  }
-
+export class DatabaseStorage implements IStorage {
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(usersTable).where(eq(usersTable.id, id));
     return user;
@@ -337,7 +149,7 @@ export class MemStorage implements IStorage {
     const updateData: Partial<Booking> = {};
     if (updates.time !== undefined) updateData.time = updates.time;
     if (updates.duration !== undefined) updateData.duration = updates.duration;
-    
+
     const [updated] = await db.update(bookingsTable)
       .set(updateData)
       .where(eq(bookingsTable.id, id))
@@ -364,7 +176,6 @@ export class MemStorage implements IStorage {
         .returning();
       return updated;
     } else {
-      // For creation, we need all required fields
       const [created] = await db.insert(heroContentTable).values(content as InsertHeroContent).returning();
       return created;
     }
@@ -561,7 +372,6 @@ export class MemStorage implements IStorage {
 
   async updateTrendsSection(content: InsertTrendsSection): Promise<TrendsSection> {
     const existing = await this.getTrendsSection();
-    
     if (existing) {
       const [updated] = await db.update(trendsSectionTable)
         .set(content)
@@ -569,12 +379,278 @@ export class MemStorage implements IStorage {
         .returning();
       return updated;
     } else {
-      const [created] = await db.insert(trendsSectionTable)
-        .values(content)
-        .returning();
+      const [created] = await db.insert(trendsSectionTable).values(content).returning();
       return created;
     }
   }
 }
 
-export const storage = new MemStorage();
+export class MemStorage implements IStorage {
+  private users: Map<string, User> = new Map();
+  private bookings: Map<string, Booking> = new Map();
+  private services: Map<string, Service> = new Map();
+  private staff: Map<string, Staff> = new Map();
+  private galleryImages: Map<string, GalleryImage> = new Map();
+  private trends: Map<string, Trend> = new Map();
+  private specialOffers: Map<string, SpecialOffer> = new Map();
+  private heroContent: HeroContent | undefined;
+  private siteSettings: SiteSettings | undefined;
+  private servicesSection: ServicesSection | undefined;
+  private trendsSection: TrendsSection | undefined;
+
+  constructor() {
+    this.seed();
+  }
+
+  private seed() {
+    this.heroContent = {
+      id: "1",
+      mainTitle: "THE MR",
+      subtitle: "Nail & Laser Studio",
+      description: "Expert nail artistry and advanced laser treatments in an elegant, modern setting",
+      tagline: "Where Beauty Meets Precision",
+      backgroundImage: null,
+    };
+
+    this.siteSettings = {
+      id: "1",
+      address: "თბილისი, დიდი დიღომი, ასმათის ქუჩა",
+      phone: "+995 599 999 999",
+      email: "info@themrstudio.ge",
+      hours: "Mon-Sat: 10:00 AM - 8:00 PM",
+      adminEmail: null,
+    };
+
+    const staffData: InsertStaff[] = [
+      { name: "მარიამი", serviceCategory: "Nail", calendarId: "1", order: "1" },
+      { name: "რიტა", serviceCategory: "Nail", calendarId: "2", order: "2" },
+      { name: "სალომე", serviceCategory: "Epilation", calendarId: "3", order: "3" },
+    ];
+    staffData.forEach((s, i) => {
+      const id = (i + 1).toString();
+      this.staff.set(id, { ...s, id, calendarId: s.calendarId ?? null });
+    });
+
+    const servicesData: { category: string, name: string, price: string, order: string }[] = [
+      // Manicure & Pedicure
+      { category: "მანიკური / პედიკური", name: "გელ-ლაქი ნუნების მოწესრიგებით", price: "35 ₾", order: "A01" },
+      { category: "მანიკური / პედიკური", name: "გელ-ლაქი ნუნების აწევით", price: "25 ₾", order: "A02" },
+      { category: "მანიკური / პედიკური", name: "გამაგრება", price: "45 ₾", order: "A03" },
+      { category: "მანიკური / პედიკური", name: "გამაგრების მოხსნა + გამაგრება", price: "55 ₾", order: "A04" },
+      { category: "მანიკური / პედიკური", name: "დაგრძელება", price: "80 ₾", order: "A05" },
+      { category: "მანიკური / პედიკური", name: "დაგრძელების კორექცია", price: "70 ₾", order: "A06" },
+      { category: "მანიკური / პედიკური", name: "გელ-ლაქის მოხსნა", price: "5 ₾", order: "A07" },
+      { category: "მანიკური / პედიკური", name: "გამაგრების მოხსნა", price: "10 ₾", order: "A08" },
+      { category: "მანიკური / პედიკური", name: "პედიკური კლასიკური", price: "40 ₾", order: "A09" },
+      { category: "მანიკური / პედიკური", name: "პედიკური გელ-ლაქით", price: "55 ₾", order: "A10" },
+      { category: "მანიკური / პედიკური", name: "ფრენჩი", price: "+5 ₾", order: "A11" },
+      { category: "მანიკური / პედიკური", name: "ქრომი", price: "10 ₾", order: "A12" },
+
+      // Laser Epilation - Women
+      { category: "ლაზერული ეპილაცია - ქალი", name: "მთლიანი სახე", price: "25 ₾", order: "B01" },
+      { category: "ლაზერული ეპილაცია - ქალი", name: "იღლიები", price: "10 ₾", order: "B02" },
+      { category: "ლაზერული ეპილაცია - ქალი", name: "ხელები მთლიანად", price: "25 ₾", order: "B03" },
+      { category: "ლაზერული ეპილაცია - ქალი", name: "ფეხები მთლიანად", price: "40 ₾", order: "B04" },
+      { category: "ლაზერული ეპილაცია - ქალი", name: "ღრმა ბიკინი", price: "25 ₾", order: "B05" },
+      { category: "ლაზერული ეპილაცია - ქალი", name: "მუცელი", price: "15 ₾", order: "B06" },
+      { category: "ლაზერული ეპილაცია - ქალი", name: "ზურგი მთლიანად", price: "25 ₾", order: "B07" },
+
+      // Laser Epilation - Men
+      { category: "ლაზერული ეპილაცია - კაცი", name: "სახე", price: "30 ₾", order: "C01" },
+      { category: "ლაზერული ეპილაცია - კაცი", name: "იღლიები", price: "15 ₾", order: "C02" },
+      { category: "ლაზერული ეპილაცია - კაცი", name: "გულ-მკერდი", price: "30 ₾", order: "C03" },
+      { category: "ლაზერული ეპილაცია - კაცი", name: "ზურგი მთლიანად", price: "50 ₾", order: "C04" },
+      { category: "ლაზერული ეპილაცია - კაცი", name: "ფეხები მთლიანად", price: "60 ₾", order: "C05" },
+
+      // Economy Packages
+      { category: "ეკონომ პაკეტები", name: "მთლიანი სხეული", price: "75 ₾", order: "D01" },
+      { category: "ეკონომ პაკეტები", name: "მთლიანი სხეული + სახე", price: "85 ₾", order: "D02" },
+      { category: "ეკონომ პაკეტები", name: "4 ზონა (ხელი, ფეხი, ბიკინი, იღლია)", price: "55 ₾", order: "D03" },
+
+      // Cosmetology
+      { category: "კოსმეტოლოგია", name: "ფილერი Juvederm", price: "500 ₾", order: "E01" },
+      { category: "კოსმეტოლოგია", name: "ფილერი ReMedium / Replengen", price: "250 ₾", order: "E02" },
+      { category: "კოსმეტოლოგია", name: "ბოტოქსი (NABOTA / Botox)", price: "250 ₾", order: "E03" },
+      { category: "კოსმეტოლოგია", name: "ბუსტერი Karisma", price: "500 ₾", order: "E04" },
+    ];
+
+    servicesData.forEach((s, i) => {
+      const id = `s${i}`;
+      this.services.set(id, {
+        id,
+        category: s.category,
+        name: s.name,
+        description: s.category,
+        price: s.price,
+        order: s.order
+      });
+    });
+
+    this.servicesSection = {
+      id: "1",
+      title: "ჩვენი სერვისები",
+      subtitle: "Professional Services",
+      categoryDescriptions: JSON.stringify({
+        "მანიკური / პედიკური": "პროფესიონალური ფრჩხილების მოვლა პრემიუმ გელ-ლაქებითა და თანამედროვე ტექნიკებით. ჩვენი მანიკური და პედიკური მოიცავს ფრჩხილების გამაგრებას, დაგრძელებას და მხატვრულ დიზაინებს. / Professional nail care using premium gel polishes and advanced techniques. Our manicure and pedicure services include nail strengthening, extensions, and artistic designs.",
+        "ლაზერული ეპილაცია - ქალი": "განვითარებული ლაზერული ეპილაციის ტექნოლოგია უსაფრთხო და ეფექტური პროცედურებით ქალბატონებისთვის. / Advanced laser hair removal technology with safe and effective treatments for women.",
+        "ლაზერული ეპილაცია - კაცი": "განვითარებული ლაზერული ეპილაციის ტექნოლოგია უსაფრთხო და ეფექტური პროცედურებით მამაკაცებისთვის. / Advanced laser hair removal technology with safe and effective treatments for men.",
+        "ეკონომ პაკეტები": "სპეციალური ფასები და ეკონომიური შეთავაზებები კომპლექსურ ზონებზე. / Special prices and economy offers for combined treatment zones.",
+        "კოსმეტოლოგია": "პროფესიონალური კანის მოვლა და სილამაზის პროცედურები თანამედროვე ტექნიკებითა და მაღალი ხარისხის პროდუქტებით. / Professional skincare and beauty treatments using modern techniques and high-quality products."
+      })
+    };
+  }
+
+  async getUser(id: string) { return this.users.get(id); }
+  async getUserByUsername(username: string) { return Array.from(this.users.values()).find(u => u.username === username); }
+  async createUser(u: InsertUser) {
+    const id = Math.random().toString(36).substr(2, 9);
+    const user = { ...u, id };
+    this.users.set(id, user);
+    return user;
+  }
+  async createBooking(b: InsertBooking) {
+    const id = Math.random().toString(36).substr(2, 9);
+    const booking: Booking = {
+      ...b,
+      id,
+      duration: b.duration ?? "90",
+      status: b.status ?? "pending",
+      staffId: b.staffId ?? null,
+      staffName: b.staffName ?? null,
+      notes: b.notes ?? null,
+      calendarEventId: null,
+      rejectionReason: null
+    };
+    this.bookings.set(id, booking);
+    return booking;
+  }
+  async getBookingsByDate(date: string) { return Array.from(this.bookings.values()).filter(b => b.date === date); }
+  async getAllBookings() { return Array.from(this.bookings.values()); }
+  async getBookingById(id: string) { return this.bookings.get(id); }
+  async getPendingBookings() { return Array.from(this.bookings.values()).filter(b => b.status === "pending"); }
+  async getConfirmedBookings() { return Array.from(this.bookings.values()).filter(b => b.status === "confirmed"); }
+  async approveBooking(id: string, calendarEventId?: string) {
+    const b = this.bookings.get(id);
+    if (!b) return undefined;
+    b.status = "confirmed";
+    if (calendarEventId) b.calendarEventId = calendarEventId;
+    return b;
+  }
+  async rejectBooking(id: string, reason?: string) {
+    const b = this.bookings.get(id);
+    if (!b) return undefined;
+    b.status = "rejected";
+    b.rejectionReason = reason ?? null;
+    return b;
+  }
+  async modifyBooking(id: string, updates: { time?: string; duration?: string }) {
+    const b = this.bookings.get(id);
+    if (!b) return undefined;
+    if (updates.time) b.time = updates.time;
+    if (updates.duration) b.duration = updates.duration;
+    return b;
+  }
+  async deleteBooking(id: string) { return this.bookings.delete(id); }
+  async getHeroContent() { return this.heroContent; }
+  async updateHeroContent(c: Partial<InsertHeroContent>) {
+    this.heroContent = { ...this.heroContent, ...c } as HeroContent;
+    return this.heroContent;
+  }
+  async getAllServices() { return Array.from(this.services.values()).sort((a, b) => a.order.localeCompare(b.order)); }
+  async createService(s: InsertService) {
+    const id = Math.random().toString(36).substr(2, 9);
+    const service = { ...s, id };
+    this.services.set(id, service);
+    return service;
+  }
+  async updateService(id: string, s: Partial<InsertService>) {
+    const existing = this.services.get(id);
+    if (!existing) return undefined;
+    const updated = { ...existing, ...s };
+    this.services.set(id, updated);
+    return updated;
+  }
+  async deleteService(id: string) { return this.services.delete(id); }
+  async getSiteSettings() { return this.siteSettings; }
+  async updateSiteSettings(s: InsertSiteSettings) {
+    this.siteSettings = { ...this.siteSettings, ...s } as SiteSettings;
+    return this.siteSettings;
+  }
+  async getAllStaff() { return Array.from(this.staff.values()).sort((a, b) => a.order.localeCompare(b.order)); }
+  async getStaffById(id: string) { return this.staff.get(id); }
+  async getStaffByCategory(c: string) { return Array.from(this.staff.values()).filter(s => s.serviceCategory === c).sort((a, b) => a.order.localeCompare(b.order)); }
+  async createStaff(s: InsertStaff) {
+    const id = Math.random().toString(36).substr(2, 9);
+    const staff = { ...s, id, calendarId: s.calendarId ?? null };
+    this.staff.set(id, staff as Staff);
+    return staff as Staff;
+  }
+  async updateStaff(id: string, s: Partial<InsertStaff>) {
+    const existing = this.staff.get(id);
+    if (!existing) return undefined;
+    const updated = { ...existing, ...s, calendarId: s.calendarId ?? existing.calendarId ?? null };
+    this.staff.set(id, updated as Staff);
+    return updated as Staff;
+  }
+  async deleteStaff(id: string) { return this.staff.delete(id); }
+  async getAllGalleryImages() { return Array.from(this.galleryImages.values()).sort((a, b) => a.order.localeCompare(b.order)); }
+  async getGalleryImagesByCategory(c: string) { return Array.from(this.galleryImages.values()).filter(i => i.category === c).sort((a, b) => a.order.localeCompare(b.order)); }
+  async createGalleryImage(i: InsertGalleryImage) {
+    const id = Math.random().toString(36).substr(2, 9);
+    const image = { ...i, id };
+    this.galleryImages.set(id, image);
+    return image;
+  }
+  async updateGalleryImage(id: string, i: Partial<InsertGalleryImage>) {
+    const existing = this.galleryImages.get(id);
+    if (!existing) return undefined;
+    const updated = { ...existing, ...i };
+    this.galleryImages.set(id, updated);
+    return updated;
+  }
+  async deleteGalleryImage(id: string) { return this.galleryImages.delete(id); }
+  async getServicesSection() { return this.servicesSection; }
+  async updateServicesSection(s: InsertServicesSection) {
+    this.servicesSection = { ...this.servicesSection, ...s } as ServicesSection;
+    return this.servicesSection;
+  }
+  async getAllSpecialOffers() { return Array.from(this.specialOffers.values()); }
+  async getActiveSpecialOffer() { return Array.from(this.specialOffers.values()).find(o => o.isActive); }
+  async createSpecialOffer(o: InsertSpecialOffer) {
+    const id = Math.random().toString(36).substr(2, 9);
+    const offer = { ...o, id, isActive: o.isActive ?? true };
+    this.specialOffers.set(id, offer as SpecialOffer);
+    return offer as SpecialOffer;
+  }
+  async updateSpecialOffer(id: string, o: Partial<InsertSpecialOffer>) {
+    const existing = this.specialOffers.get(id);
+    if (!existing) return undefined;
+    const updated = { ...existing, ...o };
+    this.specialOffers.set(id, updated as SpecialOffer);
+    return updated as SpecialOffer;
+  }
+  async deleteSpecialOffer(id: string) { return this.specialOffers.delete(id); }
+  async getAllTrends() { return Array.from(this.trends.values()).sort((a, b) => a.order.localeCompare(b.order)); }
+  async getTrendsByCategory(c: string) { return Array.from(this.trends.values()).filter(t => t.category === c).sort((a, b) => a.order.localeCompare(b.order)); }
+  async createTrend(t: InsertTrend) {
+    const id = Math.random().toString(36).substr(2, 9);
+    const trend = { ...t, id };
+    this.trends.set(id, trend);
+    return trend;
+  }
+  async updateTrend(id: string, t: Partial<InsertTrend>) {
+    const existing = this.trends.get(id);
+    if (!existing) return undefined;
+    const updated = { ...existing, ...t };
+    this.trends.set(id, updated);
+    return updated;
+  }
+  async deleteTrend(id: string) { return this.trends.delete(id); }
+  async getTrendsSection() { return this.trendsSection; }
+  async updateTrendsSection(t: InsertTrendsSection) {
+    this.trendsSection = { ...this.trendsSection, ...t } as TrendsSection;
+    return this.trendsSection;
+  }
+}
+
+export const storage = process.env.DATABASE_URL ? new DatabaseStorage() : new MemStorage();

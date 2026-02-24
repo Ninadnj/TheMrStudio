@@ -1,53 +1,34 @@
 import { google } from 'googleapis';
 
-let connectionSettings: any;
+let calendarClient: ReturnType<typeof google.calendar> | null = null;
 
-async function getAccessToken() {
-  if (connectionSettings && connectionSettings.settings.expires_at && new Date(connectionSettings.settings.expires_at).getTime() > Date.now()) {
-    return connectionSettings.settings.access_token;
-  }
-  
-  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME
-  const xReplitToken = process.env.REPL_IDENTITY 
-    ? 'repl ' + process.env.REPL_IDENTITY 
-    : process.env.WEB_REPL_RENEWAL 
-    ? 'depl ' + process.env.WEB_REPL_RENEWAL 
-    : null;
-
-  if (!xReplitToken) {
-    throw new Error('X_REPLIT_TOKEN not found for repl/depl');
+export async function getGoogleCalendarClient() {
+  if (calendarClient) {
+    return calendarClient;
   }
 
-  connectionSettings = await fetch(
-    'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=google-calendar',
-    {
-      headers: {
-        'Accept': 'application/json',
-        'X_REPLIT_TOKEN': xReplitToken
-      }
-    }
-  ).then(res => res.json()).then(data => data.items?.[0]);
-
-  const accessToken = connectionSettings?.settings?.access_token || connectionSettings.settings?.oauth?.credentials?.access_token;
-
-  if (!connectionSettings || !accessToken) {
-    throw new Error('Google Calendar not connected');
+  // Use a Service Account JSON for server-to-server auth without expiration.
+  // The JSON file contents should be base64 encoded into process.env.GOOGLE_CALENDAR_SERVICE_ACCOUNT
+  if (!process.env.GOOGLE_CALENDAR_SERVICE_ACCOUNT) {
+    throw new Error('Google Calendar not configured: Missing GOOGLE_CALENDAR_SERVICE_ACCOUNT in .env');
   }
-  return accessToken;
-}
 
-// WARNING: Never cache this client.
-// Access tokens expire, so a new client must be created each time.
-// Always call this function again to get a fresh client.
-export async function getUncachableGoogleCalendarClient() {
-  const accessToken = await getAccessToken();
+  try {
+    // Decode base64 to JSON string
+    const decodedKey = Buffer.from(process.env.GOOGLE_CALENDAR_SERVICE_ACCOUNT, 'base64').toString('utf-8');
+    const credentials = JSON.parse(decodedKey);
 
-  const oauth2Client = new google.auth.OAuth2();
-  oauth2Client.setCredentials({
-    access_token: accessToken
-  });
+    const auth = new google.auth.GoogleAuth({
+      credentials,
+      scopes: ['https://www.googleapis.com/auth/calendar'],
+    });
 
-  return google.calendar({ version: 'v3', auth: oauth2Client });
+    calendarClient = google.calendar({ version: 'v3', auth });
+    return calendarClient;
+  } catch (err) {
+    console.error("Failed to parse GOOGLE_CALENDAR_SERVICE_ACCOUNT. Make sure it's a valid Base64 string of the JSON key", err);
+    throw new Error("Invalid Google Calendar credentials configuration");
+  }
 }
 
 // Create a calendar event for a booking
@@ -60,8 +41,8 @@ export async function createCalendarEvent(
   attendeeEmail?: string
 ) {
   try {
-    const calendar = await getUncachableGoogleCalendarClient();
-    
+    const calendar = await getGoogleCalendarClient();
+
     const event = {
       summary,
       description,
@@ -102,8 +83,8 @@ export async function deleteCalendarEvent(
   eventId: string
 ) {
   try {
-    const calendar = await getUncachableGoogleCalendarClient();
-    
+    const calendar = await getGoogleCalendarClient();
+
     await calendar.events.delete({
       calendarId,
       eventId,
@@ -123,8 +104,8 @@ export async function checkCalendarAvailability(
   date: string
 ) {
   try {
-    const calendar = await getUncachableGoogleCalendarClient();
-    
+    const calendar = await getGoogleCalendarClient();
+
     const timeMin = new Date(`${date}T00:00:00+04:00`).toISOString();
     const timeMax = new Date(`${date}T23:59:59+04:00`).toISOString();
 
@@ -146,8 +127,8 @@ export async function checkCalendarAvailability(
 // Get all available calendars
 export async function listCalendars() {
   try {
-    const calendar = await getUncachableGoogleCalendarClient();
-    
+    const calendar = await getGoogleCalendarClient();
+
     const response = await calendar.calendarList.list();
     return response.data.items || [];
   } catch (error) {
@@ -166,8 +147,8 @@ export async function getCalendarBusySlots(
       return new Set<string>();
     }
 
-    const calendar = await getUncachableGoogleCalendarClient();
-    
+    const calendar = await getGoogleCalendarClient();
+
     // Use freebusy query for efficient batch checking
     const timeMin = new Date(`${date}T00:00:00+04:00`).toISOString();
     const timeMax = new Date(`${date}T23:59:59+04:00`).toISOString();
@@ -186,17 +167,17 @@ export async function getCalendarBusySlots(
     if (response.data.calendars) {
       for (const [calendarId, calendarData] of Object.entries(response.data.calendars)) {
         const busyTimes = calendarData.busy || [];
-        
+
         for (const busyPeriod of busyTimes) {
           if (busyPeriod.start && busyPeriod.end) {
             // Convert busy period to hourly slots in Asia/Tbilisi timezone
             const startTime = new Date(busyPeriod.start);
             const endTime = new Date(busyPeriod.end);
-            
+
             // Calculate duration in minutes
             const durationMs = endTime.getTime() - startTime.getTime();
             const durationMinutes = Math.floor(durationMs / (60 * 1000));
-            
+
             // Get start hour and minute in Tbilisi timezone
             const tbilisiTimeStr = startTime.toLocaleString('en-US', {
               timeZone: 'Asia/Tbilisi',
@@ -204,19 +185,19 @@ export async function getCalendarBusySlots(
               minute: '2-digit',
               hour12: false
             });
-            
+
             const [startHours, startMinutes] = tbilisiTimeStr.split(':').map(Number);
-            
+
             // Calculate which 30-minute slots this busy period overlaps
             const startMinutesFromMidnight = startHours * 60 + startMinutes;
             const endMinutesFromMidnight = startMinutesFromMidnight + durationMinutes;
-            
+
             // Block all 30-minute slots from start to end
             // Round down to nearest 30-minute slot for start
             const firstSlotMinutes = Math.floor(startMinutesFromMidnight / 30) * 30;
             // Round up to include the slot where booking ends
             const lastSlotMinutes = Math.ceil(endMinutesFromMidnight / 30) * 30;
-            
+
             // Log for debugging
             const blockedSlots: string[] = [];
             for (let slotMinutes = firstSlotMinutes; slotMinutes < lastSlotMinutes; slotMinutes += 30) {
@@ -226,7 +207,7 @@ export async function getCalendarBusySlots(
               busySlots.add(slotTime);
               blockedSlots.push(slotTime);
             }
-            
+
             console.log(`Calendar busy slot: ${busyPeriod.start} → Tbilisi ${tbilisiTimeStr} → blocking slots: ${blockedSlots.join(', ')}`);
           }
         }

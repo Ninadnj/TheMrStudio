@@ -9,6 +9,10 @@ import Home from "@/pages/Home";
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
 import ScrollProgress from "@/components/ScrollProgress";
+import SmoothScroll from "@/components/SmoothScroll";
+import CustomCursor from "@/components/CustomCursor";
+import LiquidBackground from "@/components/LiquidBackground";
+import Preloader from "@/components/Preloader";
 
 const pageVariants = {
   initial: {
@@ -47,7 +51,7 @@ function AnimatedRoute({ component: Component, ...props }: any) {
 
 function Router() {
   const [location] = useLocation();
-  
+
   return (
     <AnimatePresence mode="wait">
       <Switch location={location} key={location}>
@@ -66,11 +70,16 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <ScrollProgress />
-        <Toaster />
-        <Router />
-      </TooltipProvider>
+      <SmoothScroll>
+        <Preloader />
+        <TooltipProvider>
+          <CustomCursor />
+          <LiquidBackground />
+          <ScrollProgress />
+          <Toaster />
+          <Router />
+        </TooltipProvider>
+      </SmoothScroll>
     </QueryClientProvider>
   );
 }

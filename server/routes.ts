@@ -19,6 +19,8 @@ import { chatWithGemini } from "./gemini-chat";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
 import {
   loginHandler,
   logoutHandler,
@@ -32,23 +34,41 @@ import {
   sendBookingRejectionToClient
 } from "./email-notifications";
 import { ObjectPermission } from "./objectAcl";
+// Define uploadDir globally so the static file handler can access it
+const uploadDir = process.env.PRIVATE_OBJECT_DIR || ".local/storage/uploads";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Setup multer for local file uploads
-  const uploadDir = process.env.PRIVATE_OBJECT_DIR || ".local/storage/uploads";
-  if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-  }
+  // Setup flexible local/cloud upload storage
+  let storageConfig;
 
-  const storageConfig = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, uploadDir);
-    },
-    filename: function (req, file, cb) {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-      cb(null, uniqueSuffix + path.extname(file.originalname));
+  if (process.env.CLOUDINARY_URL) {
+    // If Cloudinary URL is defined (e.g., on Render), save direct to cloud
+    console.log("[Upload Config] CLOUDINARY_URL detected. Using Cloudinary for image storage.");
+    storageConfig = new CloudinaryStorage({
+      cloudinary: cloudinary,
+      params: {
+        folder: 'the-mr-studio-uploads', // The folder name in your Cloudinary account
+        allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'heic'],
+        public_id: (req: any, file: any) => Date.now() + '-' + Math.round(Math.random() * 1E9),
+      } as any, // Cast to any to handle type mismatch in @types
+    });
+  } else {
+    // Local development fallback
+    console.log("[Upload Config] No CLOUDINARY_URL detected. Falling back to local disk storage.");
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
     }
-  });
+
+    storageConfig = multer.diskStorage({
+      destination: function (req, file, cb) {
+        cb(null, uploadDir);
+      },
+      filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + path.extname(file.originalname));
+      }
+    });
+  }
 
   const upload = multer({ storage: storageConfig });
   // Auth routes
@@ -855,8 +875,16 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
       }
 
       // Return the URL path to access the file
-      const objectId = req.file.filename;
-      const objectPath = `/objects/uploads/${objectId}`;
+      let objectPath = "";
+
+      // Cloudinary returns the full absolute URL in req.file.path
+      // Local multer returns the absolute disk path in req.file.path and just the filename in req.file.filename
+      if (req.file.path && req.file.path.startsWith('http')) {
+        objectPath = req.file.path;
+      } else {
+        const objectId = req.file.filename;
+        objectPath = `/objects/uploads/${objectId}`;
+      }
 
       console.log(`[Upload] File saved directly: ${objectPath}`);
       res.json({ uploadURL: objectPath, success: true });

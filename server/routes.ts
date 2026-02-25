@@ -44,6 +44,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   if (process.env.CLOUDINARY_URL) {
     // If Cloudinary URL is defined (e.g., on Render), save direct to cloud
     console.log("[Upload Config] CLOUDINARY_URL detected. Using Cloudinary for image storage.");
+
+    try {
+      // Bulletproof manual parsing to prevent SDK auto-hydration crashes
+      const urlMatches = process.env.CLOUDINARY_URL.match(/cloudinary:\/\/([^:]+):([^@]+)@(.+)/);
+      if (urlMatches) {
+        cloudinary.config({
+          api_key: urlMatches[1],
+          api_secret: urlMatches[2],
+          cloud_name: urlMatches[3]
+        });
+        console.log("[Upload Config] Configured Cloudinary explicitly.");
+      } else {
+        // Fallback to letting the SDK try and parse it if regex fails
+        cloudinary.config(true);
+      }
+    } catch (e) {
+      console.error("[Upload Config] Failed to parse Cloudinary URL for explicit config", e);
+    }
+
     storageConfig = new CloudinaryStorage({
       cloudinary: cloudinary,
       params: {

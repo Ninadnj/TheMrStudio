@@ -133,15 +133,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
-      // IMPORTANT: Only count PENDING bookings from database
-      // Confirmed bookings are checked via Google Calendar (single source of truth)
-      // This ensures manual calendar deletions free up slots automatically
+      // IMPORTANT: Only count PENDING and CONFIRMED bookings from database
+      // This ensures if Google Calendar isn't synced, the local system still works perfectly
+      // (The Set data structure automatically prevents duplicate double-counting if Google Calendar is active)
       const relevantBookings = bookings.filter(b => {
-        const isPending = b.status === 'pending';
+        const isBlocking = b.status === 'pending' || b.status === 'confirmed';
         const matchesStaff = staffId && typeof staffId === "string"
           ? staffIdsWithSameCalendar.includes(b.staffId ?? '')
           : true;
-        return isPending && matchesStaff;
+        return isBlocking && matchesStaff;
       });
 
       for (const booking of relevantBookings) {

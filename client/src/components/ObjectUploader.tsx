@@ -43,7 +43,7 @@ export function ObjectUploader({
         fieldName: "file",
         formData: true,
       })
-      .on("complete", (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
+      .on("complete", (result: any) => {
         console.log("[ObjectUploader] Upload complete:", result);
         onComplete?.(result);
         setShowModal(false);

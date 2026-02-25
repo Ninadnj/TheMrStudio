@@ -13,6 +13,7 @@ import { initializeAdmin } from "./auth";
 neonConfig.webSocketConstructor = ws;
 
 const app = express();
+app.set("trust proxy", 1);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 

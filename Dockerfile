@@ -21,7 +21,7 @@ WORKDIR /app
 
 # Copy package files and install production deps only
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev --legacy-peer-deps
+RUN npm ci --legacy-peer-deps
 
 # Copy built output
 COPY --from=builder /app/dist ./dist

@@ -54,7 +54,7 @@ export async function createCalendarEvent(
         dateTime: endTime,
         timeZone: 'Asia/Tbilisi',
       },
-      attendees: attendeeEmail ? [{ email: attendeeEmail }] : [],
+      // Removed attendees to avoid 'Domain-Wide Delegation of Authority' Errors for Service Accounts
       reminders: {
         useDefault: false,
         overrides: [
@@ -67,7 +67,7 @@ export async function createCalendarEvent(
     const response = await calendar.events.insert({
       calendarId,
       requestBody: event,
-      sendUpdates: 'all', // Send email notifications to attendees
+      // Removed sendUpdates: 'all' to avoid error
     });
 
     return response.data;

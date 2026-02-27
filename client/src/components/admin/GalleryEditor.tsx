@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertGalleryImageSchema, type GalleryImage } from "@shared/schema";
 import { z } from "zod";
+import { isVideoUrl } from "@/lib/videoUtils";
 
 // Enhanced schema with proper validation for required fields
 const galleryFormSchema = insertGalleryImageSchema.extend({
@@ -258,14 +259,30 @@ export default function GalleryEditor() {
 
               {form.watch("imageUrl") && (
                 <div className="rounded-md overflow-hidden border border-border">
-                  <img
-                    src={form.watch("imageUrl")}
-                    alt="Preview"
-                    className="w-full h-48 object-cover"
-                    onError={(e) => {
-                      e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23ddd' width='100' height='100'/%3E%3C/svg%3E";
-                    }}
-                  />
+                  {(() => {
+                    const previewUrl = form.watch("imageUrl");
+                    const isVideo = isVideoUrl(previewUrl);
+                    const className = "w-full h-48 object-cover";
+                    return isVideo ? (
+                      <video
+                        src={previewUrl}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className={className}
+                      />
+                    ) : (
+                      <img
+                        src={previewUrl}
+                        alt="Preview"
+                        className={className}
+                        onError={(e) => {
+                          e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23ddd' width='100' height='100'/%3E%3C/svg%3E";
+                        }}
+                      />
+                    );
+                  })()}
                 </div>
               )}
 
@@ -316,11 +333,26 @@ export default function GalleryEditor() {
                         .map((image) => (
                           <div key={image.id} className="space-y-2">
                             <div className="aspect-square rounded-md overflow-hidden bg-muted border border-border relative group">
-                              <img
-                                src={image.imageUrl}
-                                alt={`${cat.value} ${image.order}`}
-                                className="w-full h-full object-cover"
-                              />
+                              {(() => {
+                                const isVideo = isVideoUrl(image.imageUrl);
+                                const className = "w-full h-full object-cover";
+                                return isVideo ? (
+                                  <video
+                                    src={image.imageUrl}
+                                    autoPlay
+                                    loop
+                                    muted
+                                    playsInline
+                                    className={className}
+                                  />
+                                ) : (
+                                  <img
+                                    src={image.imageUrl}
+                                    alt={`${cat.value} ${image.order}`}
+                                    className={className}
+                                  />
+                                );
+                              })()}
                               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                                 <Button
                                   size="sm"

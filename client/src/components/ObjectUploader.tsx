@@ -33,8 +33,8 @@ export function ObjectUploader({
     new Uppy({
       restrictions: {
         maxNumberOfFiles,
-        maxFileSize,
-        allowedFileTypes: ['image/*'],
+        maxFileSize: 104857600, // 100MB to allow for videos
+        allowedFileTypes: ['image/*', 'video/*'],
       },
       autoProceed: false,
     })

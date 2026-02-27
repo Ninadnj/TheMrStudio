@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, useMemo, type PointerEvent } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion, useInView, useMotionValue, useTransform } from "framer-motion";
 import type { GalleryImage } from "@shared/schema";
+import { isVideoUrl } from "@/lib/videoUtils";
 
 // Bento grid pattern - defines which images should be larger
 const getBentoPattern = (index: number): string => {
@@ -18,7 +19,7 @@ const getBentoPattern = (index: number): string => {
     "col-span-1 row-span-2", // Tall (8)
     "col-span-2 row-span-1", // Wide (9)
   ];
-  
+
   return patterns[index % patterns.length];
 };
 
@@ -51,7 +52,7 @@ export default function Gallery() {
   }, [images]);
 
   const categories = Object.keys(imagesByCategory).sort();
-  
+
   const displayedImages = useMemo(() => {
     if (selectedCategory) {
       return imagesByCategory[selectedCategory] || [];
@@ -62,7 +63,7 @@ export default function Gallery() {
   const handlePointerMove = (index: number, e: PointerEvent<HTMLDivElement>) => {
     const cardRef = cardRefs.current[index];
     if (!cardRef) return;
-    
+
     const rect = cardRef.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -109,7 +110,7 @@ export default function Gallery() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (lightboxImage === null) return;
-      
+
       if (e.key === 'Escape') closeLightbox();
       if (e.key === 'ArrowLeft') goToPrevious();
       if (e.key === 'ArrowRight') goToNext();
@@ -155,11 +156,10 @@ export default function Gallery() {
                     }, 150);
                   }
                 }}
-                className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 magnetic-button ${
-                  selectedCategory === null
+                className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 magnetic-button ${selectedCategory === null
                     ? 'bg-theme-accent text-white scale-105'
                     : 'bg-card hover-elevate border border-border text-foreground'
-                }`}
+                  }`}
                 data-testid="filter-all"
               >
                 ყველა / All
@@ -178,11 +178,10 @@ export default function Gallery() {
                         }, 150);
                       }
                     }}
-                    className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 magnetic-button ${
-                      selectedCategory === category
+                    className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 magnetic-button ${selectedCategory === category
                         ? 'bg-theme-accent text-white scale-105'
                         : 'bg-card hover-elevate border border-border text-foreground'
-                    }`}
+                      }`}
                     data-testid={`filter-${category}`}
                   >
                     {category}
@@ -201,9 +200,9 @@ export default function Gallery() {
               <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[200px] gap-4" key={categoryKey}>
                 {displayedImages.map((image, index) => {
                   const pattern = getBentoPattern(index);
-                  
+
                   const rotation = cardRotations[index] || { x: 0, y: 0 };
-                  
+
                   return (
                     <motion.div
                       key={image.id}
@@ -241,12 +240,27 @@ export default function Gallery() {
                       data-testid={`gallery-image-${image.id}`}
                     >
                       <div className="relative w-full h-full rounded-xl overflow-hidden shadow-lg">
-                        <img
-                          src={image.imageUrl}
-                          alt={`${image.category} ${image.order}`}
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 image-reveal"
-                          loading="lazy"
-                        />
+                        {(() => {
+                          const isVideo = isVideoUrl(image.imageUrl);
+                          const className = "w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 image-reveal";
+                          return isVideo ? (
+                            <video
+                              src={image.imageUrl}
+                              autoPlay
+                              loop
+                              muted
+                              playsInline
+                              className={className}
+                            />
+                          ) : (
+                            <img
+                              src={image.imageUrl}
+                              alt={`${image.category} ${image.order}`}
+                              className={className}
+                              loading="lazy"
+                            />
+                          );
+                        })()}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-all duration-300">
                           <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                             <div className="flex items-center gap-2">
@@ -314,11 +328,26 @@ export default function Gallery() {
             className="max-w-6xl max-h-[90vh] w-full mx-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <img
-              src={displayedImages[lightboxImage].imageUrl}
-              alt={`${displayedImages[lightboxImage].category} ${displayedImages[lightboxImage].order}`}
-              className="w-full h-full object-contain rounded-lg"
-            />
+            {(() => {
+              const popupImage = displayedImages[lightboxImage];
+              const isVideo = isVideoUrl(popupImage.imageUrl);
+              const className = "w-full h-full object-contain rounded-lg";
+              return isVideo ? (
+                <video
+                  src={popupImage.imageUrl}
+                  autoPlay
+                  controls
+                  playsInline
+                  className={className}
+                />
+              ) : (
+                <img
+                  src={popupImage.imageUrl}
+                  alt={`${popupImage.category} ${popupImage.order}`}
+                  className={className}
+                />
+              );
+            })()}
             <div className="text-center mt-4">
               <p className="text-white text-lg font-medium">
                 {displayedImages[lightboxImage].category}

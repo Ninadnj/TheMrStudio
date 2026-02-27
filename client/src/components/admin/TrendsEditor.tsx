@@ -32,6 +32,7 @@ import { Plus, Edit, Trash2, Save, X, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ObjectUploader } from "@/components/ObjectUploader";
 import type { UploadResult } from "@uppy/core";
+import { isVideoUrl } from "@/lib/videoUtils";
 
 export default function TrendsEditor() {
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -424,7 +425,7 @@ export default function TrendsEditor() {
                         </FormControl>
                         <ObjectUploader
                           maxNumberOfFiles={1}
-                          maxFileSize={10485760}
+                          maxFileSize={104857600}
                           onComplete={async (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
                             if (result.successful && result.successful.length > 0) {
                               const filePath = result.successful[0].response?.body?.uploadURL;
@@ -540,11 +541,26 @@ export default function TrendsEditor() {
                   className="flex items-start gap-4 p-4 border rounded-lg hover-elevate"
                   data-testid={`trend-item-${trend.id}`}
                 >
-                  <img
-                    src={trend.imageUrl}
-                    alt={trend.title}
-                    className="w-24 h-24 object-cover rounded-md"
-                  />
+                  {(() => {
+                    const isVideo = isVideoUrl(trend.imageUrl);
+                    const className = "w-24 h-24 object-cover rounded-md";
+                    return isVideo ? (
+                      <video
+                        src={trend.imageUrl}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className={className}
+                      />
+                    ) : (
+                      <img
+                        src={trend.imageUrl}
+                        alt={trend.title}
+                        className={className}
+                      />
+                    );
+                  })()}
                   <div className="flex-1 min-w-0">
                     <h4 className="font-semibold text-foreground mb-1">{trend.title}</h4>
                     <p className="text-sm text-muted-foreground line-clamp-2 mb-2">

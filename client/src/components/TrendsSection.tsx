@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import type { Trend, TrendsSection as TrendsSectionType } from "@shared/schema";
+import { isVideoUrl } from "@/lib/videoUtils";
 
 export default function TrendsSection() {
   const sectionRef = useRef(null);
@@ -66,11 +67,26 @@ export default function TrendsSection() {
               key={trend.id}
               className="relative w-[80vw] md:w-[60vw] lg:w-[40vw] flex-shrink-0 aspect-[3/4] md:aspect-[16/9] rounded-lg overflow-hidden group"
             >
-              <img
-                src={trend.imageUrl}
-                alt={trend.title}
-                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-              />
+              {(() => {
+                const isVideo = isVideoUrl(trend.imageUrl);
+                const className = "w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105";
+                return isVideo ? (
+                  <video
+                    src={trend.imageUrl}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className={className}
+                  />
+                ) : (
+                  <img
+                    src={trend.imageUrl}
+                    alt={trend.title}
+                    className={className}
+                  />
+                );
+              })()}
               <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors duration-500" />
 
               <div className="absolute bottom-6 left-6 right-6">

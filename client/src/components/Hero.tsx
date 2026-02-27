@@ -7,6 +7,8 @@ import { useQuery } from "@tanstack/react-query";
 import type { HeroContent, SpecialOffer } from "@shared/schema";
 import heroBackground from "@assets/dnj0209_Stylized_illustration_of_a_fashionable_woman_wearing__c8336757-5e7e-4c3b-8d06-de464e7c4e40_1_1759491029908.png";
 
+import { isVideoUrl } from "@/lib/videoUtils";
+
 export default function Hero() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const { scrollY } = useScroll();
@@ -52,11 +54,25 @@ export default function Hero() {
         className="absolute top-0 right-[-10%] w-[110%] md:w-[70%] h-full origin-top-right z-0"
         style={{ y: parallaxY }}
       >
-        <img
-          src={heroContent?.backgroundImage || heroBackground}
-          alt="Elegant Fashion"
-          className="w-full h-full object-cover opacity-60"
-        />
+        {(() => {
+          const bgSrc = heroContent?.backgroundImage || heroBackground;
+          return isVideoUrl(bgSrc) ? (
+            <video
+              src={bgSrc}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover opacity-60 pointer-events-none"
+            />
+          ) : (
+            <img
+              src={bgSrc}
+              alt="Elegant Fashion"
+              className="w-full h-full object-cover opacity-60"
+            />
+          );
+        })()}
         {/* Harsh Gradient cutoff to blend with Obsidian */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#09090b] via-[#09090b]/50 to-transparent w-[40%]"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/80 to-transparent h-[40%] bottom-0 mt-auto"></div>

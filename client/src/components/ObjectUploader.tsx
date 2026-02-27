@@ -42,6 +42,7 @@ export function ObjectUploader({
         endpoint: "/api/objects/upload",
         fieldName: "file",
         formData: true,
+        withCredentials: true,
       })
       .on("complete", (result: any) => {
         console.log("[ObjectUploader] Upload complete:", result);

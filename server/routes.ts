@@ -887,30 +887,38 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
   // Object Storage Routes - Replaced Replit sidecar logic with standard local upload
 
   // Handle direct file uploads from admin
-  app.post("/api/objects/upload", requireAuth, upload.single('file'), async (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ error: "No file uploaded" });
+  // Wrap multer in error handler to catch Cloudinary SDK crashes gracefully
+  app.post("/api/objects/upload", requireAuth, (req, res) => {
+    upload.single('file')(req, res, async (multerError) => {
+      try {
+        if (multerError) {
+          console.error("[Upload] Multer/Cloudinary error:", multerError);
+          return res.status(500).json({ error: `Upload failed: ${multerError.message}` });
+        }
+
+        if (!req.file) {
+          return res.status(400).json({ error: "No file uploaded" });
+        }
+
+        // Return the URL path to access the file
+        let objectPath = "";
+
+        // Cloudinary returns the full absolute URL in req.file.path
+        // Local multer returns the absolute disk path in req.file.path and just the filename in req.file.filename
+        if (req.file.path && req.file.path.startsWith('http')) {
+          objectPath = req.file.path;
+        } else {
+          const objectId = req.file.filename;
+          objectPath = `/objects/uploads/${objectId}`;
+        }
+
+        console.log(`[Upload] File saved directly: ${objectPath}`);
+        res.json({ uploadURL: objectPath, success: true });
+      } catch (error: any) {
+        console.error("[Upload] Error processing upload:", error);
+        res.status(500).json({ error: `Failed to upload file: ${error.message}` });
       }
-
-      // Return the URL path to access the file
-      let objectPath = "";
-
-      // Cloudinary returns the full absolute URL in req.file.path
-      // Local multer returns the absolute disk path in req.file.path and just the filename in req.file.filename
-      if (req.file.path && req.file.path.startsWith('http')) {
-        objectPath = req.file.path;
-      } else {
-        const objectId = req.file.filename;
-        objectPath = `/objects/uploads/${objectId}`;
-      }
-
-      console.log(`[Upload] File saved directly: ${objectPath}`);
-      res.json({ uploadURL: objectPath, success: true });
-    } catch (error) {
-      console.error("Error processing local upload:", error);
-      res.status(500).json({ error: "Failed to upload file" });
-    }
+    });
   });
 
   // Serve uploaded images directly from local storage

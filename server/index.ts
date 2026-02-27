@@ -48,8 +48,8 @@ app.use((req, res, next) => {
       "script-src 'self' 'unsafe-inline' 'unsafe-eval'",      // Vite HMR needs unsafe-eval in dev
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com https://fonts.cdnfonts.com",
-      "img-src 'self' data: blob: https://storage.googleapis.com",
-      "connect-src 'self' https://*.neon.tech wss://*.neon.tech",
+      "img-src 'self' data: blob: https://storage.googleapis.com https://res.cloudinary.com",
+      "connect-src 'self' https://*.neon.tech wss://*.neon.tech https://*.googleapis.com",
       "frame-ancestors 'self'",
     ].join("; ")
   );

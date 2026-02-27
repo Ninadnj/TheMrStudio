@@ -288,7 +288,7 @@ export default function BookingForm() {
                 <Label htmlFor="serviceDetails" className="text-xs uppercase tracking-widest text-theme-muted group-focus-within:text-theme-accent transition-colors">პროცედურის დეტალები</Label>
                 <Textarea
                   id="serviceDetails"
-                  placeholder="აიღწერეთ სასურველი პროცედურა..."
+                  placeholder="მიუთითეთ სასურველი პროცედურა..."
                   className="input-underline text-lg min-h-[80px] px-0 bg-transparent text-white placeholder:text-white/20 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none resize-none border-b border-white/10"
                   value={formData.serviceDetails}
                   onChange={(e) => setFormData({ ...formData, serviceDetails: e.target.value })}
@@ -381,10 +381,10 @@ export default function BookingForm() {
               </div>
 
               <div className="space-y-2 group">
-                <Label htmlFor="notes" className="text-xs uppercase tracking-widest text-theme-muted group-focus-within:text-theme-accent transition-colors">დამატებითი შენიშვნელობები</Label>
+                <Label htmlFor="notes" className="text-xs uppercase tracking-widest text-theme-muted group-focus-within:text-theme-accent transition-colors">დამატებითი შენიშვნები</Label>
                 <Textarea
                   id="notes"
-                  placeholder="სპეცსაილური სახითხოები ან სურვილები?"
+                  placeholder="სპეციალური შენიშვნები/ სურვილები"
                   className="input-underline text-lg min-h-[80px] px-0 bg-transparent text-white placeholder:text-white/20 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none resize-none border-b border-white/10"
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}

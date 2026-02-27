@@ -27,7 +27,7 @@ import {
   checkAuthHandler,
   requireAuth
 } from "./auth";
-import { createCalendarEvent } from "./google-calendar";
+import { createCalendarEvent, testCalendarAccess, listCalendars, getGoogleCalendarClient } from "./google-calendar";
 import {
   sendNewBookingNotification,
   sendBookingConfirmationToClient,
@@ -131,6 +131,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const bookings = await storage.getBookingsByDate(date);
+      console.log(`[Availability] Date: ${date}, StaffId: ${staffId || 'none'}, Total bookings for date: ${bookings.length}`);
 
       // Calculate all blocked time slots based on booking duration
       const bookedTimesSet = new Set<string>();
@@ -140,15 +141,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let staffIdsWithSameCalendar: string[] = [];
       if (staffId && typeof staffId === "string") {
         const selectedStaff = await storage.getStaffById(staffId);
-        if (selectedStaff?.calendarId) {
+        if (!selectedStaff) {
+          console.warn(`[Availability] WARNING: No staff found with ID: ${staffId}`);
+          staffIdsWithSameCalendar = [staffId];
+        } else if (selectedStaff?.calendarId) {
           // Find all staff with the same calendar ID
           const allStaff = await storage.getAllStaff();
           staffIdsWithSameCalendar = allStaff
             .filter(s => s.calendarId === selectedStaff.calendarId)
             .map(s => s.id);
 
-          console.log(`Staff ${selectedStaff.name} shares calendar with ${staffIdsWithSameCalendar.length} staff member(s)`);
+          console.log(`[Availability] Staff ${selectedStaff.name} (calendarId: ${selectedStaff.calendarId}) shares calendar with ${staffIdsWithSameCalendar.length} staff member(s)`);
         } else {
+          console.warn(`[Availability] Staff ${selectedStaff.name} has NO calendarId configured`);
           staffIdsWithSameCalendar = [staffId];
         }
       }
@@ -163,6 +168,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           : true;
         return isBlocking && matchesStaff;
       });
+
+      console.log(`[Availability] Relevant bookings (pending/confirmed matching staff): ${relevantBookings.length}`);
+      for (const b of relevantBookings) {
+        console.log(`  - Booking ${b.id}: time=${b.time}, duration=${b.duration}, status=${b.status}, staffId=${b.staffId}`);
+      }
 
       for (const booking of relevantBookings) {
         try {
@@ -197,15 +207,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
+
       // Check Google Calendar - only for the selected staff member if provided
+      let calendarIds: string[] = [];
       try {
-        let calendarIds: string[] = [];
 
         if (staffId && typeof staffId === "string") {
           // Only check the selected staff member's calendar
           const selectedStaff = await storage.getStaffById(staffId);
           if (selectedStaff?.calendarId) {
             calendarIds = [selectedStaff.calendarId];
+            console.log(`[Availability] Will check Google Calendar: ${selectedStaff.calendarId}`);
+          } else {
+            console.log(`[Availability] Staff has no calendarId, skipping Google Calendar check`);
           }
         } else {
           // No staff selected - check all calendars (fallback for compatibility)
@@ -213,6 +227,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           calendarIds = staff
             .filter(s => s.calendarId)
             .map(s => s.calendarId as string);
+          console.log(`[Availability] No staffId provided, checking all ${calendarIds.length} calendars`);
         }
 
         if (calendarIds.length > 0) {
@@ -226,10 +241,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       } catch (calendarError) {
         // Log error but don't fail the request - fallback to database bookings only
-        console.error('Error checking Google Calendar availability:', calendarError);
+        console.error('[Availability] ERROR checking Google Calendar:', calendarError);
+        console.error('[Availability] Calendar IDs attempted:', calendarIds);
       }
 
       const bookedTimes = Array.from(bookedTimesSet);
+      console.log(`[Availability] Final blocked times: [${bookedTimes.join(', ')}]`);
 
       res.json({ bookedTimes });
     } catch (error) {
@@ -267,6 +284,87 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Calendar diagnostic endpoint
+  app.get("/api/admin/calendar-diagnostic", requireAuth, async (req, res) => {
+    try {
+      const { listCalendars, testCalendarAccess } = await import('./google-calendar.js');
+      const results: any = {
+        timestamp: new Date().toISOString(),
+        serviceAccountConfigured: !!process.env.GOOGLE_CALENDAR_SERVICE_ACCOUNT,
+        staff: [],
+        recentBookings: [],
+        calendarApiTest: null,
+      };
+
+      // Test Google Calendar API connectivity
+      try {
+        const calendars = await listCalendars();
+        results.calendarApiTest = {
+          success: true,
+          visibleCalendars: calendars.map(c => ({ id: c.id, summary: c.summary })),
+        };
+      } catch (error: any) {
+        results.calendarApiTest = {
+          success: false,
+          error: error?.message || String(error),
+        };
+      }
+
+      // Check each staff member's calendar access
+      const allStaff = await storage.getAllStaff();
+      for (const s of allStaff) {
+        const staffInfo: any = {
+          id: s.id,
+          name: s.name,
+          serviceCategory: s.serviceCategory,
+          calendarId: s.calendarId,
+          hasCalendarId: !!s.calendarId,
+        };
+
+        if (s.calendarId) {
+          staffInfo.calendarAccess = await testCalendarAccess(s.calendarId);
+        } else {
+          staffInfo.calendarAccess = { success: false, error: 'No calendarId configured' };
+        }
+
+        results.staff.push(staffInfo);
+      }
+
+      // Get recent bookings
+      const allBookings = await storage.getAllBookings();
+      results.recentBookings = allBookings
+        .sort((a, b) => b.date.localeCompare(a.date))
+        .slice(0, 10)
+        .map(b => ({
+          id: b.id,
+          date: b.date,
+          time: b.time,
+          duration: b.duration,
+          status: b.status,
+          staffId: b.staffId,
+          staffName: b.staffName,
+          calendarEventId: b.calendarEventId,
+          service: b.service,
+        }));
+
+      results.summary = {
+        totalStaff: allStaff.length,
+        staffWithCalendarId: allStaff.filter(s => s.calendarId).length,
+        staffWithoutCalendarId: allStaff.filter(s => !s.calendarId).length,
+        totalBookings: allBookings.length,
+        pendingBookings: allBookings.filter(b => b.status === 'pending').length,
+        confirmedBookings: allBookings.filter(b => b.status === 'confirmed').length,
+        confirmedWithCalendarEvent: allBookings.filter(b => b.status === 'confirmed' && b.calendarEventId).length,
+        confirmedWithoutCalendarEvent: allBookings.filter(b => b.status === 'confirmed' && !b.calendarEventId).length,
+      };
+
+      res.json(results);
+    } catch (error: any) {
+      console.error('Calendar diagnostic error:', error);
+      res.status(500).json({ error: error?.message || 'Diagnostic failed' });
+    }
+  });
+
   app.post("/api/admin/bookings/:id/approve", requireAuth, async (req, res) => {
     try {
       const { id } = req.params;
@@ -282,6 +380,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create Google Calendar event before approving
       if (existingBooking.staffId) {
         const staff = await storage.getStaffById(existingBooking.staffId);
+        console.log(`[Approve] Booking ${id}: staff=${staff?.name}, calendarId="${staff?.calendarId}", date=${existingBooking.date}, time=${existingBooking.time}`);
+
+        if (!staff) {
+          console.error(`[Approve] WARNING: Staff not found for ID: ${existingBooking.staffId}`);
+        } else if (!staff.calendarId) {
+          console.error(`[Approve] WARNING: Staff ${staff.name} has NO calendarId - calendar event will NOT be created`);
+        }
 
         if (staff?.calendarId) {
           try {
@@ -329,8 +434,9 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
             }
 
             console.log(`Calendar event ${calendarEventId} created for approved booking ${id}`);
-          } catch (calendarError) {
-            console.error('Failed to create calendar event:', calendarError);
+          } catch (calendarError: any) {
+            console.error(`[Approve] FAILED to create calendar event for booking ${id}:`, calendarError?.message || calendarError);
+            console.error(`[Approve] CalendarId used: ${staff.calendarId}`);
           }
         }
       }

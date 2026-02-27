@@ -221,3 +221,29 @@ export async function getCalendarBusySlots(
     return new Set<string>();
   }
 }
+
+// Test if the service account can access a specific calendar
+export async function testCalendarAccess(calendarId: string): Promise<{ success: boolean; error?: string; calendarSummary?: string }> {
+  try {
+    const calendar = await getGoogleCalendarClient();
+
+    const response = await calendar.events.list({
+      calendarId,
+      maxResults: 1,
+      timeMin: new Date().toISOString(),
+    });
+
+    return {
+      success: true,
+      calendarSummary: response.data.summary || 'No summary',
+    };
+  } catch (error: any) {
+    const errorMessage = error?.message || String(error);
+    const statusCode = error?.code || error?.response?.status;
+
+    return {
+      success: false,
+      error: `[${statusCode || 'UNKNOWN'}] ${errorMessage}`,
+    };
+  }
+}

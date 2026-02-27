@@ -140,7 +140,7 @@ export default function PriceList() {
         {/* Mobile Header */}
         <div className="lg:hidden mb-12 text-center">
           <span className="text-theme-muted tracking-widest text-xs uppercase mb-2 block">სერვისი / ფასი</span>
-          <h2 className="font-display text-4xl mb-4 text-foreground">ფასები</h2>
+          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl mb-4 text-foreground">ფასები</h2>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">

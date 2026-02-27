@@ -71,12 +71,7 @@ export default function Services() {
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 0.8 }}
         >
-          <div className="flex items-center gap-6 mb-6">
-            <span className="text-[10px] text-[var(--theme-accent)] tracking-[0.3em] uppercase font-mono border border-[var(--theme-accent)]/30 px-3 py-1">
-              ჩვენი სერვისები
-            </span>
-          </div>
-          <h2 className="font-display text-5xl md:text-7xl lg:text-[6vw] leading-[0.9] text-[#fafafa] tracking-tighter uppercase">
+          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl leading-[0.9] text-[#fafafa] tracking-tighter uppercase">
             ჩვენი სერვისები
           </h2>
         </motion.div>

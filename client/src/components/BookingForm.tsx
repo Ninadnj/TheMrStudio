@@ -210,9 +210,14 @@ export default function BookingForm() {
         <div className="max-w-4xl mx-auto">
           <div className={`text-center mb-12 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             <span className="text-white/50 tracking-kicker text-xs md:text-sm block mb-4 uppercase">კონციერჯი</span>
-            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl mb-4 text-white font-normal">
-              დაჯავშნისმოთხოვნა
-            </h2>
+            <div className="mb-12">
+              <h2 className="font-display text-3xl md:text-4xl lg:text-5xl mb-4 text-white font-normal">
+                რეზერვაცია
+              </h2>
+              <p className="text-white/60 tracking-widest uppercase text-sm font-light">
+                დაგეგმეთ თქვენი დრო
+              </p>
+            </div>
             <p className="text-base md:text-lg text-theme-muted max-w-lg mx-auto font-light leading-relaxed">
               აირჩიეთ სასურველი სერვისი და დრო. დაჯავშნის შემდეგ, ჩვენ მალევე დაგიკავშირდებით დასადასტურებლად.
             </p>

@@ -67,7 +67,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       cloudinary: cloudinary,
       params: {
         folder: 'the-mr-studio-uploads', // The folder name in your Cloudinary account
-        allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'heic'],
+        allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'heic', 'mp4', 'mov', 'webm', 'mkv'],
+        resource_type: 'auto',
         public_id: (req: any, file: any) => Date.now() + '-' + Math.round(Math.random() * 1E9),
       } as any, // Cast to any to handle type mismatch in @types
     });

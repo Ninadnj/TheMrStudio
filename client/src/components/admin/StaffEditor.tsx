@@ -66,10 +66,11 @@ export function StaffEditor() {
         description: "Staff member added successfully",
       });
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error("Staff creation error:", error);
       toast({
-        title: "Error",
-        description: "Failed to add staff member",
+        title: "შეცდომა",
+        description: error?.message || "Failed to add staff member",
         variant: "destructive",
       });
     },
@@ -88,10 +89,11 @@ export function StaffEditor() {
         description: "Staff member updated successfully",
       });
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error("Staff update error:", error);
       toast({
-        title: "Error",
-        description: "Failed to update staff member",
+        title: "შეცდომა",
+        description: error?.message || "Failed to update staff member",
         variant: "destructive",
       });
     },
@@ -195,9 +197,9 @@ export function StaffEditor() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="Nail">Nail (Manicure/Pedicure/Design)</SelectItem>
-                        <SelectItem value="Epilation">Epilation (Laser Hair Removal)</SelectItem>
-                        <SelectItem value="Cosmetology">Cosmetology</SelectItem>
+                        <SelectItem value="Nail">მანიკური / პედიკური</SelectItem>
+                        <SelectItem value="Epilation">ლაზერული ეპილაცია</SelectItem>
+                        <SelectItem value="Cosmetology">კოსმეტოლოგია</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -286,7 +288,10 @@ export function StaffEditor() {
                       <div>
                         <h3 className="font-medium">{member.name}</h3>
                         <p className="text-sm text-muted-foreground">
-                          {member.serviceCategory}
+                          {member.serviceCategory === "Nail" ? "მანიკური / პედიკური" :
+                           member.serviceCategory === "Epilation" ? "ლაზერული ეპილაცია" :
+                           member.serviceCategory === "Cosmetology" ? "კოსმეტოლოგია" :
+                           member.serviceCategory}
                         </p>
                         {member.calendarId && (
                           <p className="text-xs text-muted-foreground mt-1">

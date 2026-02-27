@@ -106,7 +106,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const settings = await storage.getSiteSettings();
       const adminEmail = settings?.adminEmail || process.env.EMAIL_USER;
       if (adminEmail) {
-        await sendNewBookingNotification(booking, adminEmail);
+        try {
+          await sendNewBookingNotification(booking, adminEmail);
+        } catch (mailError) {
+          console.error("Failed to send admin notification email, but booking was saved:", mailError);
+        }
       }
 
       res.status(201).json(booking);
@@ -446,7 +450,11 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
 
       if (booking) {
         // Notify client
-        await sendBookingConfirmationToClient(booking);
+        try {
+          await sendBookingConfirmationToClient(booking);
+        } catch (mailError) {
+          console.error("Failed to send approval email, but booking was approved:", mailError);
+        }
       }
 
       res.json(booking);
@@ -468,7 +476,11 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
 
       // Notify client
       if (booking) {
-        await sendBookingRejectionToClient(booking, reason);
+        try {
+          await sendBookingRejectionToClient(booking, reason);
+        } catch (mailError) {
+          console.error("Failed to send rejection email, but booking was rejected:", mailError);
+        }
       }
 
       res.json(booking);

@@ -88,7 +88,7 @@ export async function deleteCalendarEvent(
     await calendar.events.delete({
       calendarId,
       eventId,
-      sendUpdates: 'all', // Send cancellation notifications
+      // Removed sendUpdates: 'all' to avoid permissions error
     });
 
     console.log(`Deleted calendar event ${eventId} from calendar ${calendarId}`);

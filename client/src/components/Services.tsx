@@ -111,13 +111,13 @@ export default function Services() {
                 </div>
               </div>
 
-              {/* Hover Image Reveal - Always visible at low opacity, pops on hover */}
-              <div className="absolute top-0 right-0 w-1/2 md:w-[40%] h-full opacity-30 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none z-0 hidden md:block">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#09090b] via-[#09090b]/50 to-transparent group-hover:from-[#fafafa] group-hover:via-[#fafafa]/50 transition-colors duration-500 z-10" />
+              {/* Hover Image Reveal - Visible on mobile at low opacity, pops on hover/desktop */}
+              <div className="absolute top-0 right-0 w-full md:w-[40%] h-full opacity-25 md:opacity-30 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none z-0">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#09090b] via-[#09090b]/70 md:via-[#09090b]/50 to-transparent group-hover:from-[#fafafa] group-hover:via-[#fafafa]/50 transition-colors duration-500 z-10" />
                 <img
                   src={service.image}
                   alt={service.title}
-                  className="w-full h-full object-cover transition-all duration-700 opacity-80 group-hover:opacity-100"
+                  className="w-full h-full object-cover transition-all duration-700 opacity-60 md:opacity-80 group-hover:opacity-100"
                 />
               </div>
             </motion.div>

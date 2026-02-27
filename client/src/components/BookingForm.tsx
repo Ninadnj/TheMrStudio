@@ -106,15 +106,22 @@ export default function BookingForm() {
     mutationFn: async (bookingData: any) => {
       return await apiRequest("POST", "/api/bookings", bookingData);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
+    onSuccess: async () => {
+      // First invalidate ALL availability queries (for any staffId/date combination)
+      await queryClient.invalidateQueries({
         queryKey: ["/api/bookings/availability"],
-        exact: false
       });
+      // Also refetch any active availability queries to get fresh data
+      await queryClient.refetchQueries({
+        queryKey: ["/api/bookings/availability"],
+      });
+
       toast({
         title: "მოთხოვნა გაგზავნილია!",
         description: "თქვენი დაჯავშნის მოთხოვნა გაიგზავნა. სპეციალისტი დაგიკავშირდებათ დასადასტურებლად",
       });
+
+      // Reset form AFTER cache is invalidated
       setFormData({
         fullName: "",
         email: "",
@@ -126,7 +133,6 @@ export default function BookingForm() {
         notes: ""
       });
       setDate(undefined);
-      // Let the popover close naturally if it was open, but here we just reset state
     },
     onError: (error: any) => {
       console.error('Booking error:', error);
@@ -208,7 +214,7 @@ export default function BookingForm() {
               დაჯავშნისმოთხოვნა
             </h2>
             <p className="text-base md:text-lg text-theme-muted max-w-lg mx-auto font-light leading-relaxed">
-              აირჩიეთ სასურველი სერვისი და დრო. დადასტურებთ მოგერავე დროით დაგიკავშირდებთ.
+              აირჩიეთ სასურველი სერვისი და დრო. დაჯავშნის შემდეგ, ჩვენ მალევე დაგიკავშირდებით დასადასტურებლად.
             </p>
           </div>
 

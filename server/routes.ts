@@ -104,8 +104,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Send email notification to admin if configured
       const settings = await storage.getSiteSettings();
-      if (settings?.adminEmail) {
-        await sendNewBookingNotification(booking, settings.adminEmail);
+      const adminEmail = settings?.adminEmail || process.env.EMAIL_USER;
+      if (adminEmail) {
+        await sendNewBookingNotification(booking, adminEmail);
       }
 
       res.status(201).json(booking);

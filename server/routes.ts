@@ -583,10 +583,16 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
 
   app.post("/api/admin/staff", requireAuth, async (req, res) => {
     try {
-      const validatedData = insertStaffSchema.parse(req.body);
+      // Normalize empty calendarId to null (form sends "" but DB expects null)
+      const body = { ...req.body };
+      if (body.calendarId === "" || body.calendarId === undefined) {
+        body.calendarId = null;
+      }
+      const validatedData = insertStaffSchema.parse(body);
       const staffMember = await storage.createStaff(validatedData);
       res.status(201).json(staffMember);
     } catch (error: any) {
+      console.error("Staff creation error:", error);
       if (error.name === "ZodError") {
         const validationError = fromZodError(error);
         res.status(400).json({ error: validationError.message });
@@ -600,8 +606,14 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
     try {
       const { id } = req.params;
 
+      // Normalize empty calendarId to null
+      const body = { ...req.body };
+      if (body.calendarId === "" || body.calendarId === undefined) {
+        body.calendarId = null;
+      }
+
       // Validate the update data - partial schema since not all fields required for update
-      const validatedData = insertStaffSchema.partial().parse(req.body);
+      const validatedData = insertStaffSchema.partial().parse(body);
 
       const staffMember = await storage.updateStaff(id, validatedData);
       if (!staffMember) {

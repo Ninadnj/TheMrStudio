@@ -32,7 +32,7 @@ export default function SpecialOfferBanner() {
 
   return (
     <div
-      className={`fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] sm:w-auto max-w-2xl bg-theme/60 backdrop-blur-xl border border-white/10 text-white/90 py-3 px-6 rounded-none shadow-[0_8px_32px_rgba(0,0,0,0.3)] z-[100] transition-all duration-500 hover:bg-theme/80 hover:border-white/20 hover:text-white ${bannerClasses}`}
+      className={`fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] sm:w-auto max-w-2xl bg-theme/80 backdrop-blur-xl border border-border text-theme-text py-3 px-6 rounded-none shadow-[0_8px_32px_rgba(0,0,0,0.3)] z-[100] transition-all duration-500 hover:bg-theme hover:border-theme-accent/50 ${bannerClasses}`}
       onClick={activeOffer.link ? handleClick : undefined}
       data-testid="special-offer-banner"
     >
@@ -46,7 +46,7 @@ export default function SpecialOfferBanner() {
         <Button
           size="icon"
           variant="ghost"
-          className="flex-shrink-0 h-6 w-6 text-white hover:bg-white/20 no-default-hover-elevate"
+          className="flex-shrink-0 h-6 w-6 text-theme-muted hover:text-theme-text hover:bg-theme-muted/10 no-default-hover-elevate"
           onClick={(e) => {
             e.stopPropagation();
             setDismissed(true);

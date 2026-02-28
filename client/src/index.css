@@ -12,9 +12,9 @@
   --theme-muted1: #71717a;
   --theme-muted2: #a1a1aa;
 
-  /* Cashmere & Stone Accent (Organic Luxury) */
-  --theme-accent: #8B8074;
-  --theme-accent-hover: #736A5F;
+  /* Cashmere & Stone Accent (Unified to preferred light beige) */
+  --theme-accent: #D4C9BD;
+  --theme-accent-hover: #E6DED5;
   /* Deep Emerald Alternative (Old Money Premium) */
   /* --theme-accent: #064E3B; */
   /* --theme-accent-hover: #022C22; */
@@ -154,7 +154,7 @@
 
   .bg-theme-accent {
     background-color: var(--theme-accent);
-    color: white;
+    color: #141311;
   }
 
   /* Editorial Typography */

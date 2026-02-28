@@ -234,9 +234,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getStaffByCategory(category: string): Promise<Staff[]> {
-    // Map split booking categories back to the unified staff category
-    const dbCategory = (category === "Manicure" || category === "Pedicure") ? "Nail" : category;
-    const staff = await db.select().from(staffTable).where(eq(staffTable.serviceCategory, dbCategory));
+    const staff = await db.select().from(staffTable).where(eq(staffTable.serviceCategory, category));
     return staff.sort((a, b) => a.order.localeCompare(b.order));
   }
 
@@ -580,7 +578,7 @@ export class MemStorage implements IStorage {
   }
   async getAllStaff() { return Array.from(this.staff.values()).sort((a, b) => a.order.localeCompare(b.order)); }
   async getStaffById(id: string) { return this.staff.get(id); }
-  async getStaffByCategory(c: string) { const cat = (c === "Manicure" || c === "Pedicure") ? "Nail" : c; return Array.from(this.staff.values()).filter(s => s.serviceCategory === cat).sort((a, b) => a.order.localeCompare(b.order)); }
+  async getStaffByCategory(c: string) { return Array.from(this.staff.values()).filter(s => s.serviceCategory === c).sort((a, b) => a.order.localeCompare(b.order)); }
   async createStaff(s: InsertStaff) {
     const id = Math.random().toString(36).substr(2, 9);
     const staff = { ...s, id, calendarId: s.calendarId ?? null };

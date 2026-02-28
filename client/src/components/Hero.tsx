@@ -48,7 +48,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-end justify-start bg-theme pt-32 pb-20 px-6 md:px-12 overflow-hidden overflow-x-hidden">
+    <section className="relative min-h-screen flex items-end justify-start bg-[#141311] pt-32 pb-20 px-6 md:px-12 overflow-hidden overflow-x-hidden">
       {/* Brutalist Background Image (Bleeding out right) */}
       <motion.div
         className="absolute top-0 right-[-10%] w-[110%] md:w-[70%] h-full origin-top-right z-0"
@@ -74,8 +74,8 @@ export default function Hero() {
           );
         })()}
         {/* Harsh Gradient cutoff to blend with Obsidian */}
-        <div className="absolute inset-0 bg-gradient-to-r from-theme-bg via-theme-bg/50 to-transparent w-[40%]"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-theme-bg via-theme-bg/80 to-transparent h-[40%] bottom-0 mt-auto"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-[#141311] via-[#141311]/50 to-transparent w-[40%]"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#141311] via-[#141311]/80 to-transparent h-[40%] bottom-0 mt-auto"></div>
       </motion.div>
 
       {/* Massive Typographic Overlay */}
@@ -87,7 +87,7 @@ export default function Hero() {
           className="w-full"
         >
           {/* Metadata Kicker */}
-          <div className="flex items-center gap-6 mb-8">
+          <div className="flex items-center gap-6 mb-8 mt-20">
             <span className="text-[10px] text-[var(--theme-accent)] tracking-[0.3em] uppercase font-mono border border-[var(--theme-accent)]/30 px-3 py-1">
               Est. 2026 // Tbilisi
             </span>
@@ -95,14 +95,14 @@ export default function Hero() {
           </div>
 
           {/* Brutalist Headline */}
-          <h1 className="font-display text-[12vw] md:text-[9vw] leading-[0.8] text-[#fafafa] tracking-tighter uppercase mix-blend-difference mb-12 sm:mb-8 pb-4">
-            <span className="block pr-4">THE MR</span>
-            <span className="block italic text-[15vw] md:text-[11vw] font-serif text-[var(--theme-accent)] pr-4">Studio</span>
+          <h1 className="font-display text-[10vw] md:text-[8vw] leading-[0.8] text-[#F2EFE9] tracking-tighter uppercase mb-12 sm:mb-8 pb-4">
+            <span className="block pr-4 relative z-10 drop-shadow-2xl">THE MR</span>
+            <span className="block italic text-[12vw] md:text-[9vw] font-serif text-[var(--theme-accent)] pr-4 relative z-10 drop-shadow-2xl">Studio</span>
           </h1>
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8 sm:gap-12 pl-2 sm:pl-4 max-w-4xl">
             <motion.div>
-              <p className="font-sans text-sm md:text-base text-[#fafafa]/60 font-light leading-relaxed tracking-wide border-l border-[var(--theme-accent)]/30 pl-6">
+              <p className="font-sans text-sm md:text-base text-[#F2EFE9]/70 font-light leading-relaxed tracking-wide border-l border-[var(--theme-accent)]/30 pl-6">
                 Redefining the standard of premium<br />Nail and Laser Aesthetics.
               </p>
             </motion.div>

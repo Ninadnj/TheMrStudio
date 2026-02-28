@@ -105,13 +105,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Send email notification to admin if configured
       const settings = await storage.getSiteSettings();
-      const adminEmail = settings?.adminEmail || process.env.EMAIL_USER;
+      const adminEmail = settings?.adminEmail || process.env.ADMIN_NOTIFICATION_EMAIL;
       if (adminEmail) {
         try {
           await sendNewBookingNotification(booking, adminEmail);
+          console.log(`Admin notification triggered for booking ${booking.id} → ${adminEmail}`);
         } catch (mailError) {
           console.error("Failed to send admin notification email, but booking was saved:", mailError);
         }
+      } else {
+        console.warn("No admin email configured (set ADMIN_NOTIFICATION_EMAIL in .env or adminEmail in site settings)");
       }
 
       res.status(201).json(booking);
@@ -453,6 +456,7 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
         // Notify client
         try {
           await sendBookingConfirmationToClient(booking);
+          console.log(`Client confirmation email sent for booking ${booking.id} → ${booking.email}`);
         } catch (mailError) {
           console.error("Failed to send approval email, but booking was approved:", mailError);
         }

@@ -44,7 +44,7 @@ export default function Preloader() {
                         delay: 0.2
                     }}
                 >
-                    THE MR <span className="italic font-light">Studio</span>
+                    Remember, <span className="italic font-light">You Are Beautiful</span>
                 </motion.h1>
 
                 {/* Loading Line */}

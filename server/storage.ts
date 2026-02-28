@@ -234,7 +234,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getStaffByCategory(category: string): Promise<Staff[]> {
-    const staff = await db.select().from(staffTable).where(eq(staffTable.serviceCategory, category));
+    // Map split booking categories back to the unified staff category
+    const dbCategory = (category === "Manicure" || category === "Pedicure") ? "Nail" : category;
+    const staff = await db.select().from(staffTable).where(eq(staffTable.serviceCategory, dbCategory));
     return staff.sort((a, b) => a.order.localeCompare(b.order));
   }
 

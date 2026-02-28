@@ -31,7 +31,8 @@ const timeSlots = [
 ];
 
 const serviceCategories = [
-  { value: "Nail", label: "მანიკური / პედიკური" },
+  { value: "Manicure", label: "მანიკური" },
+  { value: "Pedicure", label: "პედიკური" },
   { value: "Epilation", label: "ლაზერული ეპილაცია" },
   { value: "Cosmetology", label: "კოსმეტოლოგია" }
 ];

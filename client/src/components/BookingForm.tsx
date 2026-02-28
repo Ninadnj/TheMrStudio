@@ -234,10 +234,10 @@ export default function BookingForm() {
             <form onSubmit={handleSubmit} className="space-y-12">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
                 <div className="space-y-2 group">
-                  <Label htmlFor="fullName" className="text-xs uppercase tracking-widest text-theme-muted group-focus-within:text-theme-accent transition-colors">სახელი და გვარი</Label>
+                  <Label htmlFor="fullName" className="text-sm font-medium tracking-wide text-white/70 group-focus-within:text-white transition-colors">სახელი და გვარი</Label>
                   <Input
                     id="fullName"
-                    className="input-underline text-lg h-12 px-0 bg-transparent text-white placeholder:text-white/20 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none border-b border-white/10"
+                    className="input-underline text-base h-12 px-0 bg-transparent text-white placeholder:text-white/40 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none border-b border-white/10"
                     placeholder="შეიყვანეთ თქვენი სახელი და გვარი"
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
@@ -247,11 +247,11 @@ export default function BookingForm() {
                 </div>
 
                 <div className="space-y-2 group">
-                  <Label htmlFor="email" className="text-xs uppercase tracking-widest text-theme-muted group-focus-within:text-theme-accent transition-colors">ელ. ფოსტა</Label>
+                  <Label htmlFor="email" className="text-sm font-medium tracking-wide text-white/70 group-focus-within:text-white transition-colors">ელ. ფოსტა</Label>
                   <Input
                     id="email"
                     type="email"
-                    className="input-underline text-lg h-12 px-0 bg-transparent text-white placeholder:text-white/20 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none border-b border-white/10"
+                    className="input-underline text-base h-12 px-0 bg-transparent text-white placeholder:text-white/40 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none border-b border-white/10"
                     placeholder="example@email.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -263,11 +263,11 @@ export default function BookingForm() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
                 <div className="space-y-2 group">
-                  <Label htmlFor="phone" className="text-xs uppercase tracking-widest text-theme-muted group-focus-within:text-theme-accent transition-colors">ტელეფონის ნომერი</Label>
+                  <Label htmlFor="phone" className="text-sm font-medium tracking-wide text-white/70 group-focus-within:text-white transition-colors">ტელეფონის ნომერი</Label>
                   <Input
                     id="phone"
                     type="tel"
-                    className="input-underline text-lg h-12 px-0 bg-transparent text-white placeholder:text-white/20 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none border-b border-white/10"
+                    className="input-underline text-base h-12 px-0 bg-transparent text-white placeholder:text-white/40 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none border-b border-white/10"
                     placeholder="+995 555 000 000"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -277,12 +277,12 @@ export default function BookingForm() {
                 </div>
 
                 <div className="space-y-2 group">
-                  <Label htmlFor="serviceCategory" className="text-xs uppercase tracking-widest text-theme-muted group-focus-within:text-theme-accent transition-colors">სერვისის კატეგორია</Label>
+                  <Label htmlFor="serviceCategory" className="text-sm font-medium tracking-wide text-white/70 group-focus-within:text-white transition-colors">სერვისის კატეგორია</Label>
                   <Select
                     value={formData.serviceCategory}
                     onValueChange={(value) => setFormData({ ...formData, serviceCategory: value, staffId: "" })}
                   >
-                    <SelectTrigger id="serviceCategory" className="input-underline text-lg h-12 px-0 bg-transparent text-white border-b border-white/10 focus:ring-0 focus:ring-offset-0 rounded-none shadow-none">
+                    <SelectTrigger id="serviceCategory" className="input-underline text-base h-12 px-0 bg-transparent text-white border-b border-white/10 focus:ring-0 focus:ring-offset-0 rounded-none shadow-none">
                       <SelectValue placeholder="კატეგორიის არჩევა" />
                     </SelectTrigger>
                     <SelectContent>
@@ -297,11 +297,11 @@ export default function BookingForm() {
               </div>
 
               <div className="space-y-2 group">
-                <Label htmlFor="serviceDetails" className="text-xs uppercase tracking-widest text-theme-muted group-focus-within:text-theme-accent transition-colors">პროცედურის დეტალები</Label>
+                <Label htmlFor="serviceDetails" className="text-sm font-medium tracking-wide text-white/70 group-focus-within:text-white transition-colors">პროცედურის დეტალები</Label>
                 <Textarea
                   id="serviceDetails"
                   placeholder="მიუთითეთ სასურველი პროცედურა..."
-                  className="input-underline text-lg min-h-[80px] px-0 bg-transparent text-white placeholder:text-white/20 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none resize-none border-b border-white/10"
+                  className="input-underline text-base min-h-[80px] px-0 bg-transparent text-white placeholder:text-white/40 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none resize-none border-b border-white/10"
                   value={formData.serviceDetails}
                   onChange={(e) => setFormData({ ...formData, serviceDetails: e.target.value })}
                   required
@@ -310,13 +310,13 @@ export default function BookingForm() {
               </div>
 
               <div className="space-y-2 group">
-                <Label htmlFor="staff" className="text-xs uppercase tracking-widest text-theme-muted group-focus-within:text-theme-accent transition-colors">სპეციალისტი</Label>
+                <Label htmlFor="staff" className="text-sm font-medium tracking-wide text-white/70 group-focus-within:text-white transition-colors">სპეციალისტი</Label>
                 <Select
                   value={formData.staffId}
                   onValueChange={(value) => setFormData({ ...formData, staffId: value })}
                   disabled={!formData.serviceCategory || staffLoading}
                 >
-                  <SelectTrigger id="staff" className="input-underline text-lg h-12 px-0 bg-transparent text-white border-b border-white/10 focus:ring-0 focus:ring-offset-0 rounded-none shadow-none disabled:opacity-50">
+                  <SelectTrigger id="staff" className="input-underline text-base h-12 px-0 bg-transparent text-white border-b border-white/10 focus:ring-0 focus:ring-offset-0 rounded-none shadow-none disabled:opacity-50">
                     <SelectValue placeholder={
                       !formData.serviceCategory
                         ? "ჯერ აირჩიეთ კატეგორია"
@@ -339,12 +339,12 @@ export default function BookingForm() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
                 <div className="space-y-2 group">
-                  <Label className="text-xs uppercase tracking-widest text-theme-muted group-focus-within:text-theme-accent transition-colors">თარიღი</Label>
+                  <Label className="text-sm font-medium tracking-wide text-white/70 group-focus-within:text-white transition-colors">თარიღი</Label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
                         variant="ghost"
-                        className={`w-full justify-start text-left font-normal text-lg h-12 px-0 bg-transparent rounded-none border-b border-white/10 hover:bg-transparent hover:text-theme-accent ${!date && "text-white/40"
+                        className={`w-full justify-start text-left font-normal text-base h-12 px-0 bg-transparent rounded-none border-b border-white/10 hover:bg-transparent hover:text-white ${!date && "text-white/40"
                           }`}
                       >
                         <CalendarIcon className="mr-3 h-5 w-5 opacity-50" />
@@ -366,13 +366,13 @@ export default function BookingForm() {
                 </div>
 
                 <div className="space-y-2 group">
-                  <Label htmlFor="time" className="text-xs uppercase tracking-widest text-theme-muted group-focus-within:text-theme-accent transition-colors">დრო</Label>
+                  <Label htmlFor="time" className="text-sm font-medium tracking-wide text-white/70 group-focus-within:text-white transition-colors">დრო</Label>
                   <Select
                     value={formData.time}
                     onValueChange={(value) => setFormData({ ...formData, time: value })}
                     disabled={!date || !formData.staffId}
                   >
-                    <SelectTrigger id="time" className="input-underline text-lg h-12 px-0 bg-transparent text-white border-b border-white/10 focus:ring-0 focus:ring-offset-0 rounded-none shadow-none disabled:opacity-50">
+                    <SelectTrigger id="time" className="input-underline text-base h-12 px-0 bg-transparent text-white border-b border-white/10 focus:ring-0 focus:ring-offset-0 rounded-none shadow-none disabled:opacity-50">
                       <SelectValue placeholder="დროის არჩევა" />
                     </SelectTrigger>
                     <SelectContent>
@@ -393,11 +393,11 @@ export default function BookingForm() {
               </div>
 
               <div className="space-y-2 group">
-                <Label htmlFor="notes" className="text-xs uppercase tracking-widest text-theme-muted group-focus-within:text-theme-accent transition-colors">დამატებითი შენიშვნები</Label>
+                <Label htmlFor="notes" className="text-sm font-medium tracking-wide text-white/70 group-focus-within:text-white transition-colors">დამატებითი შენიშვნები</Label>
                 <Textarea
                   id="notes"
                   placeholder="სპეციალური შენიშვნები/ სურვილები"
-                  className="input-underline text-lg min-h-[80px] px-0 bg-transparent text-white placeholder:text-white/20 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none resize-none border-b border-white/10"
+                  className="input-underline text-base min-h-[80px] px-0 bg-transparent text-white placeholder:text-white/40 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none resize-none border-b border-white/10"
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 />

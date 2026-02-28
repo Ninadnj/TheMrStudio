@@ -44,7 +44,7 @@ export default function Preloader() {
                         delay: 0.2
                     }}
                 >
-                    Remember, <span className="italic font-light">You Are Beautiful</span>
+                    Elevating <span className="italic font-light">Your Beauty</span>
                 </motion.h1>
 
                 {/* Loading Line */}

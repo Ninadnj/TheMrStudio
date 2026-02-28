@@ -218,7 +218,7 @@ export default function ServicesEditor() {
             {services.map((service) => (
               <div
                 key={service.id}
-                className="flex items-center justify-between p-4 border rounded-lg hover-elevate"
+                className="flex items-center justify-between p-4 border rounded-none hover-elevate"
                 data-testid={`service-item-${service.id}`}
               >
                 <div className="flex-1">

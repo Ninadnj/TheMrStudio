@@ -47,34 +47,31 @@
 
 /* Silk & Sand - Dark Mode (Obsidian Bronze) */
 .dark {
-  --theme-bg: #09090B;
-  --theme-text: #FAFAFA;
-  --theme-muted1: #A1A1AA;
-  --theme-muted2: #52525B;
+  --theme-bg: #141311;
+  --theme-text: #F2EFE9;
+  --theme-muted1: #A3A09A;
+  --theme-muted2: #5C5A56;
 
   /* Cashmere & Stone Accent (Organic Luxury) */
   --theme-accent: #D4C9BD;
   --theme-accent-hover: #E6DED5;
-  /* Deep Emerald Alternative (Old Money Premium) */
-  /* --theme-accent: #34D399; */
-  /* --theme-accent-hover: #6EE7B7; */
 
-  --theme-surface: #18181B;
-  --theme-line: #27272A;
+  --theme-surface: #1E1D1B;
+  --theme-line: #33312E;
 
-  /* Shadcn/UI Mappings - Stark Dark */
-  --background: 240 10% 4%;
-  --foreground: 0 0% 98%;
-  --card: 240 10% 4%;
-  --card-foreground: 0 0% 98%;
-  --popover: 240 10% 4%;
-  --popover-foreground: 0 0% 98%;
-  --primary: 0 0% 98%;
-  --primary-foreground: 240 10% 4%;
-  --secondary: 240 4% 16%;
-  --secondary-foreground: 0 0% 98%;
-  --muted: 240 4% 16%;
-  --muted-foreground: 240 5% 65%;
+  /* Shadcn/UI Mappings - Stark Dark (Adjusted for Warmer Tone) */
+  --background: 40 5% 7%;
+  --foreground: 40 15% 93%;
+  --card: 40 5% 10%;
+  --card-foreground: 40 15% 93%;
+  --popover: 40 5% 10%;
+  --popover-foreground: 40 15% 93%;
+  --primary: 40 15% 93%;
+  --primary-foreground: 40 5% 7%;
+  --secondary: 40 5% 15%;
+  --secondary-foreground: 40 15% 93%;
+  --muted: 40 5% 15%;
+  --muted-foreground: 40 5% 60%;
   --accent: 32 35% 54%;
   --accent-foreground: 0 0% 98%;
   --destructive: 0 62% 30%;

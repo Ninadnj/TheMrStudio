@@ -48,7 +48,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-end justify-start bg-[#09090b] pt-32 pb-20 px-6 md:px-12 overflow-hidden overflow-x-hidden">
+    <section className="relative min-h-screen flex items-end justify-start bg-theme pt-32 pb-20 px-6 md:px-12 overflow-hidden overflow-x-hidden">
       {/* Brutalist Background Image (Bleeding out right) */}
       <motion.div
         className="absolute top-0 right-[-10%] w-[110%] md:w-[70%] h-full origin-top-right z-0"
@@ -74,8 +74,8 @@ export default function Hero() {
           );
         })()}
         {/* Harsh Gradient cutoff to blend with Obsidian */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#09090b] via-[#09090b]/50 to-transparent w-[40%]"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/80 to-transparent h-[40%] bottom-0 mt-auto"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-theme-bg via-theme-bg/50 to-transparent w-[40%]"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-theme-bg via-theme-bg/80 to-transparent h-[40%] bottom-0 mt-auto"></div>
       </motion.div>
 
       {/* Massive Typographic Overlay */}
@@ -111,7 +111,7 @@ export default function Hero() {
               <MagneticButton>
                 <button
                   onClick={() => document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" })}
-                  className="w-full sm:w-auto bg-[var(--theme-accent)] hover:bg-[#fafafa] hover:text-[#09090b] text-[#09090b] px-10 md:px-12 py-7 md:py-8 text-xs md:text-sm font-mono tracking-[0.2em] uppercase rounded-none transition-colors duration-500"
+                  className="w-full sm:w-auto bg-[var(--theme-accent)] hover:bg-[#fafafa] hover:text-theme-bg text-theme-bg px-10 md:px-12 py-7 md:py-8 text-xs md:text-sm font-mono tracking-[0.2em] uppercase rounded-none transition-colors duration-500"
                 >
                   დაჯავშნა
                 </button>

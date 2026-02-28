@@ -189,7 +189,7 @@ export default function NailShapeQuiz() {
         {!showResults ? (
           <>
             {/* Progress Bar */}
-            <div className="w-full h-2 bg-muted rounded-full mb-8 overflow-hidden">
+            <div className="w-full h-2 bg-muted rounded-none mb-8 overflow-hidden">
               <motion.div
                 className="h-full bg-theme-accent"
                 initial={{ width: 0 }}
@@ -219,7 +219,7 @@ export default function NailShapeQuiz() {
                       <motion.button
                         key={index}
                         onClick={() => handleAnswer(option.value)}
-                        className="w-full p-4 text-left rounded-lg border border-border hover-elevate active-elevate-2 transition-all bg-card"
+                        className="w-full p-4 text-left rounded-none border border-border hover-elevate active-elevate-2 transition-all bg-card"
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         data-testid={`quiz-option-${option.value}`}
@@ -258,7 +258,7 @@ export default function NailShapeQuiz() {
               </h4>
               <p className="text-muted-foreground mb-8">თქვენი იდეალური არჩევანი</p>
 
-              <div className="bg-theme-accent/10 rounded-xl p-6 mb-6">
+              <div className="bg-theme-accent/10 rounded-none p-6 mb-6">
                 <div className="mb-4 flex justify-center">
                   {(() => {
                     const Icon = nailShapes[recommendation].icon;

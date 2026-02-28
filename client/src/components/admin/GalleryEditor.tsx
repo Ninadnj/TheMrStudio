@@ -258,7 +258,7 @@ export default function GalleryEditor() {
               />
 
               {form.watch("imageUrl") && (
-                <div className="rounded-md overflow-hidden border border-border">
+                <div className="rounded-none overflow-hidden border border-border">
                   {(() => {
                     const previewUrl = form.watch("imageUrl");
                     const isVideo = isVideoUrl(previewUrl);
@@ -332,7 +332,7 @@ export default function GalleryEditor() {
                         .sort((a, b) => parseInt(a.order) - parseInt(b.order))
                         .map((image) => (
                           <div key={image.id} className="space-y-2">
-                            <div className="aspect-square rounded-md overflow-hidden bg-muted border border-border relative group">
+                            <div className="aspect-square rounded-none overflow-hidden bg-muted border border-border relative group">
                               {(() => {
                                 const isVideo = isVideoUrl(image.imageUrl);
                                 const className = "w-full h-full object-cover";

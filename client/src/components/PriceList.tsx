@@ -167,20 +167,20 @@ export default function PriceList() {
                     className={cn(
                       `flex items-center gap-4 group transition-all duration-300 min-w-max lg:min-w-0 text-left px-4 py-4 rounded-none border`,
                       activeCategory === list.id
-                        ? "border-[var(--theme-accent)] bg-[var(--theme-accent)] text-[#09090b]"
+                        ? "border-[var(--theme-accent)] bg-[var(--theme-accent)] text-theme-bg"
                         : "border-[var(--theme-accent)]/20 hover:border-[var(--theme-accent)] bg-transparent text-foreground/50"
                     )}
                   >
                     <span className={cn(
                       "font-mono text-lg transition-all duration-300 hidden md:block",
-                      activeCategory === list.id ? "text-[#09090b]" : "text-foreground/30"
+                      activeCategory === list.id ? "text-theme-bg" : "text-foreground/30"
                     )}>
                       0{staticPriceLists.indexOf(list) + 1}
                     </span>
                     <div className="text-left">
                       <span className={cn(
                         "text-sm lg:text-base font-mono uppercase tracking-widest block transition-all duration-300",
-                        activeCategory === list.id ? "text-[#09090b]" : "text-foreground/50 group-hover:text-foreground/80"
+                        activeCategory === list.id ? "text-theme-bg" : "text-foreground/50 group-hover:text-foreground/80"
                       )}>
                         {list.category}
                       </span>

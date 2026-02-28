@@ -63,7 +63,7 @@ export default function Services() {
   };
 
   return (
-    <section id="services" className="py-24 md:py-36 bg-[#09090b] relative overflow-hidden" ref={sectionRef}>
+    <section id="services" className="py-24 md:py-36 bg-theme relative overflow-hidden" ref={sectionRef}>
       <div className="max-w-[100rem] mx-auto px-6 md:px-12">
         <motion.div
           className="mb-16 md:mb-24"
@@ -86,22 +86,22 @@ export default function Services() {
             <motion.div
               key={service.id}
               variants={cardVariants}
-              className="group relative border-b border-[var(--theme-accent)]/30 py-10 md:py-16 flex flex-col justify-center cursor-pointer overflow-hidden bg-[#09090b] hover:bg-[#fafafa] transition-colors duration-500"
+              className="group relative border-b border-[var(--theme-accent)]/30 py-10 md:py-16 flex flex-col justify-center cursor-pointer overflow-hidden bg-theme hover:bg-[#fafafa] transition-colors duration-500"
             >
               <div className="relative z-10 flex flex-col md:flex-row md:items-end md:justify-between w-full px-4 md:px-8 pointer-events-none mix-blend-difference">
                 <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-12">
                   <span className="font-mono text-xs text-[var(--theme-accent)] group-hover:text-[#FAFAFA] transition-colors duration-500 hidden md:block">
                     0{index + 1}
                   </span>
-                  <h3 className="font-display text-3xl md:text-4xl lg:text-5xl text-[#fafafa] group-hover:text-[#09090b] transition-colors duration-500 uppercase tracking-tighter">
+                  <h3 className="font-display text-3xl md:text-4xl lg:text-5xl text-[#fafafa] group-hover:text-theme-bg transition-colors duration-500 uppercase tracking-tighter">
                     {service.title}
                   </h3>
                 </div>
                 <div className="mt-6 md:mt-0 flex flex-col items-start md:items-end text-left md:text-right mix-blend-normal">
-                  <p className="font-mono text-xs md:text-sm text-[#fafafa]/50 group-hover:text-[#09090b]/50 transition-colors duration-500 uppercase tracking-widest mb-2">
+                  <p className="font-mono text-xs md:text-sm text-[#fafafa]/50 group-hover:text-theme-bg/50 transition-colors duration-500 uppercase tracking-widest mb-2">
                     {service.scents}
                   </p>
-                  <p className="font-sans text-sm text-[#fafafa]/40 group-hover:text-[#09090b]/60 transition-colors duration-500 max-w-sm hidden md:block">
+                  <p className="font-sans text-sm text-[#fafafa]/40 group-hover:text-theme-bg/60 transition-colors duration-500 max-w-sm hidden md:block">
                     {service.description}
                   </p>
                 </div>
@@ -109,7 +109,7 @@ export default function Services() {
 
               {/* Hover Image Reveal - Visible on mobile at low opacity, pops on hover/desktop */}
               <div className="absolute top-0 right-0 w-full md:w-[40%] h-full opacity-25 md:opacity-30 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none z-0">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#09090b] via-[#09090b]/70 md:via-[#09090b]/50 to-transparent group-hover:from-[#fafafa] group-hover:via-[#fafafa]/50 transition-colors duration-500 z-10" />
+                <div className="absolute inset-0 bg-gradient-to-r from-theme-bg via-theme-bg/70 md:via-theme-bg/50 to-transparent group-hover:from-[#fafafa] group-hover:via-[#fafafa]/50 transition-colors duration-500 z-10" />
                 {(() => {
                   const isVideo = isVideoUrl(service.image);
                   const className = "w-full h-full object-cover transition-all duration-700 opacity-60 md:opacity-80 group-hover:opacity-100";

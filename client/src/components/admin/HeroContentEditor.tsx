@@ -172,7 +172,7 @@ export default function HeroContentEditor() {
               </div>
 
               {heroContent?.backgroundImage && (
-                <div className="flex items-center gap-2 p-3 bg-muted rounded-md">
+                <div className="flex items-center gap-2 p-3 bg-muted rounded-none">
                   <Image className="w-4 h-4 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground truncate flex-1">
                     {heroContent.backgroundImage}

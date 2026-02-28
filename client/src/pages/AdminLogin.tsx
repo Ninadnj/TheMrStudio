@@ -64,7 +64,7 @@ export default function AdminLogin() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
-          <div className="mx-auto mb-4 w-12 h-12 rounded-full bg-theme-accent/10 flex items-center justify-center">
+          <div className="mx-auto mb-4 w-12 h-12 rounded-none bg-theme-accent/10 flex items-center justify-center">
             <Lock className="w-6 h-6 text-theme-accent" />
           </div>
           <CardTitle className="text-2xl font-light tracking-wide">
@@ -78,7 +78,7 @@ export default function AdminLogin() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md" data-testid="error-message">
+              <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-none" data-testid="error-message">
                 {error}
               </div>
             )}

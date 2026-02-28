@@ -35,7 +35,7 @@ export default function Header() {
             className="flex items-center gap-2 group"
             data-testid="button-logo"
           >
-            <div className="relative overflow-hidden w-12 h-12 rounded-full border border-white/20">
+            <div className="relative overflow-hidden w-12 h-12 rounded-none border border-white/20">
               <img
                 src={logoImage}
                 alt="MR Studio"

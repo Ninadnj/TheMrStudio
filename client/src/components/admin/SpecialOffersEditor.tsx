@@ -230,7 +230,7 @@ export default function SpecialOffersEditor() {
                         <div className="flex items-center gap-2 mb-2">
                           <p className="text-sm font-medium">{offer.message}</p>
                           {isExpired && (
-                            <span className="text-xs px-2 py-0.5 rounded-full bg-destructive/20 text-destructive font-medium">
+                            <span className="text-xs px-2 py-0.5 rounded-none bg-destructive/20 text-destructive font-medium">
                               EXPIRED
                             </span>
                           )}

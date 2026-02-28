@@ -230,7 +230,7 @@ export default function BookingForm() {
             </p>
           </div>
 
-          <div className={`glass-card p-8 md:p-12 rounded-sm transition-all duration-700 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <div className={`glass-card p-8 md:p-12 rounded-none transition-all duration-700 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             <form onSubmit={handleSubmit} className="space-y-12">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
                 <div className="space-y-2 group">
@@ -359,7 +359,7 @@ export default function BookingForm() {
                         initialFocus
                         locale={ka}
                         disabled={(date) => isBefore(date, startOfToday())}
-                        className="rounded-md border border-white/10"
+                        className="rounded-none border border-white/10"
                       />
                     </PopoverContent>
                   </Popover>

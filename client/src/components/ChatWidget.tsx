@@ -88,14 +88,14 @@ export default function ChatWidget() {
 
       {/* Compact Slide-in Panel */}
       <div
-        className={`fixed bottom-6 right-6 h-[480px] w-[340px] bg-background border border-border rounded-lg shadow-2xl transform transition-transform duration-300 ease-in-out z-40 flex flex-col ${
+        className={`fixed bottom-6 right-6 h-[480px] w-[340px] bg-background border border-border rounded-none shadow-2xl transform transition-transform duration-300 ease-in-out z-40 flex flex-col ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border backdrop-blur-sm bg-background/95 rounded-t-lg">
           <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
+            <div className="h-2 w-2 rounded-none bg-emerald-500 animate-pulse"></div>
             <span className="font-semibold text-base">
               <span className="text-foreground/40">THE</span>{" "}
               <span className="text-foreground font-bold">MR</span>{" "}
@@ -117,7 +117,7 @@ export default function ChatWidget() {
         <div className="flex gap-2 px-4 py-3 bg-muted/30 border-b border-border">
           <button
             onClick={() => setLanguage("ka")}
-            className={`flex-1 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+            className={`flex-1 px-3 py-1.5 rounded-none text-sm font-medium transition-colors ${
               language === "ka"
                 ? "bg-theme-accent text-white"
                 : "bg-background text-muted-foreground hover:bg-muted"
@@ -128,7 +128,7 @@ export default function ChatWidget() {
           </button>
           <button
             onClick={() => setLanguage("en")}
-            className={`flex-1 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+            className={`flex-1 px-3 py-1.5 rounded-none text-sm font-medium transition-colors ${
               language === "en"
                 ? "bg-theme-accent text-white"
                 : "bg-background text-muted-foreground hover:bg-muted"
@@ -158,7 +158,7 @@ export default function ChatWidget() {
                 className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`max-w-[85%] rounded-2xl px-4 py-3 ${
+                  className={`max-w-[85%] rounded-none px-4 py-3 ${
                     message.role === "user"
                       ? "bg-theme-accent text-white shadow-sm"
                       : "bg-muted/50 text-foreground border border-border/50"
@@ -171,11 +171,11 @@ export default function ChatWidget() {
             ))}
             {chatMutation.isPending && (
               <div className="flex justify-start">
-                <div className="bg-muted/50 border border-border/50 rounded-2xl px-4 py-3">
+                <div className="bg-muted/50 border border-border/50 rounded-none px-4 py-3">
                   <div className="flex gap-1">
-                    <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"></span>
-                    <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></span>
-                    <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "0.4s" }}></span>
+                    <span className="w-2 h-2 bg-muted-foreground rounded-none animate-bounce"></span>
+                    <span className="w-2 h-2 bg-muted-foreground rounded-none animate-bounce" style={{ animationDelay: "0.2s" }}></span>
+                    <span className="w-2 h-2 bg-muted-foreground rounded-none animate-bounce" style={{ animationDelay: "0.4s" }}></span>
                   </div>
                 </div>
               </div>
@@ -192,14 +192,14 @@ export default function ChatWidget() {
               onKeyPress={handleKeyPress}
               placeholder={language === "ka" ? "შეიყვანეთ შეტყობინება..." : "Type a message..."}
               disabled={chatMutation.isPending}
-              className="flex-1 rounded-full"
+              className="flex-1 rounded-none"
               data-testid="input-chat-message"
             />
             <Button
               onClick={handleSend}
               disabled={!input.trim() || chatMutation.isPending}
               size="icon"
-              className="bg-theme-accent hover:bg-theme-accent-hover rounded-full h-10 w-10 shrink-0"
+              className="bg-theme-accent hover:bg-theme-accent-hover rounded-none h-10 w-10 shrink-0"
               data-testid="button-send-message"
             >
               <Send className="h-4 w-4 text-white" />

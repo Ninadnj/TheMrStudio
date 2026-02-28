@@ -32,12 +32,12 @@ export default function SpecialOfferBanner() {
 
   return (
     <div
-      className={`fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] sm:w-auto max-w-2xl bg-[#09090b]/60 backdrop-blur-xl border border-white/10 text-white/90 py-3 px-6 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.3)] z-[100] transition-all duration-500 hover:bg-[#09090b]/80 hover:border-white/20 hover:text-white ${bannerClasses}`}
+      className={`fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] sm:w-auto max-w-2xl bg-theme/60 backdrop-blur-xl border border-white/10 text-white/90 py-3 px-6 rounded-none shadow-[0_8px_32px_rgba(0,0,0,0.3)] z-[100] transition-all duration-500 hover:bg-theme/80 hover:border-white/20 hover:text-white ${bannerClasses}`}
       onClick={activeOffer.link ? handleClick : undefined}
       data-testid="special-offer-banner"
     >
       <div className="flex items-center justify-between gap-4 w-full">
-        <div className="flex bg-theme-accent/20 p-2 rounded-full hidden sm:flex">
+        <div className="flex bg-theme-accent/20 p-2 rounded-none hidden sm:flex">
           <Megaphone className="w-4 h-4 text-theme-accent" />
         </div>
         <p className="text-sm md:text-base font-medium text-center flex-1 whitespace-nowrap overflow-hidden text-ellipsis">

@@ -156,7 +156,7 @@ export default function Gallery() {
                     }, 150);
                   }
                 }}
-                className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 magnetic-button ${selectedCategory === null
+                className={`px-6 py-2.5 rounded-none text-sm font-medium transition-all duration-300 magnetic-button ${selectedCategory === null
                   ? 'bg-theme-accent text-white scale-105'
                   : 'bg-card hover-elevate border border-border text-foreground'
                   }`}
@@ -178,7 +178,7 @@ export default function Gallery() {
                         }, 150);
                       }
                     }}
-                    className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 magnetic-button ${selectedCategory === category
+                    className={`px-6 py-2.5 rounded-none text-sm font-medium transition-all duration-300 magnetic-button ${selectedCategory === category
                       ? 'bg-theme-accent text-white scale-105'
                       : 'bg-card hover-elevate border border-border text-foreground'
                       }`}
@@ -207,7 +207,7 @@ export default function Gallery() {
                     <motion.div
                       key={image.id}
                       ref={el => cardRefs.current[index] = el}
-                      className={`group relative rounded-xl overflow-visible bg-muted cursor-pointer ${pattern}`}
+                      className={`group relative rounded-none overflow-visible bg-muted cursor-pointer ${pattern}`}
                       style={{
                         perspective: '1000px',
                         transformStyle: 'preserve-3d',
@@ -239,7 +239,7 @@ export default function Gallery() {
                       onClick={() => openLightbox(index)}
                       data-testid={`gallery-image-${image.id}`}
                     >
-                      <div className="relative w-full h-full rounded-xl overflow-hidden shadow-lg">
+                      <div className="relative w-full h-full rounded-none overflow-hidden shadow-lg">
                         {(() => {
                           const isVideo = isVideoUrl(image.imageUrl);
                           const className = "w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 image-reveal";
@@ -264,7 +264,7 @@ export default function Gallery() {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-all duration-300">
                           <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                             <div className="flex items-center gap-2">
-                              <span className="text-xs font-medium text-white bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                              <span className="text-xs font-medium text-white bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-none">
                                 {image.category}
                               </span>
                             </div>
@@ -288,13 +288,13 @@ export default function Gallery() {
         >
           <button
             onClick={closeLightbox}
-            className="absolute top-4 right-4 z-10 text-white hover:bg-white/10 rounded-full p-2 transition-colors"
+            className="absolute top-4 right-4 z-10 text-white hover:bg-white/10 rounded-none p-2 transition-colors"
             data-testid="button-close-lightbox"
           >
             <X className="w-6 h-6" />
           </button>
 
-          <div className="absolute top-4 left-4 z-10 text-white text-sm font-medium bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
+          <div className="absolute top-4 left-4 z-10 text-white text-sm font-medium bg-white/10 backdrop-blur-sm px-4 py-2 rounded-none">
             {lightboxImage + 1} / {displayedImages.length}
           </div>
 
@@ -304,7 +304,7 @@ export default function Gallery() {
                 e.stopPropagation();
                 goToPrevious();
               }}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/10 rounded-full p-3 transition-colors"
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/10 rounded-none p-3 transition-colors"
               data-testid="button-previous-image"
             >
               <ChevronLeft className="w-8 h-8" />
@@ -317,7 +317,7 @@ export default function Gallery() {
                 e.stopPropagation();
                 goToNext();
               }}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/10 rounded-full p-3 transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/10 rounded-none p-3 transition-colors"
               data-testid="button-next-image"
             >
               <ChevronRight className="w-8 h-8" />
@@ -331,7 +331,7 @@ export default function Gallery() {
             {(() => {
               const popupImage = displayedImages[lightboxImage];
               const isVideo = isVideoUrl(popupImage.imageUrl);
-              const className = "w-full h-full object-contain rounded-lg";
+              const className = "w-full h-full object-contain rounded-none";
               return isVideo ? (
                 <video
                   src={popupImage.imageUrl}

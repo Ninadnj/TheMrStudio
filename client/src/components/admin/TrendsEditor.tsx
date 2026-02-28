@@ -538,12 +538,12 @@ export default function TrendsEditor() {
               {trendsByCategory[category].map((trend) => (
                 <div
                   key={trend.id}
-                  className="flex items-start gap-4 p-4 border rounded-lg hover-elevate"
+                  className="flex items-start gap-4 p-4 border rounded-none hover-elevate"
                   data-testid={`trend-item-${trend.id}`}
                 >
                   {(() => {
                     const isVideo = isVideoUrl(trend.imageUrl);
-                    const className = "w-24 h-24 object-cover rounded-md";
+                    const className = "w-24 h-24 object-cover rounded-none";
                     return isVideo ? (
                       <video
                         src={trend.imageUrl}

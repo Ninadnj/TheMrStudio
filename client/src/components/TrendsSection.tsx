@@ -65,7 +65,7 @@ export default function TrendsSection() {
           {sortedTrends.map((trend) => (
             <div
               key={trend.id}
-              className="relative w-[80vw] md:w-[60vw] lg:w-[40vw] flex-shrink-0 aspect-[3/4] md:aspect-[16/9] rounded-lg overflow-hidden group"
+              className="relative w-[80vw] md:w-[60vw] lg:w-[40vw] flex-shrink-0 aspect-[3/4] md:aspect-[16/9] rounded-none overflow-hidden group"
             >
               {(() => {
                 const isVideo = isVideoUrl(trend.imageUrl);

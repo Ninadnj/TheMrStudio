@@ -198,6 +198,8 @@ export function StaffEditor() {
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="Nail">მანიკური / პედიკური</SelectItem>
+                        <SelectItem value="Manicure">მანიკური</SelectItem>
+                        <SelectItem value="Pedicure">პედიკური</SelectItem>
                         <SelectItem value="Epilation">ლაზერული ეპილაცია</SelectItem>
                         <SelectItem value="Cosmetology">კოსმეტოლოგია</SelectItem>
                       </SelectContent>
@@ -289,9 +291,11 @@ export function StaffEditor() {
                         <h3 className="font-medium">{member.name}</h3>
                         <p className="text-sm text-muted-foreground">
                           {member.serviceCategory === "Nail" ? "მანიკური / პედიკური" :
-                           member.serviceCategory === "Epilation" ? "ლაზერული ეპილაცია" :
-                           member.serviceCategory === "Cosmetology" ? "კოსმეტოლოგია" :
-                           member.serviceCategory}
+                            member.serviceCategory === "Manicure" ? "მანიკური" :
+                              member.serviceCategory === "Pedicure" ? "პედიკური" :
+                                member.serviceCategory === "Epilation" ? "ლაზერული ეპილაცია" :
+                                  member.serviceCategory === "Cosmetology" ? "კოსმეტოლოგია" :
+                                    member.serviceCategory}
                         </p>
                         {member.calendarId && (
                           <p className="text-xs text-muted-foreground mt-1">

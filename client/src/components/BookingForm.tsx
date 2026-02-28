@@ -39,10 +39,11 @@ const serviceCategories = [
 
 export default function BookingForm() {
   const [date, setDate] = useState<Date>();
+  const savedUser = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('mr_booking_user') || '{}') : {};
   const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
+    fullName: savedUser.fullName || "",
+    email: savedUser.email || "",
+    phone: savedUser.phone || "",
     serviceCategory: "",
     serviceDetails: "",
     staffId: "",
@@ -122,17 +123,22 @@ export default function BookingForm() {
         description: "თქვენი დაჯავშნის მოთხოვნა გაიგზავნა. სპეციალისტი დაგიკავშირდებათ დასადასტურებლად",
       });
 
-      // Reset form AFTER cache is invalidated
-      setFormData({
-        fullName: "",
-        email: "",
-        phone: "",
+      // Save user details for next time
+      localStorage.setItem('mr_booking_user', JSON.stringify({
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone
+      }));
+
+      // Reset form but keep personal details
+      setFormData(prev => ({
+        ...prev,
         serviceCategory: "",
         serviceDetails: "",
         staffId: "",
         time: "",
         notes: ""
-      });
+      }));
       setDate(undefined);
     },
     onError: (error: any) => {

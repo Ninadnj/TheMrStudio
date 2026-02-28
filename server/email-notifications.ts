@@ -1,35 +1,45 @@
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 import type { Booking } from '@shared/schema';
 
-// Initialize Resend
-// Note: We'll gracefully fallback to null if the key isn't provided yet
-const getResendClient = () => {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    console.warn('Email notifications disabled: RESEND_API_KEY not configured');
+let transporter: nodemailer.Transporter | null = null;
+
+// Initialize email transporter
+function getTransporter() {
+  if (transporter) return transporter;
+
+  const emailUser = process.env.EMAIL_USER;
+  const emailPass = process.env.EMAIL_PASS;
+
+  if (!emailUser || !emailPass) {
+    console.warn('Email notifications disabled: EMAIL_USER and EMAIL_PASS not configured');
     return null;
   }
-  return new Resend(apiKey);
-};
 
-// Use the configured domain email, default to a generic admin@themrstudio.net if not set yet.
-// Resend STRICTLY requires the sender domain to be verified in their dashboard.
-const getFromEmail = () => process.env.RESEND_FROM_EMAIL || 'bookings@themrstudio.net';
+  transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: emailUser,
+      pass: emailPass,
+    },
+  });
+
+  return transporter;
+}
 
 export async function sendNewBookingNotification(
   booking: Booking,
   adminEmail: string
 ): Promise<void> {
-  const resend = getResendClient();
+  const transport = getTransporter();
 
-  if (!resend) {
-    console.log('Skipping admin email notification (Resend not configured)');
+  if (!transport) {
+    console.log('Skipping email notification (not configured)');
     return;
   }
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: `THE MR Studio <${getFromEmail()}>`,
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
       to: adminEmail,
       subject: `🔔 New Booking Request - ${booking.fullName}`,
       html: `
@@ -68,13 +78,10 @@ export async function sendNewBookingNotification(
           </div>
         </div>
       `,
-    });
+    };
 
-    if (error) {
-      console.error('Resend API error sending admin notification:', error);
-    } else {
-      console.log(`Booking notification email sent to ${adminEmail}, Message ID: ${data?.id}`);
-    }
+    await transport.sendMail(mailOptions);
+    console.log(`Booking notification email sent to ${adminEmail}`);
   } catch (error) {
     console.error('Failed to send booking notification email:', error);
   }
@@ -83,12 +90,12 @@ export async function sendNewBookingNotification(
 export async function sendBookingConfirmationToClient(
   booking: Booking
 ): Promise<void> {
-  const resend = getResendClient();
-  if (!resend) return;
+  const transport = getTransporter();
+  if (!transport) return;
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: `THE MR Studio <${getFromEmail()}>`,
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
       to: booking.email,
       subject: `✨ დაჯავშნა დადასტურებულია / Booking Confirmed - THE MR Studio`,
       html: `
@@ -116,13 +123,10 @@ export async function sendBookingConfirmationToClient(
           </div>
         </div>
       `,
-    });
+    };
 
-    if (error) {
-      console.error('Resend API error sending client confirmation:', error);
-    } else {
-      console.log(`Confirmation email sent to client: ${booking.email}, Message ID: ${data?.id}`);
-    }
+    await transport.sendMail(mailOptions);
+    console.log(`Confirmation email sent to client: ${booking.email}`);
   } catch (error) {
     console.error('Failed to send confirmation email to client:', error);
   }
@@ -132,12 +136,12 @@ export async function sendBookingRejectionToClient(
   booking: Booking,
   reason?: string
 ): Promise<void> {
-  const resend = getResendClient();
-  if (!resend) return;
+  const transport = getTransporter();
+  if (!transport) return;
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: `THE MR Studio <${getFromEmail()}>`,
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
       to: booking.email,
       subject: `Booking Status Update - THE MR Studio`,
       html: `
@@ -159,13 +163,10 @@ export async function sendBookingRejectionToClient(
           </div>
         </div>
       `,
-    });
+    };
 
-    if (error) {
-      console.error('Resend API error sending client rejection:', error);
-    } else {
-      console.log(`Rejection email sent to client: ${booking.email}, Message ID: ${data?.id}`);
-    }
+    await transport.sendMail(mailOptions);
+    console.log(`Rejection email sent to client: ${booking.email}`);
   } catch (error) {
     console.error('Failed to send rejection email to client:', error);
   }

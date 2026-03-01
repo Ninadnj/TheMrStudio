@@ -1,30 +1,51 @@
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 import type { Booking } from '@shared/schema';
 
-const getResendClient = () => {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    console.warn('Email notifications disabled: RESEND_API_KEY not configured');
-    return null;
-  }
-  return new Resend(apiKey);
-};
+// Store previous email state separately so we don't spam on restart
+const processedBookings = new Set<number>();
 
-const getFromEmail = () => process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
+// Initialize transporter directly using environment variables
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+  // Add timeouts to prevent hanging if DO blocks SMTP again
+  connectionTimeout: 10000,
+  greetingTimeout: 5000,
+  socketTimeout: 10000,
+});
+
+// Test SMTP connection on startup silently to not crash the server if it fails
+if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+  transporter.verify().then(() => {
+    console.log('✅ SMTP connection successful: Email notifications are active');
+  }).catch((error) => {
+    console.error('❌ SMTP connection failed (Check Gmail App Password or Port Block):', error.message);
+  });
+} else {
+  console.warn('⚠️ Email credentials not found. Notifications will not be sent.');
+}
+
+const getFromEmail = () => process.env.EMAIL_USER || 'no-reply@themrstudio.net';
 
 export async function sendNewBookingNotification(
   booking: Booking,
   adminEmail: string
 ): Promise<void> {
-  const resend = getResendClient();
-  if (!resend) {
-    console.log('Skipping admin email notification (Resend not configured)');
+  const fromEmail = getFromEmail();
+  if (!fromEmail || !process.env.EMAIL_PASS) {
+    console.log('Skipping email notification: EMAIL_USER or EMAIL_PASS not configured');
     return;
   }
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: `THE MR Studio <${getFromEmail()}>`,
+    const info = await transporter.sendMail({
+      from: `"THE MR Studio" <${fromEmail}>`,
       to: adminEmail,
       subject: `🔔 New Booking Request - ${booking.fullName}`,
       html: `
@@ -56,12 +77,7 @@ export async function sendNewBookingNotification(
         </div>
       `,
     });
-
-    if (error) {
-      console.error('Resend API error (admin notification):', error);
-    } else {
-      console.log(`Booking notification sent to ${adminEmail}, ID: ${data?.id}`);
-    }
+    console.log(`Booking notification sent to ${adminEmail}, ID: ${info.messageId}`);
   } catch (error) {
     console.error('Failed to send booking notification:', error);
   }
@@ -70,12 +86,12 @@ export async function sendNewBookingNotification(
 export async function sendBookingConfirmationToClient(
   booking: Booking
 ): Promise<void> {
-  const resend = getResendClient();
-  if (!resend) return;
+  const fromEmail = getFromEmail();
+  if (!fromEmail || !process.env.EMAIL_PASS) return;
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: `THE MR Studio <${getFromEmail()}>`,
+    const info = await transporter.sendMail({
+      from: `"THE MR Studio" <${fromEmail}>`,
       to: booking.email,
       subject: `✨ დაჯავშნა დადასტურებულია / Booking Confirmed - THE MR Studio`,
       html: `
@@ -99,51 +115,40 @@ export async function sendBookingConfirmationToClient(
         </div>
       `,
     });
-
-    if (error) {
-      console.error('Resend API error (client confirmation):', error);
-    } else {
-      console.log(`Confirmation sent to ${booking.email}, ID: ${data?.id}`);
-    }
+    console.log(`Booking confirmation sent to client ${booking.email}, ID: ${info.messageId}`);
   } catch (error) {
-    console.error('Failed to send confirmation email:', error);
+    console.error('Failed to send confirmation email to client:', error);
   }
 }
 
 export async function sendBookingRejectionToClient(
-  booking: Booking,
-  reason?: string
+  booking: Booking
 ): Promise<void> {
-  const resend = getResendClient();
-  if (!resend) return;
+  const fromEmail = getFromEmail();
+  if (!fromEmail || !process.env.EMAIL_PASS) return;
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: `THE MR Studio <${getFromEmail()}>`,
+    const info = await transporter.sendMail({
+      from: `"THE MR Studio" <${fromEmail}>`,
       to: booking.email,
-      subject: `Booking Status Update - THE MR Studio`,
+      subject: `❌ დაჯავშნა გაუქმებულია / Booking Cancelled - THE MR Studio`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
-          <h2 style="color: #666; border-bottom: 1px solid #eee; padding-bottom: 10px;">Booking Update</h2>
+          <h2 style="color: #d9534f; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+            თქვენი ვიზიტი გაუქმებულია
+          </h2>
           <p>მოგესალმებით ${booking.fullName},</p>
-          <p>სამწუხაროდ, ამჯერად ვერ ვახერხებთ თქვენი დაჯავშნის დადასტურებას მითითებულ დროს.</p>
-          ${reason ? `<div style="background: #fff5f5; padding: 15px; margin: 20px 0; border-radius: 8px; border-left: 4px solid #fc8181;">
-            <p style="margin: 0;"><strong>მიზეზი:</strong> ${reason}</p>
-          </div>` : ''}
-          <p>გთხოვთ, სცადოთ სხვა დროს დაჯავშნა ან დაგვიკავშირდით დეტალებისთვის.</p>
+          <p>სამწუხაროდ, თქვენი დაჯავშნა <strong>${booking.date}</strong>-ში, <strong>${booking.time}</strong> საათზე ვერ დადასტურდა (სავარაუდოდ დრო უკვე დაკავებულია ან სპეციალისტი მიუწვდომელია).</p>
+          <p>გთხოვთ, ეწვიოთ ჩვენს ვებსაიტს და აირჩიოთ სხვა დრო.</p>
+          <p><a href="https://mrstudio.ge" style="display: inline-block; padding: 10px 20px; background-color: #c9a063; color: white; text-decoration: none; border-radius: 4px; margin-top: 10px;">ახალი დაჯავშნა / Book Again</a></p>
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 14px; color: #666;">
-            <p><strong>THE MR Studio</strong></p>
+            <p>ბოდიშს გიხდით დისკომფორტისთვის.<br><strong>THE MR Studio</strong></p>
           </div>
         </div>
       `,
     });
-
-    if (error) {
-      console.error('Resend API error (client rejection):', error);
-    } else {
-      console.log(`Rejection sent to ${booking.email}, ID: ${data?.id}`);
-    }
+    console.log(`Booking rejection sent to client ${booking.email}, ID: ${info.messageId}`);
   } catch (error) {
-    console.error('Failed to send rejection email:', error);
+    console.error('Failed to send rejection email to client:', error);
   }
 }

@@ -34,8 +34,9 @@ app.use((req, res, next) => {
   if (isProduction) {
     res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
   }
-  // Prevent clickjacking
-  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  // Allow clickjacking for portfolio embed or use a specific domain
+  // res.setHeader("X-Frame-Options", "SAMEORIGIN"); // Removed to allow embedding
+
   // Prevent MIME-type sniffing
   res.setHeader("X-Content-Type-Options", "nosniff");
   // Referrer policy
@@ -50,7 +51,7 @@ app.use((req, res, next) => {
       "font-src 'self' https://fonts.gstatic.com https://fonts.cdnfonts.com",
       "img-src 'self' data: blob: https://storage.googleapis.com https://res.cloudinary.com",
       "connect-src 'self' https://*.neon.tech wss://*.neon.tech https://*.googleapis.com",
-      "frame-ancestors 'self'",
+      "frame-ancestors *", // Allow embedding from any origin (e.g. portfolio site)
     ].join("; ")
   );
   next();

@@ -78,7 +78,7 @@ export default function Footer() {
 
             {/* Live Google Map */}
             <a
-              href="https://maps.app.goo.gl/mNq1Lbr1Uh3iYC5z9"
+              href="https://maps.google.com/?q=%E1%83%95%E1%83%94%E1%83%A4%E1%83%AE%E1%83%98%E1%83%A1%E1%83%A2%E1%83%A7%E1%83%90%E1%83%9D%E1%83%A1%E1%83%9C%E1%83%98%E1%83%A1%2020/22,%20%E1%83%97%E1%83%91%E1%83%98%E1%83%9A%E1%83%98%E1%83%A1%E1%83%98"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Open MR Studio location in Google Maps"
@@ -93,7 +93,7 @@ export default function Footer() {
                 marginWidth={0}
                 referrerPolicy="no-referrer"
                 loading="lazy"
-                src="https://maps.google.com/maps?q=22-24%20Vefkhistkaosani%20St,%20Tbilisi,%20Georgia&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                src="https://maps.google.com/maps?q=%E1%83%95%E1%83%94%E1%83%A4%E1%83%AE%E1%83%98%E1%83%A1%E1%83%A2%E1%83%A7%E1%83%90%E1%83%9D%E1%83%A1%E1%83%9C%E1%83%98%E1%83%A1%2020/22,%20%E1%83%97%E1%83%91%E1%83%98%E1%83%9A%E1%83%98%E1%83%A1%E1%83%98&t=&z=15&ie=UTF8&iwloc=&output=embed"
                 title="MR Studio Location"
                 className="pointer-events-none grayscale-[0.5] opacity-80 transition-all duration-700 group-hover:grayscale-0 group-hover:opacity-100"
               />

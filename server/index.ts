@@ -51,6 +51,8 @@ app.use((req, res, next) => {
       "font-src 'self' https://fonts.gstatic.com https://fonts.cdnfonts.com",
       "img-src 'self' data: blob: https://storage.googleapis.com https://res.cloudinary.com",
       "connect-src 'self' https://*.neon.tech wss://*.neon.tech https://*.googleapis.com",
+      // Allow the footer's live Google Maps iframe embed to render.
+      "frame-src 'self' https://www.google.com https://maps.google.com",
       "frame-ancestors *", // Allow embedding from any origin (e.g. portfolio site)
     ].join("; ")
   );

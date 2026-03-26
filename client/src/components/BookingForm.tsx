@@ -344,14 +344,14 @@ export default function BookingForm() {
                     <PopoverTrigger asChild>
                       <Button
                         variant="ghost"
-                        className={`w-full justify-start text-left font-normal text-base h-12 px-0 bg-transparent rounded-none border-b border-white/10 hover:bg-transparent hover:text-white ${!date && "text-white/40"
+                        className={`w-full justify-start text-left font-normal text-base h-12 px-0 bg-transparent rounded-none border-b border-white/10 hover:bg-transparent hover:text-white ${!date ? "text-white/40" : "text-white"
                           }`}
                       >
                         <CalendarIcon className="mr-3 h-5 w-5 opacity-50" />
-                        {date ? format(date, "PPP", { locale: ka }) : "აირჩიეთ თარიღი"}
+                        {date ? format(date, "d MMMM, yyyy", { locale: ka }) : "აირჩიეთ თარიღი"}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 border-none bg-theme-surface/95 backdrop-blur-xl" align="start">
+                    <PopoverContent className="dark w-auto p-0 border-none bg-theme-surface/95 backdrop-blur-xl" align="start">
                       <Calendar
                         mode="single"
                         selected={date}
@@ -410,7 +410,7 @@ export default function BookingForm() {
                 disabled={createBookingMutation.isPending}
                 data-testid="button-book-appointment"
               >
-                {createBookingMutation.isPending ? "გაგზავნა..." : "დადასტურეთ დაჯავშნა"}
+                {createBookingMutation.isPending ? "გაგზავნა..." : "ჯავშნის დადასტურება"}
               </Button>
             </form>
           </div>

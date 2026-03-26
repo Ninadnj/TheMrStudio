@@ -77,7 +77,13 @@ export default function Footer() {
             </div>
 
             {/* Live Google Map */}
-            <div className="mt-8 w-full h-[180px] rounded-none overflow-hidden border border-border/40 relative">
+            <a
+              href="https://maps.app.goo.gl/mNq1Lbr1Uh3iYC5z9"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Open MR Studio location in Google Maps"
+              className="mt-8 block w-full h-[180px] rounded-none overflow-hidden border border-border/40 relative group"
+            >
               <iframe
                 width="100%"
                 height="100%"
@@ -89,9 +95,9 @@ export default function Footer() {
                 loading="lazy"
                 src="https://maps.google.com/maps?q=22-24%20Vefkhistkaosani%20St,%20Tbilisi,%20Georgia&t=&z=15&ie=UTF8&iwloc=&output=embed"
                 title="MR Studio Location"
-                className="grayscale-[0.5] opacity-80 hover:grayscale-0 hover:opacity-100 transition-all duration-700"
+                className="pointer-events-none grayscale-[0.5] opacity-80 transition-all duration-700 group-hover:grayscale-0 group-hover:opacity-100"
               />
-            </div>
+            </a>
           </div>
         </div>
 

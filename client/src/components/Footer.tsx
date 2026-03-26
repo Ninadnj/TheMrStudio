@@ -59,7 +59,7 @@ export default function Footer() {
               <div className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 mt-0.5 text-muted-foreground/60" />
                 <span className="text-sm text-muted-foreground">
-                  დიდი დიღომი ვეფხისტყაოსნის 20/22. <br />თბილისი, საქართველო
+                  დიდი დიღომი ვეფხისტყაოსნის 22/24. <br />თბილისი, საქართველო
                 </span>
               </div>
               <div className="flex items-center gap-3">
@@ -87,7 +87,7 @@ export default function Footer() {
                 marginWidth={0}
                 referrerPolicy="no-referrer"
                 loading="lazy"
-                src="https://maps.google.com/maps?q=%E1%83%95%E1%83%94%E1%83%A4%E1%83%AE%E1%83%98%E1%83%A1%E1%83%A2%E1%83%A7%E1%83%90%E1%83%9D%E1%83%A1%E1%83%9C%E1%83%98%E1%83%A1%2020,%20%E1%83%97%E1%83%91%E1%83%98%E1%83%9A%E1%83%98%E1%83%A1%E1%83%98&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                src="https://maps.google.com/maps?q=%E1%83%95%E1%83%94%E1%83%A4%E1%83%AE%E1%83%98%E1%83%A1%E1%83%A2%E1%83%A7%E1%83%90%E1%83%9D%E1%83%A1%E1%83%9C%E1%83%98%E1%83%A1%2022/24,%20%E1%83%97%E1%83%91%E1%83%98%E1%83%9A%E1%83%98%E1%83%A1%E1%83%98&t=&z=15&ie=UTF8&iwloc=&output=embed"
                 title="MR Studio Location"
                 className="grayscale-[0.5] opacity-80 hover:grayscale-0 hover:opacity-100 transition-all duration-700"
               />

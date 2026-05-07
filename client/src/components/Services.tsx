@@ -11,7 +11,6 @@ type Category = {
   title: string;
   subtitle: string;
   description: string;
-  priceFrom: string;
   priceAnchor: string;
   Icon: LucideIcon;
 };
@@ -22,7 +21,6 @@ const categories: Category[] = [
     title: "ფრჩხილები",
     subtitle: "Nails",
     description: "მანიკური, პედიკური, გელ-ლაქი და დაგრძელება პრემიუმ მასალებით.",
-    priceFrom: "5",
     priceAnchor: "category-nails",
     Icon: Hand,
   },
@@ -31,7 +29,6 @@ const categories: Category[] = [
     title: "ლაზერი",
     subtitle: "Laser",
     description: "უახლესი დიოდური ლაზერული ეპილაცია — სწრაფი და უსაფრთხო.",
-    priceFrom: "10",
     priceAnchor: "category-laser-women",
     Icon: ScanLine,
   },
@@ -40,7 +37,6 @@ const categories: Category[] = [
     title: "ესთეტიკა",
     subtitle: "Cosmetology",
     description: "ფილერი, ბოტოქსი, ბიორევიტალიზაცია, პილინგი და მეზოთერაპია.",
-    priceFrom: "100",
     priceAnchor: "category-cosmetology",
     Icon: Activity,
   },
@@ -122,13 +118,7 @@ export default function Services() {
                     </p>
                   </div>
 
-                  <div className="mt-auto flex items-center justify-end rounded-[8px] border border-border/70 bg-secondary/32 px-3.5 py-2.5">
-                    <span className="text-lg font-medium tabular-nums text-foreground">
-                      {cat.priceFrom} ₾
-                    </span>
-                  </div>
-
-                  <div className="mt-3 grid grid-cols-2 gap-2.5">
+                  <div className="mt-auto grid grid-cols-2 gap-2.5 pt-4">
                     <button
                       onClick={() => {
                         hapticTap();

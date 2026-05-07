@@ -122,10 +122,7 @@ export default function Services() {
                     </p>
                   </div>
 
-                  <div className="mt-auto flex items-center justify-between rounded-[8px] border border-border/70 bg-secondary/32 px-3.5 py-2.5">
-                    <span className="text-[11px] uppercase font-mono text-foreground/48">
-                      From
-                    </span>
+                  <div className="mt-auto flex items-center justify-end rounded-[8px] border border-border/70 bg-secondary/32 px-3.5 py-2.5">
                     <span className="text-lg font-medium tabular-nums text-foreground">
                       {cat.priceFrom} ₾
                     </span>

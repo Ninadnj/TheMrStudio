@@ -247,7 +247,7 @@ export default function PriceList() {
                     </div>
                     {!isOpen && (
                       <p className="text-[11px] text-foreground/50 mt-0.5">
-                        From {fromPrice} ₾ · {cat.subtitle}
+                        {fromPrice} ₾ · {cat.subtitle}
                       </p>
                     )}
                   </div>

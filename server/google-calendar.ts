@@ -208,7 +208,7 @@ export async function getCalendarBusySlots(
               blockedSlots.push(slotTime);
             }
 
-            console.log(`Calendar busy slot: ${busyPeriod.start} → Tbilisi ${tbilisiTimeStr} → blocking slots: ${blockedSlots.join(', ')}`);
+            console.log(`Calendar busy slot: ${busyPeriod.start} to Tbilisi ${tbilisiTimeStr}; blocking slots: ${blockedSlots.join(', ')}`);
           }
         }
       }

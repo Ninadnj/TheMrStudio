@@ -34,7 +34,9 @@ export default function ThemeSwitch() {
       size="icon"
       variant="ghost"
       onClick={toggleTheme}
+      className="rounded-full border border-current/10 bg-current/[0.03] hover:bg-current/[0.08]"
       data-testid="button-theme-toggle"
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
     >
       {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
     </Button>

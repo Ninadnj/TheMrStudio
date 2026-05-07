@@ -9,8 +9,8 @@ export async function initializeAdmin() {
   if (!existingAdmin) {
     const adminPassword = process.env.ADMIN_PASSWORD;
     if (!adminPassword) {
-      console.warn("⚠️  ADMIN_PASSWORD not set - skipping admin user creation");
-      console.warn("⚠️  Set ADMIN_PASSWORD environment variable to create admin user");
+      console.warn("ADMIN_PASSWORD not set - skipping admin user creation");
+      console.warn("Set ADMIN_PASSWORD environment variable to create admin user");
       return;
     }
     const hashedPassword = await bcrypt.hash(adminPassword, 10);
@@ -18,7 +18,7 @@ export async function initializeAdmin() {
       username: adminUsername,
       password: hashedPassword,
     });
-    console.log("✅ Admin user created with username: admin");
+    console.log("Admin user created with username: admin");
   }
 }
 

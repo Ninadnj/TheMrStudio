@@ -1,56 +1,32 @@
-import { Instagram, Facebook, Mail, Phone, MapPin, Copyright } from "lucide-react";
+import { Instagram, Facebook, Mail, Phone, MapPin, Copyright, CalendarCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MagneticButton from "@/components/MagneticButton";
 
 export default function Footer() {
   return (
-    <footer id="contact" className="relative py-16 lg:py-20 bg-background">
-      {/* Brutalist Accent Line */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-[var(--theme-accent)]" />
+    <footer id="contact" className="relative scroll-mt-24 py-16 md:scroll-mt-28 lg:py-20 bg-background">
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--theme-accent)]/70 to-transparent" />
 
       <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
-          <div>
-            <h3 className="font-sans text-2xl mb-4 text-foreground" style={{ letterSpacing: '0.05em' }}>
+        <div className="grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-10 lg:gap-16 mb-12">
+          <div className="flex flex-col justify-between gap-8">
+            <div>
+            <h3 className="font-display text-3xl mb-4 text-foreground tracking-normal">
               <span style={{ opacity: 0.6 }}>The</span> <span className="font-medium">MR</span> Studio
             </h3>
-            <p className="text-sm leading-relaxed tracking-wide text-muted-foreground">
+            <p className="text-sm leading-relaxed text-muted-foreground max-w-xs">
               Where refined elegance meets modern precision.
             </p>
-          </div>
-
-          <div>
-            <h4 className="font-medium mb-4 text-foreground">სწრაფი ბმულები</h4>
-            <div className="space-y-2">
-              <button
-                className="block text-sm transition-colors text-muted-foreground link-underline opacity-60 hover:opacity-100"
-                data-testid="footer-link-about"
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              >
-                ჩვენს შესახებ
-              </button>
-              <button
-                className="block text-sm transition-colors text-muted-foreground link-underline opacity-60 hover:opacity-100"
-                data-testid="footer-link-services"
-                onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
-              >
-                ჩვენი სერვისები
-              </button>
-              <button
-                className="block text-sm transition-colors text-muted-foreground link-underline opacity-60 hover:opacity-100"
-                data-testid="footer-link-gallery"
-                onClick={() => document.getElementById('gallery')?.scrollIntoView({ behavior: 'smooth' })}
-              >
-                გალერეა
-              </button>
-              <button
-                className="block text-sm transition-colors text-muted-foreground link-underline opacity-60 hover:opacity-100"
-                data-testid="footer-link-booking"
-                onClick={() => document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' })}
-              >
-                დაჯავშნა
-              </button>
             </div>
+
+            <button
+              onClick={() => document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' })}
+              className="press-tap accent-glow inline-flex w-fit items-center gap-2 rounded-full bg-[var(--theme-accent)] px-5 py-3 text-sm font-medium text-[var(--theme-on-accent)] transition-colors hover:bg-[var(--theme-accent-hover)]"
+              data-testid="footer-booking-cta"
+            >
+              <CalendarCheck className="w-4 h-4" strokeWidth={1.8} />
+              დაჯავშნა
+            </button>
           </div>
 
           <div>
@@ -82,7 +58,7 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Open MR Studio location in Google Maps"
-              className="mt-8 block w-full h-[180px] rounded-none overflow-hidden border border-border/40 relative group"
+              className="mt-8 block w-full h-[180px] rounded-[8px] overflow-hidden border border-border/60 relative group shadow-sm"
             >
               <iframe
                 width="100%"
@@ -154,7 +130,7 @@ export default function Footer() {
         </div>
 
         <div className="text-center pt-8 mt-8 border-t border-border/40">
-          <p className="text-[10px] tracking-[0.2em] uppercase opacity-40 hover:opacity-100 transition-opacity duration-500 font-sans">
+          <p className="text-[10px] tracking-normal uppercase opacity-40 hover:opacity-100 transition-opacity duration-500 font-sans">
             Site by Nina
           </p>
         </div>

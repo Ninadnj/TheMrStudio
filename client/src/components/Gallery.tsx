@@ -1,9 +1,11 @@
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState, useMemo, type PointerEvent } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { motion, useInView, useMotionValue, useTransform } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import type { GalleryImage } from "@shared/schema";
 import { isVideoUrl } from "@/lib/videoUtils";
+import SectionHeader from "@/components/SectionHeader";
+import { stripDecorativeSymbols } from "@/lib/sanitizeText";
 
 // Bento grid pattern - defines which images should be larger
 const getBentoPattern = (index: number): string => {
@@ -132,19 +134,18 @@ export default function Gallery() {
 
   return (
     <>
-      <section id="gallery" className="py-20 lg:py-32 bg-background">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl mb-6 text-foreground">
-              გალერეა
-            </h2>
-            <p className="text-base text-muted-foreground max-w-2xl mx-auto">
-              ჩვენი სამუშაოების პორტფოლიო
-            </p>
-          </div>
+      <section id="gallery" className="scroll-mt-24 py-16 md:scroll-mt-28 lg:py-28 bg-background">
+        <div className="max-w-7xl mx-auto px-5 md:px-6">
+          <SectionHeader
+            kicker="03 / Gallery"
+            title="გალერეა"
+            subtitle="ჩვენი სამუშაოების პორტფოლიო"
+            align="center"
+            className="mb-10 md:mb-14"
+          />
 
           {categories.length > 0 && (
-            <div className="flex flex-wrap justify-center gap-3 mb-12">
+            <div className="flex flex-wrap justify-center gap-2.5 mb-10 md:mb-12">
               <button
                 onClick={() => {
                   if (selectedCategory !== null) {
@@ -156,9 +157,9 @@ export default function Gallery() {
                     }, 150);
                   }
                 }}
-                className={`px-6 py-2.5 rounded-none text-sm font-medium transition-all duration-300 magnetic-button ${selectedCategory === null
-                  ? 'bg-theme-accent text-white scale-105'
-                  : 'bg-card hover-elevate border border-border text-foreground'
+                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 magnetic-button ${selectedCategory === null
+                  ? 'bg-theme-accent text-white'
+                  : 'bg-card/80 hover-elevate border border-border text-foreground/75 hover:text-foreground'
                   }`}
                 data-testid="filter-all"
               >
@@ -178,9 +179,9 @@ export default function Gallery() {
                         }, 150);
                       }
                     }}
-                    className={`px-6 py-2.5 rounded-none text-sm font-medium transition-all duration-300 magnetic-button ${selectedCategory === category
-                      ? 'bg-theme-accent text-white scale-105'
-                      : 'bg-card hover-elevate border border-border text-foreground'
+                    className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 magnetic-button ${selectedCategory === category
+                      ? 'bg-theme-accent text-white'
+                      : 'bg-card/80 hover-elevate border border-border text-foreground/75 hover:text-foreground'
                       }`}
                     data-testid={`filter-${category}`}
                   >
@@ -197,7 +198,7 @@ export default function Gallery() {
                 ფოტოები ჯერ არ დაემატა / No images added yet
               </p>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[200px] gap-4" key={categoryKey}>
+              <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[180px] md:auto-rows-[220px] gap-3 md:gap-4" key={categoryKey}>
                 {displayedImages.map((image, index) => {
                   const pattern = getBentoPattern(index);
 
@@ -207,7 +208,7 @@ export default function Gallery() {
                     <motion.div
                       key={image.id}
                       ref={el => cardRefs.current[index] = el}
-                      className={`group relative rounded-none overflow-visible bg-muted cursor-pointer ${pattern}`}
+                      className={`group relative rounded-[8px] overflow-visible bg-muted cursor-pointer ${pattern}`}
                       style={{
                         perspective: '1000px',
                         transformStyle: 'preserve-3d',
@@ -239,7 +240,7 @@ export default function Gallery() {
                       onClick={() => openLightbox(index)}
                       data-testid={`gallery-image-${image.id}`}
                     >
-                      <div className="relative w-full h-full rounded-none overflow-hidden shadow-lg">
+                      <div className="relative w-full h-full rounded-[8px] overflow-hidden shadow-[0_24px_70px_-56px_rgba(0,0,0,0.6)] border border-border/60">
                         {(() => {
                           const isVideo = isVideoUrl(image.imageUrl);
                           const className = "w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 image-reveal";
@@ -255,7 +256,7 @@ export default function Gallery() {
                           ) : (
                             <img
                               src={image.imageUrl}
-                              alt={`${image.category} ${image.order}`}
+                              alt={`${stripDecorativeSymbols(image.category)} ${image.order}`}
                               className={className}
                               loading="lazy"
                             />
@@ -264,8 +265,8 @@ export default function Gallery() {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-all duration-300">
                           <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                             <div className="flex items-center gap-2">
-                              <span className="text-xs font-medium text-white bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-none">
-                                {image.category}
+                              <span className="text-xs font-medium text-white bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                                {stripDecorativeSymbols(image.category)}
                               </span>
                             </div>
                           </div>
@@ -288,13 +289,13 @@ export default function Gallery() {
         >
           <button
             onClick={closeLightbox}
-            className="absolute top-4 right-4 z-10 text-white hover:bg-white/10 rounded-none p-2 transition-colors"
+            className="absolute top-4 right-4 z-10 text-white hover:bg-white/10 rounded-full p-2 transition-colors"
             data-testid="button-close-lightbox"
           >
             <X className="w-6 h-6" />
           </button>
 
-          <div className="absolute top-4 left-4 z-10 text-white text-sm font-medium bg-white/10 backdrop-blur-sm px-4 py-2 rounded-none">
+          <div className="absolute top-4 left-4 z-10 text-white text-sm font-medium bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
             {lightboxImage + 1} / {displayedImages.length}
           </div>
 
@@ -304,7 +305,7 @@ export default function Gallery() {
                 e.stopPropagation();
                 goToPrevious();
               }}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/10 rounded-none p-3 transition-colors"
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/10 rounded-full p-3 transition-colors"
               data-testid="button-previous-image"
             >
               <ChevronLeft className="w-8 h-8" />
@@ -317,7 +318,7 @@ export default function Gallery() {
                 e.stopPropagation();
                 goToNext();
               }}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/10 rounded-none p-3 transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/10 rounded-full p-3 transition-colors"
               data-testid="button-next-image"
             >
               <ChevronRight className="w-8 h-8" />
@@ -331,7 +332,7 @@ export default function Gallery() {
             {(() => {
               const popupImage = displayedImages[lightboxImage];
               const isVideo = isVideoUrl(popupImage.imageUrl);
-              const className = "w-full h-full object-contain rounded-none";
+              const className = "w-full h-full object-contain rounded-[8px]";
               return isVideo ? (
                 <video
                   src={popupImage.imageUrl}
@@ -343,14 +344,14 @@ export default function Gallery() {
               ) : (
                 <img
                   src={popupImage.imageUrl}
-                  alt={`${popupImage.category} ${popupImage.order}`}
+                  alt={`${stripDecorativeSymbols(popupImage.category)} ${popupImage.order}`}
                   className={className}
                 />
               );
             })()}
             <div className="text-center mt-4">
               <p className="text-white text-lg font-medium">
-                {displayedImages[lightboxImage].category}
+                {stripDecorativeSymbols(displayedImages[lightboxImage].category)}
               </p>
             </div>
           </div>

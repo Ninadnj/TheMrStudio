@@ -35,7 +35,7 @@ export default function Preloader() {
         >
             <div className="overflow-hidden">
                 <motion.h1
-                    className="font-display text-4xl md:text-6xl text-theme-text text-center"
+                    className="font-display text-4xl md:text-6xl text-theme-text text-center tracking-normal"
                     initial={{ y: 100, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{
@@ -44,7 +44,7 @@ export default function Preloader() {
                         delay: 0.2
                     }}
                 >
-                    Elevating <span className="italic font-light">Your Beauty</span>
+                    THE MR <span className="italic font-light text-theme-accent">Studio</span>
                 </motion.h1>
 
                 {/* Loading Line */}

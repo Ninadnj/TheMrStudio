@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Download, X } from "lucide-react";
+import { Download, Share2, X } from "lucide-react";
 import { hapticTap } from "@/lib/haptics";
 
 /**
@@ -8,7 +8,7 @@ import { hapticTap } from "@/lib/haptics";
  * - Chromium browsers fire `beforeinstallprompt` when installable. We hold the
  *   event and call `.prompt()` on user click (browser requires user gesture).
  * - iOS Safari does not fire that event but supports manual install via
- *   Share → Add to Home Screen. We surface a small hint there too.
+ *   Share, then Add to Home Screen. We surface a small hint there too.
  * - Hides forever (per session) once dismissed.
  * - Hides when the page is already running in standalone (installed) mode.
  */
@@ -94,7 +94,7 @@ export default function InstallPrompt() {
         className="fixed left-4 right-4 z-[55] mx-auto max-w-md float-in"
         style={{ bottom: "calc(7.5rem + env(safe-area-inset-bottom))" }}
       >
-        <div className="ios-glass rounded-2xl p-3.5 flex items-center gap-3 shadow-[0_12px_32px_-12px_rgba(0,0,0,0.25)]">
+        <div className="ios-glass rounded-[8px] p-3.5 flex items-center gap-3 shadow-[0_12px_32px_-12px_rgba(0,0,0,0.25)]">
           <div className="shrink-0 w-9 h-9 rounded-xl bg-[var(--theme-accent)]/15 flex items-center justify-center">
             <Download className="w-4 h-4 text-[var(--theme-accent)]" strokeWidth={1.7} />
           </div>
@@ -102,8 +102,9 @@ export default function InstallPrompt() {
             <p className="text-[13px] font-medium text-foreground leading-tight">
               დაამატე მთავარ ეკრანზე
             </p>
-            <p className="text-[11px] text-foreground/60 mt-0.5">
-              Share → Add to Home Screen
+            <p className="text-[11px] text-foreground/60 mt-0.5 inline-flex items-center gap-1.5">
+              <Share2 className="w-3 h-3" strokeWidth={1.7} aria-hidden="true" />
+              <span>Share, then Add to Home Screen</span>
             </p>
           </div>
           <button
@@ -124,7 +125,7 @@ export default function InstallPrompt() {
       className="fixed left-4 right-4 z-[55] mx-auto max-w-md float-in"
       style={{ bottom: "calc(7.5rem + env(safe-area-inset-bottom))" }}
     >
-      <div className="ios-glass rounded-2xl p-3.5 flex items-center gap-3 shadow-[0_12px_32px_-12px_rgba(0,0,0,0.25)]">
+      <div className="ios-glass rounded-[8px] p-3.5 flex items-center gap-3 shadow-[0_12px_32px_-12px_rgba(0,0,0,0.25)]">
         <div className="shrink-0 w-9 h-9 rounded-xl bg-[var(--theme-accent)]/15 flex items-center justify-center">
           <Download className="w-4 h-4 text-[var(--theme-accent)]" strokeWidth={1.7} />
         </div>
@@ -138,7 +139,7 @@ export default function InstallPrompt() {
         </div>
         <button
           onClick={handleInstall}
-          className="press-tap accent-glow shrink-0 h-9 px-3.5 rounded-full bg-[var(--theme-accent)] text-[var(--theme-on-accent)] text-xs font-medium tracking-tight"
+          className="press-tap accent-glow shrink-0 h-9 px-3.5 rounded-full bg-[var(--theme-accent)] text-[var(--theme-on-accent)] text-xs font-medium tracking-normal"
           data-testid="install-prompt-install"
         >
           ინსტალაცია

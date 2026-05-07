@@ -1,15 +1,16 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Sparkles,
   Scissors,
   Zap,
-  Flower2,
+  Activity,
   ArrowLeft,
   ArrowRight,
   Check,
+  ClipboardList,
   CalendarIcon,
   Clock,
+  Hand,
   User,
   Mail,
   Phone as PhoneIcon,
@@ -65,13 +66,20 @@ const serviceCategories: {
   hint: string;
   Icon: LucideIcon;
 }[] = [
-  { value: "Manicure", label: "მანიკური", hint: "Nails — Manicure", Icon: Sparkles },
+  { value: "Manicure", label: "მანიკური", hint: "Nails — Manicure", Icon: Hand },
   { value: "Pedicure", label: "პედიკური", hint: "Nails — Pedicure", Icon: Scissors },
   { value: "Epilation", label: "ლაზერული ეპილაცია", hint: "Laser hair removal", Icon: Zap },
-  { value: "Cosmetology", label: "კოსმეტოლოგია", hint: "Skin & Injectables", Icon: Flower2 },
+  { value: "Cosmetology", label: "კოსმეტოლოგია", hint: "Skin & Injectables", Icon: Activity },
 ];
 
 const totalSteps = 4;
+
+const bookingSteps: { step: number; label: string; Icon: LucideIcon }[] = [
+  { step: 1, label: "სერვისი", Icon: ClipboardList },
+  { step: 2, label: "სპეციალისტი", Icon: User },
+  { step: 3, label: "დრო", Icon: CalendarIcon },
+  { step: 4, label: "კონტაქტი", Icon: Mail },
+];
 
 const stepVariants = {
   enter: (dir: number) => ({ x: dir > 0 ? 60 : -60, opacity: 0 }),
@@ -269,7 +277,7 @@ export default function BookingForm() {
   return (
     <section
       id="booking"
-      className="dark relative bg-background py-12 md:py-24 overflow-hidden"
+      className="dark relative scroll-mt-24 bg-background py-12 md:scroll-mt-28 md:py-24 overflow-hidden"
       ref={sectionRef}
     >
       {/* Confetti shower on success */}
@@ -286,7 +294,7 @@ export default function BookingForm() {
 
       <div className="relative max-w-2xl mx-auto px-5 md:px-6">
         <SectionHeader
-          kicker="06 — Booking"
+          kicker="06 / Booking"
           title="რეზერვაცია"
           subtitle="აირჩიე სერვისი, სპეციალისტი და დრო — 4 ნაბიჯში."
           align="center"
@@ -299,27 +307,35 @@ export default function BookingForm() {
 
         {!submitted && (
           <>
-            {/* Progress dots */}
-            <div className="flex items-center justify-center gap-2 mb-6">
-              {Array.from({ length: totalSteps }).map((_, i) => {
-                const n = i + 1;
-                const reached = n <= step;
+            <div className="grid grid-cols-4 gap-2 mb-6" aria-label="Booking progress">
+              {bookingSteps.map(({ step: stepNumber, label, Icon }) => {
+                const reached = stepNumber <= step;
+                const active = stepNumber === step;
                 return (
                   <div
-                    key={n}
+                    key={stepNumber}
                     className={cn(
-                      "h-1.5 rounded-full transition-all duration-300",
-                      reached ? "bg-[var(--theme-accent)] w-7" : "bg-white/15 w-3"
+                      "min-h-[58px] rounded-[8px] border px-2 py-2 flex flex-col items-center justify-center gap-1 transition-all duration-300",
+                      active
+                        ? "border-[var(--theme-accent)] bg-[var(--theme-accent)]/12 text-[var(--theme-accent)]"
+                        : reached
+                          ? "border-[var(--theme-accent)]/45 bg-[var(--theme-accent)]/10 text-foreground/85"
+                          : "border-white/14 bg-white/[0.035] text-foreground/62"
                     )}
-                    aria-current={n === step ? "step" : undefined}
-                  />
+                    aria-current={active ? "step" : undefined}
+                  >
+                    <Icon className="w-4 h-4 shrink-0" strokeWidth={active ? 2 : 1.6} />
+                    <span className="text-[10px] font-medium leading-none truncate max-w-full text-center">
+                      {label}
+                    </span>
+                  </div>
                 );
               })}
             </div>
 
             {/* Step heading */}
             <div className="text-center mb-5">
-              <p className="text-[10px] tracking-[0.3em] uppercase font-mono text-foreground/40">
+              <p className="text-[10px] uppercase font-mono text-foreground/40">
                 Step {step} / {totalSteps}
               </p>
             </div>
@@ -327,7 +343,7 @@ export default function BookingForm() {
         )}
 
         {/* Card */}
-        <div className="rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-sm overflow-hidden">
+        <div className="rounded-[8px] bg-white/[0.035] border border-white/10 backdrop-blur-sm overflow-hidden shadow-[0_28px_90px_-68px_rgba(0,0,0,0.75)]">
           <AnimatePresence mode="wait" custom={direction}>
             {submitted ? (
               <motion.div
@@ -348,7 +364,7 @@ export default function BookingForm() {
                   დიდი მადლობა! სპეციალისტი დაგიკავშირდებათ დასადასტურებლად.
                 </p>
 
-                <div className="rounded-2xl bg-white/[0.04] border border-white/10 p-4 md:p-5 text-left max-w-md mx-auto mb-4 space-y-2.5">
+                <div className="rounded-[8px] bg-white/[0.04] border border-white/10 p-4 md:p-5 text-left max-w-md mx-auto mb-4 space-y-2.5">
                   <SummaryRow label="სერვისი" value={submitted.serviceLabel} />
                   <SummaryRow label="სპეციალისტი" value={submitted.staffName} />
                   <SummaryRow label="თარიღი" value={submitted.date} />
@@ -356,8 +372,8 @@ export default function BookingForm() {
                 </div>
 
                 {aftercareByCategory[submitted.category] && (
-                  <div className="rounded-2xl border border-[var(--theme-accent)]/30 bg-[var(--theme-accent)]/8 p-4 md:p-5 text-left max-w-md mx-auto mb-6">
-                    <div className="text-[10px] tracking-[0.25em] uppercase font-mono text-[var(--theme-accent)] mb-1.5">
+                  <div className="rounded-[8px] border border-[var(--theme-accent)]/30 bg-[var(--theme-accent)]/10 p-4 md:p-5 text-left max-w-md mx-auto mb-6">
+                    <div className="text-[10px] uppercase font-mono text-[var(--theme-accent)] mb-1.5">
                       {aftercareByCategory[submitted.category].titleKa}
                     </div>
                     <p className="text-sm text-foreground/85 leading-relaxed">
@@ -368,7 +384,7 @@ export default function BookingForm() {
 
                 <Button
                   onClick={resetForBookAnother}
-                  className="press-tap rounded-full h-12 px-6 bg-[var(--theme-accent)] hover:bg-[var(--theme-accent-hover)] text-[var(--theme-on-accent)] font-medium tracking-wide accent-glow"
+                  className="press-tap rounded-full h-12 px-6 bg-[var(--theme-accent)] hover:bg-[var(--theme-accent-hover)] text-[var(--theme-on-accent)] font-medium tracking-normal accent-glow"
                   data-testid="button-book-another"
                 >
                   ახალი ჯავშნა
@@ -456,7 +472,7 @@ export default function BookingForm() {
                 type="button"
                 onClick={goNext}
                 disabled={!canContinue}
-                className="press-tap accent-glow rounded-full h-12 px-6 bg-[var(--theme-accent)] hover:bg-[var(--theme-accent-hover)] text-[var(--theme-on-accent)] font-medium tracking-wide disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
+              className="press-tap accent-glow rounded-full h-12 px-6 bg-[var(--theme-accent)] hover:bg-[var(--theme-accent-hover)] text-[var(--theme-on-accent)] font-medium tracking-normal disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
                 data-testid="button-step-next"
               >
                 გაგრძელება
@@ -467,7 +483,7 @@ export default function BookingForm() {
                 type="button"
                 onClick={handleSubmit}
                 disabled={!canContinue || createBookingMutation.isPending}
-                className="press-tap accent-glow rounded-full h-12 px-6 bg-[var(--theme-accent)] hover:bg-[var(--theme-accent-hover)] text-[var(--theme-on-accent)] font-medium tracking-wide disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
+                className="press-tap accent-glow rounded-full h-12 px-6 bg-[var(--theme-accent)] hover:bg-[var(--theme-accent-hover)] text-[var(--theme-on-accent)] font-medium tracking-normal disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
                 data-testid="button-confirm-booking"
               >
                 {createBookingMutation.isPending ? (
@@ -495,7 +511,7 @@ export default function BookingForm() {
 function StepHeading({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
     <div className="mb-5">
-      <h3 className="font-display text-xl md:text-2xl text-foreground tracking-tight">{title}</h3>
+      <h3 className="font-display text-xl md:text-2xl text-foreground tracking-normal">{title}</h3>
       {subtitle && <p className="text-sm text-foreground/55 mt-1">{subtitle}</p>}
     </div>
   );
@@ -520,7 +536,7 @@ function StepCategory({
               type="button"
               onClick={() => onSelect(value)}
               className={cn(
-                "press-tap text-left rounded-2xl border p-4 min-h-[110px] transition-all flex flex-col gap-2 justify-between",
+                "press-tap text-left rounded-[8px] border p-4 min-h-[110px] transition-all flex flex-col gap-2 justify-between",
                 isActive
                   ? "border-[var(--theme-accent)] bg-[var(--theme-accent)]/12"
                   : "border-white/10 bg-white/[0.02] hover:border-white/25 hover:bg-white/[0.05]"
@@ -592,7 +608,7 @@ function StepStaff({
                 type="button"
                 onClick={() => onSelect(s.id)}
                 className={cn(
-                  "press-tap w-full text-left rounded-2xl border p-3.5 transition-all flex items-center gap-3.5",
+                  "press-tap w-full text-left rounded-[8px] border p-3.5 transition-all flex items-center gap-3.5",
                   isActive
                     ? "border-[var(--theme-accent)] bg-[var(--theme-accent)]/12"
                     : "border-white/10 bg-white/[0.02] hover:border-white/25 hover:bg-white/[0.05]"
@@ -615,7 +631,7 @@ function StepStaff({
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-[15px] font-medium text-foreground leading-tight truncate">
+              <div className="text-[15px] font-medium text-foreground leading-tight truncate">
                     {s.name}
                   </div>
                 </div>
@@ -653,14 +669,14 @@ function StepDateTime({
           <button
             type="button"
             className={cn(
-              "press-tap w-full rounded-2xl border border-white/10 bg-white/[0.02] px-4 h-14 flex items-center gap-3 text-left transition-colors hover:bg-white/[0.05]",
-              date && "border-[var(--theme-accent)]/40 bg-[var(--theme-accent)]/8"
+              "press-tap w-full rounded-[8px] border border-white/10 bg-white/[0.02] px-4 h-14 flex items-center gap-3 text-left transition-colors hover:bg-white/[0.05]",
+              date && "border-[var(--theme-accent)]/40 bg-[var(--theme-accent)]/10"
             )}
             data-testid="datetime-date-trigger"
           >
             <CalendarIcon className="w-5 h-5 text-foreground/60 shrink-0" strokeWidth={1.6} />
             <div className="flex-1">
-              <div className="text-[10px] tracking-[0.25em] uppercase text-foreground/40 font-mono">
+              <div className="text-[10px] uppercase text-foreground/40 font-mono">
                 თარიღი
               </div>
               <div className="text-[15px] text-foreground">
@@ -690,7 +706,7 @@ function StepDateTime({
         <div className="mt-5">
           <div className="flex items-center gap-2 mb-2.5">
             <Clock className="w-4 h-4 text-foreground/50" strokeWidth={1.6} />
-            <span className="text-[11px] tracking-[0.2em] uppercase text-foreground/50 font-mono">
+            <span className="text-[11px] uppercase text-foreground/50 font-mono">
               ხელმისაწვდომი დრო
             </span>
           </div>
@@ -711,7 +727,7 @@ function StepDateTime({
                     type="button"
                     onClick={() => setTime(t)}
                     className={cn(
-                      "press-tap rounded-xl h-11 text-sm font-medium tabular-nums transition-colors",
+                      "press-tap rounded-[8px] h-11 text-sm font-medium tabular-nums transition-colors",
                       isActive
                         ? "bg-[var(--theme-accent)] text-[var(--theme-on-accent)]"
                         : "bg-white/[0.04] text-foreground/80 hover:bg-white/[0.08] border border-white/10"
@@ -784,8 +800,8 @@ function StepDetails({
           />
         </FieldWithIcon>
 
-        <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-3.5">
-          <Label className="text-[10px] tracking-[0.25em] uppercase text-foreground/40 font-mono mb-2 block">
+        <div className="rounded-[8px] border border-white/10 bg-white/[0.02] p-3.5">
+          <Label className="text-[10px] uppercase text-foreground/40 font-mono mb-2 block">
             პროცედურის დეტალები
           </Label>
           <Textarea
@@ -798,8 +814,8 @@ function StepDetails({
           />
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-3.5">
-          <Label className="text-[10px] tracking-[0.25em] uppercase text-foreground/40 font-mono mb-2 block">
+        <div className="rounded-[8px] border border-white/10 bg-white/[0.02] p-3.5">
+          <Label className="text-[10px] uppercase text-foreground/40 font-mono mb-2 block">
             შენიშვნები (არასავალდებულო)
           </Label>
           <Textarea
@@ -827,12 +843,12 @@ function FieldWithIcon({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-3.5 flex items-center gap-3">
+    <div className="rounded-[8px] border border-white/10 bg-white/[0.02] p-3.5 flex items-center gap-3">
       <div className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center shrink-0">
         <Icon className="w-4 h-4 text-foreground/60" strokeWidth={1.6} />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="text-[10px] tracking-[0.25em] uppercase text-foreground/40 font-mono">
+        <div className="text-[10px] uppercase text-foreground/40 font-mono">
           {label}
         </div>
         {children}
@@ -844,7 +860,7 @@ function FieldWithIcon({
 function SummaryRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-baseline justify-between gap-3">
-      <span className="text-[10px] tracking-[0.25em] uppercase text-foreground/40 font-mono">
+      <span className="text-[10px] uppercase text-foreground/40 font-mono">
         {label}
       </span>
       <span className="text-sm text-foreground text-right">{value || "—"}</span>

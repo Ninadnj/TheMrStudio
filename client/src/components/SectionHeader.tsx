@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { stripDecorativeSymbols } from "@/lib/sanitizeText";
 
 type Props = {
   kicker?: string;
@@ -29,16 +30,16 @@ export default function SectionHeader({
       className={cn("flex flex-col gap-3 md:gap-4", alignment, className)}
     >
       {kicker && (
-        <span className="text-[10px] md:text-xs text-[var(--theme-accent)] tracking-[0.3em] uppercase font-mono">
+        <span className="text-[10px] md:text-xs text-[var(--theme-accent)] tracking-normal uppercase font-mono">
           {kicker}
         </span>
       )}
-      <h2 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-[0.95] tracking-tighter text-foreground">
-        {title}
+      <h2 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-none tracking-normal text-foreground">
+        {stripDecorativeSymbols(title)}
       </h2>
       {subtitle && (
         <p className="text-sm md:text-base font-light leading-relaxed max-w-xl text-foreground/60">
-          {subtitle}
+          {stripDecorativeSymbols(subtitle)}
         </p>
       )}
     </motion.div>

@@ -22,10 +22,10 @@ const isProduction = process.env.NODE_ENV === "production";
 // Ensure SESSION_SECRET is set for security
 if (!process.env.SESSION_SECRET) {
   if (isProduction) {
-    console.error("❌ FATAL: SESSION_SECRET must be set in production!");
+    console.error("FATAL: SESSION_SECRET must be set in production!");
     process.exit(1);
   }
-  console.warn("⚠️  WARNING: SESSION_SECRET not set! Using default (insecure for production)");
+  console.warn("WARNING: SESSION_SECRET not set! Using default (insecure for production)");
 }
 
 // Security headers middleware

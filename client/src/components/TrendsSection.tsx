@@ -4,6 +4,8 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import type { Trend, TrendsSection as TrendsSectionType } from "@shared/schema";
 import { isVideoUrl } from "@/lib/videoUtils";
+import SectionHeader from "@/components/SectionHeader";
+import { stripDecorativeSymbols } from "@/lib/sanitizeText";
 
 export default function TrendsSection() {
   const sectionRef = useRef(null);
@@ -45,27 +47,30 @@ export default function TrendsSection() {
     <section ref={sectionRef} className="h-[300vh] relative bg-background">
       <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
 
-        {/* Header */}
         <motion.div
-          className="absolute top-12 left-0 right-0 z-10 text-center px-6"
+          className="absolute top-16 md:top-20 left-0 right-0 z-10 px-6"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <TrendingUp className="w-5 h-5 text-theme-accent" />
-            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl text-foreground">
-              {sectionData?.title || "What's Trending Now"}
-            </h2>
+          <div className="max-w-7xl mx-auto">
+            <div className="inline-flex items-center gap-2 rounded-full bg-card/80 border border-border px-3 py-1.5 mb-4 shadow-sm">
+              <TrendingUp className="w-4 h-4 text-theme-accent" />
+              <span className="text-[10px] uppercase font-mono text-foreground/60">Live edit</span>
+            </div>
+            <SectionHeader
+              kicker="02 / Trends"
+              title={sectionData?.title || "What's Trending Now"}
+              subtitle="Selected finishes, colors, and treatments clients are asking for now."
+            />
           </div>
         </motion.div>
 
-        {/* Horizontal Film Strip */}
-        <motion.div style={{ x }} className="flex gap-8 px-20">
+        <motion.div style={{ x }} className="flex gap-4 md:gap-6 px-8 md:px-20 pt-20">
           {sortedTrends.map((trend) => (
             <div
               key={trend.id}
-              className="relative w-[80vw] md:w-[60vw] lg:w-[40vw] flex-shrink-0 aspect-[3/4] md:aspect-[16/9] rounded-none overflow-hidden group"
+              className="relative w-[80vw] md:w-[60vw] lg:w-[40vw] flex-shrink-0 aspect-[3/4] md:aspect-[16/9] rounded-[8px] overflow-hidden group border border-border/70 bg-card shadow-[0_28px_80px_-60px_rgba(0,0,0,0.65)]"
             >
               {(() => {
                 const isVideo = isVideoUrl(trend.imageUrl);
@@ -82,20 +87,20 @@ export default function TrendsSection() {
                 ) : (
                   <img
                     src={trend.imageUrl}
-                    alt={trend.title}
+                    alt={stripDecorativeSymbols(trend.title)}
                     className={className}
                   />
                 );
               })()}
-              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/62 via-black/16 to-black/0 transition-colors duration-500" />
 
               <div className="absolute bottom-6 left-6 right-6">
-                <h3 className="text-white font-display text-2xl md:text-4xl mb-2 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
-                  {trend.title}
+                <h3 className="text-white font-display text-2xl md:text-4xl tracking-normal mb-2 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+                  {stripDecorativeSymbols(trend.title)}
                 </h3>
                 {trend.description && (
                   <p className="text-white/80 text-sm md:text-base max-w-md translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 delay-100">
-                    {trend.description}
+                    {stripDecorativeSymbols(trend.description)}
                   </p>
                 )}
               </div>
@@ -103,8 +108,7 @@ export default function TrendsSection() {
           ))}
         </motion.div>
 
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-muted-foreground/50 text-xs tracking-widest uppercase">
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-muted-foreground/55 text-xs uppercase">
           Keep Scrolling
         </div>
       </div>

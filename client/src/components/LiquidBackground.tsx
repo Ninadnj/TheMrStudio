@@ -9,8 +9,8 @@ const LiquidShaderMaterial = {
         uTime: { value: 0 },
         uMouse: { value: new Vector2(0, 0) },
         uResolution: { value: new Vector2(1, 1) },
-        uColorStart: { value: new THREE.Color("#A6BBA3") }, // Light sage
-        uColorEnd: { value: new THREE.Color("#8EA58C") },   // Soft coastal green
+        uColorStart: { value: new THREE.Color("#BFCFBB") },
+        uColorEnd: { value: new THREE.Color("#8EA58C") },
     },
     vertexShader: `
     varying vec2 vUv;
@@ -88,7 +88,7 @@ function GradientPlane() {
                 uTime: { value: 0 },
                 uMouse: { value: new Vector2(0, 0) },
                 uResolution: { value: new Vector2(viewport.width, viewport.height) },
-                uColorStart: { value: new THREE.Color("#A6BBA3") },
+                uColorStart: { value: new THREE.Color("#BFCFBB") },
                 uColorEnd: { value: new THREE.Color("#8EA58C") },
             },
             vertexShader: LiquidShaderMaterial.vertexShader,
@@ -117,7 +117,7 @@ function GradientPlane() {
 
 export default function LiquidBackground() {
     return (
-        <div className="fixed inset-0 -z-50 pointer-events-none opacity-60">
+        <div className="fixed inset-0 -z-50 pointer-events-none opacity-25 dark:opacity-10">
             <Canvas camera={{ position: [0, 0, 1] }}>
                 <GradientPlane />
             </Canvas>

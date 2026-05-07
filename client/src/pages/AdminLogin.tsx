@@ -67,11 +67,11 @@ export default function AdminLogin() {
           <div className="mx-auto mb-4 w-12 h-12 rounded-none bg-theme-accent/10 flex items-center justify-center">
             <Lock className="w-6 h-6 text-theme-accent" />
           </div>
-          <CardTitle className="text-2xl font-light tracking-wide">
+          <CardTitle className="text-2xl font-light tracking-normal">
             <span style={{ opacity: 0.3 }}>THE </span>
             <span className="font-bold">MR</span>
           </CardTitle>
-          <CardDescription className="tracking-wide uppercase text-xs">
+          <CardDescription className="tracking-normal uppercase text-xs">
             Admin Dashboard
           </CardDescription>
         </CardHeader>

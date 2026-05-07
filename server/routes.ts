@@ -109,7 +109,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (adminEmail) {
         try {
           await sendNewBookingNotification(booking, adminEmail);
-          console.log(`Admin notification triggered for booking ${booking.id} → ${adminEmail}`);
+          console.log(`Admin notification triggered for booking ${booking.id} to ${adminEmail}`);
         } catch (mailError) {
           console.error("Failed to send admin notification email, but booking was saved:", mailError);
         }
@@ -456,7 +456,7 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
         // Notify client
         try {
           await sendBookingConfirmationToClient(booking);
-          console.log(`Client confirmation email sent for booking ${booking.id} → ${booking.email}`);
+          console.log(`Client confirmation email sent for booking ${booking.id} to ${booking.email}`);
         } catch (mailError) {
           console.error("Failed to send approval email, but booking was approved:", mailError);
         }

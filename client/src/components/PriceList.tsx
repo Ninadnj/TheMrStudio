@@ -148,10 +148,10 @@ export default function PriceList() {
   ];
 
   return (
-    <section id="prices" className="relative bg-background pt-10 md:pt-20 pb-12 md:pb-24">
+    <section id="prices" className="relative scroll-mt-24 bg-background pt-12 pb-14 md:scroll-mt-28 md:pt-20 md:pb-24">
       <div className="max-w-3xl mx-auto px-5 md:px-6">
         <SectionHeader
-          kicker="04 — Prices"
+          kicker="04 / Prices"
           title="ფასები"
           subtitle="გამჭვირვალე ფასები. გადახდა — ვიზიტის შემდეგ."
           align="center"
@@ -166,7 +166,7 @@ export default function PriceList() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="მოძებნე სერვისი..."
-            className="w-full h-11 pl-11 pr-10 rounded-2xl bg-secondary/70 border border-transparent focus:border-[var(--theme-accent)]/60 focus:outline-none text-sm placeholder:text-foreground/40 transition-colors"
+            className="w-full h-12 pl-11 pr-10 rounded-[8px] bg-card/90 border border-border/80 focus:border-[var(--theme-accent)]/60 focus:outline-none text-sm placeholder:text-foreground/40 transition-colors shadow-sm"
             data-testid="prices-search"
           />
           {search && (
@@ -192,7 +192,7 @@ export default function PriceList() {
                   setActiveFilter(f.id);
                 }}
                 className={cn(
-                  "press-tap shrink-0 min-h-[34px] px-3.5 rounded-full text-xs font-medium tracking-tight transition-colors",
+                  "press-tap shrink-0 min-h-[34px] px-3.5 rounded-full text-xs font-medium tracking-normal transition-colors",
                   isActive
                     ? "bg-[var(--theme-accent)] text-[var(--theme-on-accent)]"
                     : "bg-secondary text-foreground/70 hover:text-foreground"
@@ -224,7 +224,7 @@ export default function PriceList() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-30px" }}
                 transition={{ duration: 0.4 }}
-                className="scroll-mt-24 rounded-2xl border border-border bg-card overflow-hidden"
+                className="scroll-mt-24 rounded-[8px] border border-border/80 bg-card/95 overflow-hidden shadow-[0_18px_60px_-52px_rgba(0,0,0,0.5)]"
               >
                 {/* Category header — tap to expand */}
                 <button
@@ -238,10 +238,10 @@ export default function PriceList() {
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-baseline gap-2 flex-wrap">
-                      <h3 className="font-display text-base md:text-lg tracking-tight text-foreground">
+                      <h3 className="font-display text-base md:text-lg tracking-normal text-foreground">
                         {cat.category}
                       </h3>
-                      <span className="text-[10px] tracking-widest uppercase font-mono text-foreground/40">
+                      <span className="text-[10px] uppercase font-mono text-foreground/40">
                         {cat.items.length} სერვისი
                       </span>
                     </div>
@@ -287,21 +287,21 @@ export default function PriceList() {
                               className="press-tap flex-1 text-left flex items-center gap-3 px-4 py-3 min-w-0"
                               data-testid={`price-row-${cat.id}-${i}`}
                             >
-                            <div className="flex-1 min-w-0">
-                              <div className="text-[14px] font-medium text-foreground truncate">
-                                {item.nameKa}
+                              <div className="flex-1 min-w-0">
+                                <div className="text-[14px] font-medium text-foreground truncate">
+                                  {item.nameKa}
+                                </div>
+                                <div className="text-[11px] text-foreground/45 mt-0.5 truncate">
+                                  {item.name}
+                                </div>
                               </div>
-                              <div className="text-[11px] text-foreground/45 mt-0.5 truncate">
-                                {item.name}
+                              <div className="flex items-baseline gap-1 tabular-nums shrink-0">
+                                <span className="text-sm font-medium text-foreground">
+                                  {typeof item.price === "number" ? item.price : item.price}
+                                </span>
+                                <span className="text-[11px] text-foreground/50">₾</span>
                               </div>
-                            </div>
-                            <div className="flex items-baseline gap-1 tabular-nums shrink-0">
-                              <span className="text-sm font-medium text-foreground">
-                                {typeof item.price === "number" ? item.price : item.price}
-                              </span>
-                              <span className="text-[11px] text-foreground/50">₾</span>
-                            </div>
-                            <ChevronRight className="w-4 h-4 text-foreground/30 shrink-0" />
+                              <ChevronRight className="w-4 h-4 text-foreground/30 shrink-0" />
                             </button>
                             {canShare && (
                               <button
@@ -310,7 +310,7 @@ export default function PriceList() {
                                   e.stopPropagation();
                                   shareService(item, cat.category);
                                 }}
-                                className="press-tap shrink-0 px-3 mr-1 my-1 rounded-xl text-foreground/40 hover:text-[var(--theme-accent)] hover:bg-[var(--theme-accent)]/8 transition-colors flex items-center justify-center"
+                                className="press-tap shrink-0 px-3 mr-1 my-1 rounded-xl text-foreground/40 hover:text-[var(--theme-accent)] hover:bg-[var(--theme-accent)]/10 transition-colors flex items-center justify-center"
                                 aria-label="Share service"
                                 data-testid={`price-share-${cat.id}-${i}`}
                               >

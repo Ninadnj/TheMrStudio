@@ -6,6 +6,7 @@ import { MessageCircle, X, Send, Languages } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { stripDecorativeSymbols } from "@/lib/sanitizeText";
 
 interface Message {
   role: "user" | "assistant";
@@ -28,7 +29,7 @@ export default function ChatWidget() {
       return data.response;
     },
     onSuccess: (response) => {
-      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setMessages(prev => [...prev, { role: "assistant", content: stripDecorativeSymbols(response) }]);
     },
     onError: (error: Error) => {
       toast({
@@ -74,11 +75,11 @@ export default function ChatWidget() {
 
   return (
     <>
-      {/* Toggle Button - Right Side */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-1/2 right-0 -translate-y-1/2 bg-theme-accent hover:bg-theme-accent-hover text-white px-3 py-6 rounded-l-lg shadow-lg transition-all duration-300 z-50 flex flex-col items-center gap-2 writing-mode-vertical"
+        className="fixed top-1/2 right-0 z-50 flex -translate-y-1/2 flex-col items-center gap-2 rounded-l-[8px] bg-theme-accent px-3 py-5 text-white shadow-[0_20px_60px_-42px_rgba(0,0,0,0.7)] transition-all duration-300 hover:bg-theme-accent-hover"
         data-testid="button-open-chat"
+        aria-label={language === "ka" ? "ჩატის გახსნა" : "Open chat"}
       >
         <MessageCircle className="h-5 w-5" />
         <span className="text-sm font-medium rotate-180" style={{ writingMode: 'vertical-rl' }}>
@@ -86,16 +87,14 @@ export default function ChatWidget() {
         </span>
       </button>
 
-      {/* Compact Slide-in Panel */}
       <div
-        className={`fixed bottom-6 right-6 h-[480px] w-[340px] bg-background border border-border rounded-none shadow-2xl transform transition-transform duration-300 ease-in-out z-40 flex flex-col ${
+        className={`fixed bottom-6 right-4 z-40 flex h-[min(520px,calc(100svh-3rem))] w-[calc(100vw-2rem)] max-w-[360px] transform flex-col overflow-hidden rounded-[8px] border border-border bg-background shadow-[0_30px_90px_-58px_rgba(0,0,0,0.75)] transition-transform duration-300 ease-in-out sm:right-6 ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border backdrop-blur-sm bg-background/95 rounded-t-lg">
+        <div className="flex items-center justify-between border-b border-border bg-background/95 px-4 py-3 backdrop-blur-sm">
           <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-none bg-emerald-500 animate-pulse"></div>
+            <div className="h-2 w-2 rounded-full bg-[var(--theme-accent)]"></div>
             <span className="font-semibold text-base">
               <span className="text-foreground/40">THE</span>{" "}
               <span className="text-foreground font-bold">MR</span>{" "}
@@ -113,11 +112,10 @@ export default function ChatWidget() {
           </Button>
         </div>
 
-        {/* Language Selection */}
         <div className="flex gap-2 px-4 py-3 bg-muted/30 border-b border-border">
           <button
             onClick={() => setLanguage("ka")}
-            className={`flex-1 px-3 py-1.5 rounded-none text-sm font-medium transition-colors ${
+            className={`flex-1 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
               language === "ka"
                 ? "bg-theme-accent text-white"
                 : "bg-background text-muted-foreground hover:bg-muted"
@@ -128,7 +126,7 @@ export default function ChatWidget() {
           </button>
           <button
             onClick={() => setLanguage("en")}
-            className={`flex-1 px-3 py-1.5 rounded-none text-sm font-medium transition-colors ${
+            className={`flex-1 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
               language === "en"
                 ? "bg-theme-accent text-white"
                 : "bg-background text-muted-foreground hover:bg-muted"
@@ -139,7 +137,6 @@ export default function ChatWidget() {
           </button>
         </div>
 
-        {/* Messages */}
         <ScrollArea className="flex-1 px-4 py-3">
           <div ref={scrollRef} className="space-y-3">
             {messages.length === 0 && (
@@ -158,24 +155,24 @@ export default function ChatWidget() {
                 className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`max-w-[85%] rounded-none px-4 py-3 ${
+                  className={`max-w-[85%] rounded-[8px] px-4 py-3 ${
                     message.role === "user"
                       ? "bg-theme-accent text-white shadow-sm"
                       : "bg-muted/50 text-foreground border border-border/50"
                   }`}
                   data-testid={`message-${message.role}-${idx}`}
                 >
-                  <p className="text-sm leading-relaxed">{message.content}</p>
+                  <p className="text-sm leading-relaxed">{stripDecorativeSymbols(message.content)}</p>
                 </div>
               </div>
             ))}
             {chatMutation.isPending && (
               <div className="flex justify-start">
-                <div className="bg-muted/50 border border-border/50 rounded-none px-4 py-3">
+                <div className="rounded-[8px] border border-border/50 bg-muted/50 px-4 py-3">
                   <div className="flex gap-1">
-                    <span className="w-2 h-2 bg-muted-foreground rounded-none animate-bounce"></span>
-                    <span className="w-2 h-2 bg-muted-foreground rounded-none animate-bounce" style={{ animationDelay: "0.2s" }}></span>
-                    <span className="w-2 h-2 bg-muted-foreground rounded-none animate-bounce" style={{ animationDelay: "0.4s" }}></span>
+                    <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"></span>
+                    <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></span>
+                    <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "0.4s" }}></span>
                   </div>
                 </div>
               </div>
@@ -183,8 +180,7 @@ export default function ChatWidget() {
           </div>
         </ScrollArea>
 
-        {/* Input */}
-        <div className="px-4 py-3 border-t border-border bg-background/95 backdrop-blur-sm rounded-b-lg">
+        <div className="border-t border-border bg-background/95 px-4 py-3 backdrop-blur-sm">
           <div className="flex gap-2">
             <Input
               value={input}
@@ -192,14 +188,14 @@ export default function ChatWidget() {
               onKeyPress={handleKeyPress}
               placeholder={language === "ka" ? "შეიყვანეთ შეტყობინება..." : "Type a message..."}
               disabled={chatMutation.isPending}
-              className="flex-1 rounded-none"
+              className="flex-1 rounded-full"
               data-testid="input-chat-message"
             />
             <Button
               onClick={handleSend}
               disabled={!input.trim() || chatMutation.isPending}
               size="icon"
-              className="bg-theme-accent hover:bg-theme-accent-hover rounded-none h-10 w-10 shrink-0"
+              className="h-10 w-10 shrink-0 rounded-full bg-theme-accent hover:bg-theme-accent-hover"
               data-testid="button-send-message"
             >
               <Send className="h-4 w-4 text-white" />

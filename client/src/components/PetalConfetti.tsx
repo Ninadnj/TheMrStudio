@@ -15,11 +15,11 @@ type Props = {
 };
 
 const PETAL_COLORS = [
-  "#FFFDF8", // cream
-  "#D7D9CD", // sand
-  "#A6BBA3", // light sage
-  "#8EA58C", // soft coastal green
-  "#E5C7C9", // dusty rose tint
+  "#F7FAF6",
+  "#BFCFBB",
+  "#8EA58C",
+  "#738A6E",
+  "#344C3D",
 ];
 
 function rand(min: number, max: number) {

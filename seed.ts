@@ -36,7 +36,7 @@ async function run() {
             set: { password: hashedPassword }
         });
 
-    console.log("✅ Admin User guaranteed.");
+    console.log("Admin user guaranteed.");
 
     console.log("Checking for specialists (staff)...");
     const existingStaff = await db.select().from(schema.staff);
@@ -49,9 +49,9 @@ async function run() {
             calendarId: "", // Not synced to Google Calendar yet
             order: "1"
         });
-        console.log("✅ Default specialist created. The booking page will now work.");
+        console.log("Default specialist created. The booking page will now work.");
     } else {
-        console.log(`✅ Found ${existingStaff.length} specialist(s).`);
+        console.log(`Found ${existingStaff.length} specialist(s).`);
     }
 
     console.log("Done checking database. It is ready for Render.");

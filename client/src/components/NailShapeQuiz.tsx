@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, ArrowRight, ArrowLeft, CheckCircle, Square, Circle, Droplet, Diamond, Triangle, Box } from "lucide-react";
+import { ArrowRight, ArrowLeft, CheckCircle, Square, Circle, Droplet, Diamond, Triangle, Box } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
@@ -177,7 +177,7 @@ export default function NailShapeQuiz() {
         transition={{ duration: 0.6 }}
       >
         <div className="text-center mb-8">
-          <Sparkles className="w-12 h-12 mx-auto mb-4 text-theme-accent" />
+          <Diamond className="w-12 h-12 mx-auto mb-4 text-theme-accent" />
           <h3 className="font-display text-3xl md:text-4xl mb-3 text-foreground">
             Find Your Perfect Nail Shape
           </h3>

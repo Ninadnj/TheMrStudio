@@ -63,10 +63,10 @@ export default function AdminDashboard() {
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-light tracking-wide">
+            <h1 className="text-2xl font-light tracking-normal">
               <span style={{ opacity: 0.3 }}>THE </span>
               <span className="font-bold">MR</span>
-              <span className="text-sm ml-3 text-muted-foreground uppercase tracking-wider">Admin</span>
+              <span className="text-sm ml-3 text-muted-foreground uppercase tracking-normal">Admin</span>
             </h1>
           </div>
           <Button

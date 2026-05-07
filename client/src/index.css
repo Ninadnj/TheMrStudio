@@ -1,104 +1,125 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap');
 @import url('https://fonts.cdnfonts.com/css/neue-haas-grotesk-display-pro');
 
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-/* MR Studio — Soft Luxury / Clinical Beauty (Sage · Ivory · Evergreen) */
+/* MR Studio visual system: monochromatic sage green palette. */
 :root {
+  --font-sans: "Neue Haas Grotesk Display Pro", "Geist", -apple-system, BlinkMacSystemFont, "SF Pro Text", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Instrument Serif", "Playfair Display", Georgia, serif;
+  --font-mono: "Geist", "SFMono-Regular", Consolas, ui-monospace, monospace;
+
   /* Custom theme tokens */
-  --theme-bg: #F7F6F2;            /* soft mist ivory */
-  --theme-surface: #FFFDF8;       /* cream cards / panels */
-  --theme-surface-muted: #D7D9CD; /* sand / muted surface */
-  --theme-text: #1E1816;          /* espresso black */
-  --theme-muted1: #6F766B;        /* muted olive-gray text */
-  --theme-muted2: #A8AEA0;
+  --sage-hint: #BFCFBB;
+  --sage-mint: #BFCFBB;
+  --sage: #8EA58C;
+  --sage-moss: #738A6E;
+  --sage-evergreen: #344C3D;
 
-  /* Primary = evergreen — used for CTAs, selected states, brand marks */
-  --theme-accent: #344C3D;        /* evergreen (primary) */
+  --theme-bg: #F7FAF6;
+  --theme-surface: #FFFFFF;
+  --theme-surface-muted: #EAF1E8;
+  --theme-text: #151A15;
+  --theme-muted1: #667060;
+  --theme-muted2: #9EAE9A;
+
+  --theme-accent: var(--sage-evergreen);
   --theme-accent-hover: #26382D;
-  --theme-on-accent: #FFFFFF;     /* foreground that pairs with --theme-accent */
+  --theme-on-accent: #FFFFFF;
 
-  /* Supporting greens */
-  --theme-secondary: #738A6E;     /* sage — supporting elements */
-  --theme-soft: #8EA58C;          /* soft coastal green — highlights, selected pills */
+  --theme-secondary: var(--sage-moss);
+  --theme-soft: var(--sage-hint);
 
   /* Status & decorative */
-  --theme-success: #8A9A7B;
-  --theme-rose: #B76E79;          /* dusty rose, sparingly */
+  --theme-success: var(--sage-moss);
+  --theme-rose: #8EA58C;
 
-  --theme-line: #C9CDC2;          /* pale taupe / soft border */
-  --theme-cream: #F2EFE9;         /* warm cream — text on dark surfaces */
-  --theme-ink: #141311;           /* canonical dark ink — used for hero/booking */
+  --theme-line: #CDD9CA;
+  --theme-cream: #F6FAF4;
+  --theme-ink: #101610;
 
-  /* Shadcn/UI HSL Mappings — bit-for-bit synced to canonical palette hex */
-  --background: 48 24% 96%;             /* #F7F6F2 */
-  --foreground: 15 15% 10%;             /* #1E1816 */
-  --card: 43 100% 99%;                  /* #FFFDF8 */
-  --card-foreground: 15 15% 10%;
-  --popover: 43 100% 99%;
-  --popover-foreground: 15 15% 10%;
-  --primary: 143 19% 25%;               /* #344C3D evergreen */
+  --background: 108 29% 97%;
+  --foreground: 120 11% 9%;
+  --card: 0 0% 100%;
+  --card-foreground: 120 11% 9%;
+  --card-border: 108 20% 82%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 120 11% 9%;
+  --popover-border: 108 20% 82%;
+  --primary: 143 19% 25%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 70 14% 83%;              /* #D7D9CD sand */
-  --secondary-foreground: 15 15% 10%;
-  --muted: 67 15% 90%;                  /* #E8E9E1 lighter sand */
-  --muted-foreground: 98 5% 44%;        /* #6F766B muted olive-gray */
-  --accent: 115 12% 60%;                /* #8EA58C soft coastal green */
-  --accent-foreground: 15 15% 10%;
+  --primary-border: hsl(143 19% 21%);
+  --secondary: 110 20% 77%;
+  --secondary-foreground: 120 11% 9%;
+  --secondary-border: hsl(110 17% 68%);
+  --muted: 108 28% 93%;
+  --muted-foreground: 106 8% 41%;
+  --muted-border: hsl(108 20% 82%);
+  --accent: 115 12% 60%;
+  --accent-foreground: 120 11% 9%;
+  --accent-border: hsl(115 12% 51%);
   --destructive: 0 65% 55%;
   --destructive-foreground: 0 0% 100%;
-  --border: 82 10% 78%;                 /* #C9CDC2 */
-  --input: 82 10% 78%;
+  --destructive-border: hsl(0 65% 48%);
+  --border: 108 20% 82%;
+  --input: 108 20% 82%;
   --ring: 143 19% 25%;
-  --radius: 1rem;
+  --button-outline: hsl(108 17% 70%);
+  --radius: 0.875rem;
 }
 
-/* MR Studio — Dark Mode (Forest Lounge) */
+/* MR Studio dark mode. */
 .dark {
-  --theme-bg: #141311;
-  --theme-surface: #1E1D1B;
-  --theme-surface-muted: #2A2A26;
-  --theme-text: #F2EFE9;
-  --theme-muted1: #A3A09A;
-  --theme-muted2: #5C5A56;
+  --theme-bg: #101610;
+  --theme-surface: #172018;
+  --theme-surface-muted: #223024;
+  --theme-text: #F6FAF4;
+  --theme-muted1: #BFCFBB;
+  --theme-muted2: #738A6E;
 
-  /* In dark mode, accent shifts to soft coastal green so it reads against dark bg */
-  --theme-accent: #8EA58C;
-  --theme-accent-hover: #A6BBA3;
-  --theme-on-accent: #1E1816;
+  --theme-accent: #BFCFBB;
+  --theme-accent-hover: #D7E3D3;
+  --theme-on-accent: #101610;
 
-  --theme-secondary: #738A6E;
-  --theme-soft: #8EA58C;
+  --theme-secondary: #8EA58C;
+  --theme-soft: #344C3D;
 
-  --theme-success: #8A9A7B;
-  --theme-rose: #B76E79;
+  --theme-success: #BFCFBB;
+  --theme-rose: #8EA58C;
 
-  --theme-line: #33312E;
-  --theme-cream: #F2EFE9;
-  --theme-ink: #141311;
+  --theme-line: #2C3E31;
+  --theme-cream: #F6FAF4;
+  --theme-ink: #101610;
 
-  /* Shadcn/UI Mappings — Dark (bit-for-bit synced) */
-  --background: 40 8% 7%;               /* #141311 ink */
-  --foreground: 40 26% 93%;             /* #F2EFE9 cream */
-  --card: 40 5% 11%;                    /* #1E1D1B */
-  --card-foreground: 40 26% 93%;
-  --popover: 40 5% 11%;
-  --popover-foreground: 40 26% 93%;
-  --primary: 115 12% 60%;               /* #8EA58C light sage as primary in dark */
-  --primary-foreground: 15 15% 10%;
-  --secondary: 40 6% 17%;
-  --secondary-foreground: 40 26% 93%;
-  --muted: 40 6% 17%;
-  --muted-foreground: 40 8% 62%;
+  --background: 120 16% 7%;
+  --foreground: 105 38% 97%;
+  --card: 123 16% 11%;
+  --card-foreground: 105 38% 97%;
+  --card-border: 132 17% 21%;
+  --popover: 123 16% 11%;
+  --popover-foreground: 105 38% 97%;
+  --popover-border: 132 17% 21%;
+  --primary: 110 20% 77%;
+  --primary-foreground: 120 16% 7%;
+  --primary-border: hsl(110 20% 68%);
+  --secondary: 132 17% 21%;
+  --secondary-foreground: 105 38% 97%;
+  --secondary-border: hsl(132 17% 26%);
+  --muted: 132 17% 18%;
+  --muted-foreground: 110 20% 77%;
+  --muted-border: hsl(132 17% 24%);
   --accent: 115 12% 60%;
-  --accent-foreground: 15 15% 10%;
+  --accent-foreground: 120 16% 7%;
+  --accent-border: hsl(115 12% 52%);
   --destructive: 0 50% 35%;
   --destructive-foreground: 0 0% 98%;
-  --border: 40 6% 22%;
-  --input: 40 6% 22%;
-  --ring: 115 12% 60%;
+  --destructive-border: hsl(0 50% 30%);
+  --border: 132 17% 21%;
+  --input: 132 17% 21%;
+  --ring: 110 20% 77%;
+  --button-outline: hsl(132 17% 29%);
 }
 
 @layer base {
@@ -107,18 +128,26 @@
   }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     color: var(--theme-text);
     font-size: 1rem;
     line-height: 1.5rem;
     background-color: var(--theme-bg);
+    background-image:
+      linear-gradient(135deg, rgba(247, 250, 246, 0.95), rgba(191, 207, 187, 0.28) 44%, rgba(142, 165, 140, 0.16)),
+      linear-gradient(180deg, transparent, rgba(52, 76, 61, 0.05));
+  }
+
+  .dark body {
+    background-image:
+      linear-gradient(135deg, rgba(16, 22, 16, 0.96), rgba(23, 32, 24, 0.9) 52%, rgba(52, 76, 61, 0.3)),
+      linear-gradient(180deg, transparent, rgba(191, 207, 187, 0.04));
   }
 
   ::selection {
-    background-color: rgba(168, 155, 142, 0.3);
-    /* Theme Accent with opacity */
+    background-color: rgba(142, 165, 140, 0.35);
     color: var(--theme-text);
   }
 
@@ -144,8 +173,7 @@
 @layer utilities {
 
   /*
-   * EDITORIAL PRINT: Film Grain Effect (Static Brutalist Noise)
-   * This adds physical texture to the entire digital space.
+   * Fine-grain texture keeps the experience tactile without adding visual noise.
    */
   .bg-noise {
     position: fixed;
@@ -168,6 +196,10 @@
     color: var(--theme-text);
   }
 
+  .text-theme-text {
+    color: var(--theme-text);
+  }
+
   .text-theme-muted {
     color: var(--theme-muted1);
   }
@@ -175,6 +207,22 @@
   .bg-theme-accent {
     background-color: var(--theme-accent);
     color: var(--theme-on-accent);
+  }
+
+  .bg-theme-accent\/10 {
+    background-color: color-mix(in srgb, var(--theme-accent) 10%, transparent);
+  }
+
+  .bg-theme-accent\/20 {
+    background-color: color-mix(in srgb, var(--theme-accent) 20%, transparent);
+  }
+
+  .bg-theme-accent\/30 {
+    background-color: color-mix(in srgb, var(--theme-accent) 30%, transparent);
+  }
+
+  .bg-theme-muted\/10 {
+    background-color: color-mix(in srgb, var(--theme-muted1) 10%, transparent);
   }
 
   .text-theme-accent {
@@ -209,20 +257,23 @@
     color: var(--theme-accent);
   }
 
+  .hover\:text-theme-text:hover {
+    color: var(--theme-text);
+  }
+
   /* Editorial Typography */
   .font-display {
     font-family: var(--font-serif);
-    /* Tighter tracking for headings creates a more tailored, premium look */
-    letter-spacing: -0.03em;
+    letter-spacing: 0;
     line-height: 1.05;
   }
 
   .tracking-editorial {
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
   }
 
   .tracking-kicker {
-    letter-spacing: 0.15em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
   }
 
@@ -299,7 +350,7 @@
   }
 
   /* ============================================
-     iOS 26 LIQUID GLASS — APP-LIKE FOUNDATIONS
+     APP-LIKE FOUNDATIONS
      ============================================ */
 
   /* Safe-area aware spacers (iPhone notch / home indicator) */
@@ -314,15 +365,15 @@
 
   /* Frosted-glass surface (iOS liquid glass) */
   .ios-glass {
-    background: rgba(255, 255, 255, 0.72);
-    backdrop-filter: saturate(180%) blur(24px);
-    -webkit-backdrop-filter: saturate(180%) blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: color-mix(in srgb, var(--theme-surface) 76%, transparent);
+    backdrop-filter: saturate(150%) blur(22px);
+    -webkit-backdrop-filter: saturate(150%) blur(22px);
+    border: 1px solid color-mix(in srgb, var(--theme-line) 72%, transparent);
   }
 
   .dark .ios-glass {
-    background: rgba(20, 19, 17, 0.62);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(16, 17, 15, 0.72);
+    border: 1px solid rgba(248, 242, 231, 0.1);
   }
 
   /* Micro-press: instant haptic-feel feedback on tap */
@@ -334,13 +385,13 @@
     transform: scale(0.96);
   }
 
-  /* Evergreen accent glow — for primary CTAs */
+  /* Sage accent glow for primary CTAs. */
   .accent-glow {
-    box-shadow: 0 10px 32px -10px rgba(52, 76, 61, 0.45), 0 2px 8px -2px rgba(52, 76, 61, 0.22);
+    box-shadow: 0 18px 44px -24px rgba(52, 76, 61, 0.64), 0 8px 18px -14px rgba(142, 165, 140, 0.44);
   }
 
   .dark .accent-glow {
-    box-shadow: 0 10px 32px -10px rgba(142, 165, 140, 0.55), 0 0 0 1px rgba(142, 165, 140, 0.2);
+    box-shadow: 0 18px 44px -24px rgba(191, 207, 187, 0.55), 0 0 0 1px rgba(191, 207, 187, 0.16);
   }
 
   /* Spring entrance for floating elements */
@@ -496,7 +547,7 @@
   }
 
   .animated-gradient {
-    background: linear-gradient(45deg, rgba(0, 0, 0, 0.05), rgba(42, 42, 42, 0.1), rgba(0, 0, 0, 0.05));
+    background: linear-gradient(45deg, rgba(52, 76, 61, 0.06), rgba(142, 165, 140, 0.12), rgba(191, 207, 187, 0.16));
     background-size: 200% 200%;
     animation: gradientShift 15s ease infinite;
   }
@@ -508,7 +559,7 @@
   }
 
   .magnetic-button:hover {
-    transform: scale(1.05);
+    transform: translateY(-1px);
   }
 
   /* Ripple Effect on Click */
@@ -606,7 +657,7 @@
 
   /* Gradient Text Effect */
   .gradient-text {
-    background: linear-gradient(135deg, var(--theme-accent) 0%, var(--theme-accent-hover) 100%);
+    background: linear-gradient(135deg, var(--theme-accent) 0%, var(--theme-secondary) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;

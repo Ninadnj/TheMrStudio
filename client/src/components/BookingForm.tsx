@@ -1,45 +1,101 @@
 import { useState, useMemo, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Sparkles,
+  Scissors,
+  Zap,
+  Flower2,
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  CalendarIcon,
+  Clock,
+  User,
+  Mail,
+  Phone as PhoneIcon,
+  Loader2,
+  CheckCircle2,
+  type LucideIcon,
+} from "lucide-react";
+import { format, isToday, isBefore, startOfToday, setHours, setMinutes } from "date-fns";
+import { ka } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar as CalendarIcon } from "lucide-react";
-import { format, isToday, isBefore, startOfToday, setHours, setMinutes } from "date-fns";
-import { ka } from "date-fns/locale";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import type { Service, Staff } from "@shared/schema";
+import { cn } from "@/lib/utils";
+import SectionHeader from "@/components/SectionHeader";
+import PetalConfetti from "@/components/PetalConfetti";
+import { hapticTap, hapticSuccess, hapticWarning } from "@/lib/haptics";
+import type { Staff } from "@shared/schema";
+
+const aftercareByCategory: Record<string, { titleKa: string; tipKa: string }> = {
+  Manicure: {
+    titleKa: "მოვლის რჩევა",
+    tipKa: "თავიდან აიცილე ცხელი წყალი 24 საათის განმავლობაში. ყოველდღე გამოიყენე კუტიკულის ზეთი ნაზი ბრწყინვალებისთვის.",
+  },
+  Pedicure: {
+    titleKa: "მოვლის რჩევა",
+    tipKa: "მოერიდე საუნას და აუზს 24 საათით. დაიტანე დამატენიანებელი ფეხებისთვის ყოველ საღამოს.",
+  },
+  Epilation: {
+    titleKa: "ლაზერის შემდგომი მოვლა",
+    tipKa: "48 საათი მოერიდე მზეს, საუნასა და ცხელ შხაპს. დაიტანე დამამშვიდებელი ალოეს გელი.",
+  },
+  Cosmetology: {
+    titleKa: "პროცედურის შემდეგ",
+    tipKa: "12 საათი არ შეახო და არ დაიტანო მაკიაჟი. სვი წყალი მეტი რაოდენობით კანის ჰიდრატაციისთვის.",
+  },
+};
 
 const timeSlots = [
   "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30",
   "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30",
-  "18:00", "18:30"
+  "18:00", "18:30",
 ];
 
-const serviceCategories = [
-  { value: "Manicure", label: "მანიკური" },
-  { value: "Pedicure", label: "პედიკური" },
-  { value: "Epilation", label: "ლაზერული ეპილაცია" },
-  { value: "Cosmetology", label: "კოსმეტოლოგია" }
+const serviceCategories: {
+  value: string;
+  label: string;
+  hint: string;
+  Icon: LucideIcon;
+}[] = [
+  { value: "Manicure", label: "მანიკური", hint: "Nails — Manicure", Icon: Sparkles },
+  { value: "Pedicure", label: "პედიკური", hint: "Nails — Pedicure", Icon: Scissors },
+  { value: "Epilation", label: "ლაზერული ეპილაცია", hint: "Laser hair removal", Icon: Zap },
+  { value: "Cosmetology", label: "კოსმეტოლოგია", hint: "Skin & Injectables", Icon: Flower2 },
 ];
+
+const totalSteps = 4;
+
+const stepVariants = {
+  enter: (dir: number) => ({ x: dir > 0 ? 60 : -60, opacity: 0 }),
+  center: { x: 0, opacity: 1 },
+  exit: (dir: number) => ({ x: dir > 0 ? -60 : 60, opacity: 0 }),
+};
 
 export default function BookingForm() {
+  const savedUser =
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("mr_booking_user") || "{}")
+      : {};
+
+  const [step, setStep] = useState(1);
+  const [direction, setDirection] = useState(1);
   const [date, setDate] = useState<Date>();
-  const savedUser = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('mr_booking_user') || '{}') : {};
+  const [submitted, setSubmitted] = useState<{
+    category: string;
+    serviceLabel: string;
+    staffName: string;
+    date: string;
+    time: string;
+  } | null>(null);
+
   const [formData, setFormData] = useState({
     fullName: savedUser.fullName || "",
     email: savedUser.email || "",
@@ -48,8 +104,9 @@ export default function BookingForm() {
     serviceDetails: "",
     staffId: "",
     time: "",
-    notes: ""
+    notes: "",
   });
+
   const { toast } = useToast();
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -79,70 +136,60 @@ export default function BookingForm() {
       return response.json();
     },
     enabled: !!formattedDate,
-    refetchOnMount: 'always',
+    refetchOnMount: "always",
     staleTime: 0,
   });
 
   const bookedTimes = availabilityData?.bookedTimes || [];
 
   const availableTimes = useMemo(() => {
-    let times = timeSlots.filter((time) => !bookedTimes.includes(time));
-
-    // If selecting today, filter out past times and add lead time
+    let times = timeSlots.filter((t) => !bookedTimes.includes(t));
     if (date && isToday(date)) {
-      const now = new Date();
-      // Add 1 hour lead time for same-day bookings to give staff time to prepare
-      const minBookingTime = new Date(now.getTime() + 60 * 60 * 1000);
-
+      const minBookingTime = new Date(Date.now() + 60 * 60 * 1000);
       times = times.filter((time) => {
-        const [hours, minutes] = time.split(":").map(Number);
-        const slotTime = setMinutes(setHours(new Date(date), hours), minutes);
+        const [h, m] = time.split(":").map(Number);
+        const slotTime = setMinutes(setHours(new Date(date), h), m);
         return isBefore(minBookingTime, slotTime);
       });
     }
-
     return times;
   }, [bookedTimes, date]);
 
   const createBookingMutation = useMutation({
-    mutationFn: async (bookingData: any) => {
-      return await apiRequest("POST", "/api/bookings", bookingData);
-    },
+    mutationFn: async (bookingData: any) => apiRequest("POST", "/api/bookings", bookingData),
     onSuccess: async () => {
-      // First invalidate ALL availability queries (for any staffId/date combination)
-      await queryClient.invalidateQueries({
-        queryKey: ["/api/bookings/availability"],
+      await queryClient.invalidateQueries({ queryKey: ["/api/bookings/availability"] });
+      await queryClient.refetchQueries({ queryKey: ["/api/bookings/availability"] });
+
+      const selectedCategory = serviceCategories.find((c) => c.value === formData.serviceCategory);
+      const selectedStaff = availableStaff.find((s) => s.id === formData.staffId);
+
+      setSubmitted({
+        category: formData.serviceCategory,
+        serviceLabel: selectedCategory?.label || "",
+        staffName: selectedStaff?.name || "",
+        date: date ? format(date, "d MMMM, yyyy", { locale: ka }) : "",
+        time: formData.time,
       });
-      // Also refetch any active availability queries to get fresh data
-      await queryClient.refetchQueries({
-        queryKey: ["/api/bookings/availability"],
-      });
+
+      hapticSuccess();
 
       toast({
-        title: "მოთხოვნა გაგზავნილია!",
-        description: "თქვენი დაჯავშნის მოთხოვნა გაიგზავნა. სპეციალისტი დაგიკავშირდებათ დასადასტურებლად",
+        title: "მოთხოვნა გაგზავნილია",
+        description: "სპეციალისტი დაგიკავშირდებათ დასადასტურებლად.",
       });
 
-      // Save user details for next time
-      localStorage.setItem('mr_booking_user', JSON.stringify({
-        fullName: formData.fullName,
-        email: formData.email,
-        phone: formData.phone
-      }));
-
-      // Reset form but keep personal details
-      setFormData(prev => ({
-        ...prev,
-        serviceCategory: "",
-        serviceDetails: "",
-        staffId: "",
-        time: "",
-        notes: ""
-      }));
-      setDate(undefined);
+      localStorage.setItem(
+        "mr_booking_user",
+        JSON.stringify({
+          fullName: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+        })
+      );
     },
     onError: (error: any) => {
-      console.error('Booking error:', error);
+      hapticWarning();
       const errorMessage = error?.message || "რაღაც არასწორად მოხდა. გთხოვთ სცადოთ ხელახლა";
       toast({
         title: "დაჯავშნა ვერ მოხერხდა",
@@ -153,45 +200,43 @@ export default function BookingForm() {
   });
 
   useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
+    const node = sectionRef.current;
+    if (!node) return;
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
-      },
+      ([entry]) => entry.isIntersecting && setIsVisible(true),
       { threshold: 0.1 }
     );
-
-    observer.observe(section);
+    observer.observe(node);
     return () => observer.disconnect();
   }, []);
 
+  const goNext = () => {
+    hapticTap();
+    setDirection(1);
+    setStep((s) => Math.min(totalSteps, s + 1));
+  };
+
+  const goBack = () => {
+    hapticTap();
+    setDirection(-1);
+    setStep((s) => Math.max(1, s - 1));
+  };
+
+  const canContinue = (() => {
+    if (step === 1) return !!formData.serviceCategory;
+    if (step === 2) return !!formData.staffId;
+    if (step === 3) return !!date && !!formData.time;
+    if (step === 4)
+      return !!formData.fullName && !!formData.email && !!formData.phone && !!formData.serviceDetails;
+    return false;
+  })();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!canContinue) return;
 
-    if (!date || !formData.time) {
-      toast({
-        title: "არასრული ინფორმაცია",
-        description: "გთხოვთ აირჩიოთ თარიღი და დრო",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!formData.staffId) {
-      toast({
-        title: "არასრული ინფორმაცია",
-        description: "გთხოვთ აირჩიოთ სპეციალისტი",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const selectedStaff = availableStaff.find(s => s.id === formData.staffId);
-    const selectedCategory = serviceCategories.find(c => c.value === formData.serviceCategory);
+    const selectedStaff = availableStaff.find((s) => s.id === formData.staffId);
+    const selectedCategory = serviceCategories.find((c) => c.value === formData.serviceCategory);
 
     createBookingMutation.mutate({
       fullName: formData.fullName,
@@ -206,216 +251,603 @@ export default function BookingForm() {
     });
   };
 
-  return (
-    <section id="booking" className="dark section-spacing relative bg-[#0C0A09]" ref={sectionRef}>
-      {/* Background Texture */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
-        backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.8\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")',
-      }} />
+  const resetForBookAnother = () => {
+    setSubmitted(null);
+    setStep(1);
+    setDirection(1);
+    setDate(undefined);
+    setFormData((p) => ({
+      ...p,
+      serviceCategory: "",
+      serviceDetails: "",
+      staffId: "",
+      time: "",
+      notes: "",
+    }));
+  };
 
-      <div className="editorial-max-width">
-        <div className="max-w-4xl mx-auto">
-          <div className={`text-center mb-12 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <span className="text-white/50 tracking-kicker text-xs md:text-sm block mb-4 uppercase">კონციერჯი</span>
-            <div className="mb-12">
-              <h2 className="font-display text-3xl md:text-4xl lg:text-5xl mb-4 text-white font-normal">
-                რეზერვაცია
-              </h2>
-              <p className="text-white/60 tracking-widest uppercase text-sm font-light">
-                დაგეგმეთ თქვენი დრო
+  return (
+    <section
+      id="booking"
+      className="dark relative bg-background py-12 md:py-24 overflow-hidden"
+      ref={sectionRef}
+    >
+      {/* Confetti shower on success */}
+      {submitted && <PetalConfetti />}
+
+      {/* Subtle texture */}
+      <div
+        className="absolute inset-0 opacity-[0.03] pointer-events-none"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")",
+        }}
+      />
+
+      <div className="relative max-w-2xl mx-auto px-5 md:px-6">
+        <SectionHeader
+          kicker="06 — Booking"
+          title="რეზერვაცია"
+          subtitle="აირჩიე სერვისი, სპეციალისტი და დრო — 4 ნაბიჯში."
+          align="center"
+          light
+          className={cn(
+            "mb-6 md:mb-10 mx-auto transition-opacity duration-500",
+            isVisible ? "opacity-100" : "opacity-0"
+          )}
+        />
+
+        {!submitted && (
+          <>
+            {/* Progress dots */}
+            <div className="flex items-center justify-center gap-2 mb-6">
+              {Array.from({ length: totalSteps }).map((_, i) => {
+                const n = i + 1;
+                const reached = n <= step;
+                return (
+                  <div
+                    key={n}
+                    className={cn(
+                      "h-1.5 rounded-full transition-all duration-300",
+                      reached ? "bg-[var(--theme-accent)] w-7" : "bg-white/15 w-3"
+                    )}
+                    aria-current={n === step ? "step" : undefined}
+                  />
+                );
+              })}
+            </div>
+
+            {/* Step heading */}
+            <div className="text-center mb-5">
+              <p className="text-[10px] tracking-[0.3em] uppercase font-mono text-foreground/40">
+                Step {step} / {totalSteps}
               </p>
             </div>
-            <p className="text-base md:text-lg text-theme-muted max-w-lg mx-auto font-light leading-relaxed">
-              აირჩიეთ სასურველი სერვისი და დრო. დაჯავშნის შემდეგ, ჩვენ მალევე დაგიკავშირდებით დასადასტურებლად.
-            </p>
-          </div>
+          </>
+        )}
 
-          <div className={`glass-card p-8 md:p-12 rounded-none transition-all duration-700 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <form onSubmit={handleSubmit} className="space-y-12">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
-                <div className="space-y-2 group">
-                  <Label htmlFor="fullName" className="text-sm font-medium tracking-wide text-white/70 group-focus-within:text-white transition-colors">სახელი და გვარი</Label>
-                  <Input
-                    id="fullName"
-                    className="input-underline text-base h-12 px-0 bg-transparent text-white placeholder:text-white/40 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none border-b border-white/10"
-                    placeholder="შეიყვანეთ თქვენი სახელი და გვარი"
-                    value={formData.fullName}
-                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                    required
-                    data-testid="input-full-name"
-                  />
-                </div>
-
-                <div className="space-y-2 group">
-                  <Label htmlFor="email" className="text-sm font-medium tracking-wide text-white/70 group-focus-within:text-white transition-colors">ელ. ფოსტა</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    className="input-underline text-base h-12 px-0 bg-transparent text-white placeholder:text-white/40 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none border-b border-white/10"
-                    placeholder="example@email.com"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    required
-                    data-testid="input-email"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
-                <div className="space-y-2 group">
-                  <Label htmlFor="phone" className="text-sm font-medium tracking-wide text-white/70 group-focus-within:text-white transition-colors">ტელეფონის ნომერი</Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    className="input-underline text-base h-12 px-0 bg-transparent text-white placeholder:text-white/40 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none border-b border-white/10"
-                    placeholder="+995 555 000 000"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    required
-                    data-testid="input-phone"
-                  />
-                </div>
-
-                <div className="space-y-2 group">
-                  <Label htmlFor="serviceCategory" className="text-sm font-medium tracking-wide text-white/70 group-focus-within:text-white transition-colors">სერვისის კატეგორია</Label>
-                  <Select
-                    value={formData.serviceCategory}
-                    onValueChange={(value) => setFormData({ ...formData, serviceCategory: value, staffId: "" })}
-                  >
-                    <SelectTrigger id="serviceCategory" className="input-underline text-base h-12 px-0 bg-transparent text-white border-b border-white/10 focus:ring-0 focus:ring-offset-0 rounded-none shadow-none">
-                      <SelectValue placeholder="კატეგორიის არჩევა" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {serviceCategories.map((category) => (
-                        <SelectItem key={category.value} value={category.value}>
-                          {category.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="space-y-2 group">
-                <Label htmlFor="serviceDetails" className="text-sm font-medium tracking-wide text-white/70 group-focus-within:text-white transition-colors">პროცედურის დეტალები</Label>
-                <Textarea
-                  id="serviceDetails"
-                  placeholder="მიუთითეთ სასურველი პროცედურა..."
-                  className="input-underline text-base min-h-[80px] px-0 bg-transparent text-white placeholder:text-white/40 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none resize-none border-b border-white/10"
-                  value={formData.serviceDetails}
-                  onChange={(e) => setFormData({ ...formData, serviceDetails: e.target.value })}
-                  required
-                  data-testid="textarea-service-details"
-                />
-              </div>
-
-              <div className="space-y-2 group">
-                <Label htmlFor="staff" className="text-sm font-medium tracking-wide text-white/70 group-focus-within:text-white transition-colors">სპეციალისტი</Label>
-                <Select
-                  value={formData.staffId}
-                  onValueChange={(value) => setFormData({ ...formData, staffId: value })}
-                  disabled={!formData.serviceCategory || staffLoading}
-                >
-                  <SelectTrigger id="staff" className="input-underline text-base h-12 px-0 bg-transparent text-white border-b border-white/10 focus:ring-0 focus:ring-offset-0 rounded-none shadow-none disabled:opacity-50">
-                    <SelectValue placeholder={
-                      !formData.serviceCategory
-                        ? "ჯერ აირჩიეთ კატეგორია"
-                        : staffLoading
-                          ? "იტვირთება..."
-                          : availableStaff.length === 0
-                            ? "სპეციალისტი არ მოიႾენება"
-                            : "სპეციალისტის არჩევა"
-                    } />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableStaff.map((staff) => (
-                      <SelectItem key={staff.id} value={staff.id}>
-                        {staff.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
-                <div className="space-y-2 group">
-                  <Label className="text-sm font-medium tracking-wide text-white/70 group-focus-within:text-white transition-colors">თარიღი</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        className={`w-full justify-start text-left font-normal text-base h-12 px-0 bg-transparent rounded-none border-b border-white/10 hover:bg-transparent hover:text-white ${!date ? "text-white/40" : "text-white"
-                          }`}
-                      >
-                        <CalendarIcon className="mr-3 h-5 w-5 opacity-50" />
-                        {date ? format(date, "d MMMM, yyyy", { locale: ka }) : "აირჩიეთ თარიღი"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="dark w-auto p-0 border-none bg-theme-surface/95 backdrop-blur-xl" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={date}
-                        onSelect={setDate}
-                        initialFocus
-                        locale={ka}
-                        disabled={(date) => isBefore(date, startOfToday())}
-                        className="rounded-none border border-white/10"
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-
-                <div className="space-y-2 group">
-                  <Label htmlFor="time" className="text-sm font-medium tracking-wide text-white/70 group-focus-within:text-white transition-colors">დრო</Label>
-                  <Select
-                    value={formData.time}
-                    onValueChange={(value) => setFormData({ ...formData, time: value })}
-                    disabled={!date || !formData.staffId}
-                  >
-                    <SelectTrigger id="time" className="input-underline text-base h-12 px-0 bg-transparent text-white border-b border-white/10 focus:ring-0 focus:ring-offset-0 rounded-none shadow-none disabled:opacity-50">
-                      <SelectValue placeholder="დროის არჩევა" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableTimes.length === 0 && date ? (
-                        <div className="px-2 py-6 text-center text-sm text-muted-foreground">
-                          სრულად დაჯავშნული
-                        </div>
-                      ) : (
-                        availableTimes.map((time) => (
-                          <SelectItem key={time} value={time}>
-                            {time}
-                          </SelectItem>
-                        ))
-                      )}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="space-y-2 group">
-                <Label htmlFor="notes" className="text-sm font-medium tracking-wide text-white/70 group-focus-within:text-white transition-colors">დამატებითი შენიშვნები</Label>
-                <Textarea
-                  id="notes"
-                  placeholder="სპეციალური შენიშვნები/ სურვილები"
-                  className="input-underline text-base min-h-[80px] px-0 bg-transparent text-white placeholder:text-white/40 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none resize-none border-b border-white/10"
-                  value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                />
-              </div>
-
-              <Button
-                type="submit"
-                size="lg"
-                className="w-full h-14 bg-theme-accent hover:bg-theme-accent-hover text-white font-medium tracking-widest uppercase text-sm magnetic-button mt-8"
-                disabled={createBookingMutation.isPending}
-                data-testid="button-book-appointment"
+        {/* Card */}
+        <div className="rounded-3xl bg-white/[0.03] border border-white/10 backdrop-blur-sm overflow-hidden">
+          <AnimatePresence mode="wait" custom={direction}>
+            {submitted ? (
+              <motion.div
+                key="success"
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                className="p-6 md:p-10 text-center"
               >
-                {createBookingMutation.isPending ? "გაგზავნა..." : "ჯავშნის დადასტურება"}
-              </Button>
-            </form>
-          </div>
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[var(--theme-accent)]/15 mb-5">
+                  <CheckCircle2 className="w-9 h-9 text-[var(--theme-accent)]" strokeWidth={1.6} />
+                </div>
+                <h3 className="font-display text-2xl md:text-3xl text-foreground mb-2">
+                  მოთხოვნა მიღებულია
+                </h3>
+                <p className="text-sm text-foreground/60 mb-6 max-w-md mx-auto">
+                  დიდი მადლობა! სპეციალისტი დაგიკავშირდებათ დასადასტურებლად.
+                </p>
+
+                <div className="rounded-2xl bg-white/[0.04] border border-white/10 p-4 md:p-5 text-left max-w-md mx-auto mb-4 space-y-2.5">
+                  <SummaryRow label="სერვისი" value={submitted.serviceLabel} />
+                  <SummaryRow label="სპეციალისტი" value={submitted.staffName} />
+                  <SummaryRow label="თარიღი" value={submitted.date} />
+                  <SummaryRow label="დრო" value={submitted.time} />
+                </div>
+
+                {aftercareByCategory[submitted.category] && (
+                  <div className="rounded-2xl border border-[var(--theme-accent)]/30 bg-[var(--theme-accent)]/8 p-4 md:p-5 text-left max-w-md mx-auto mb-6">
+                    <div className="text-[10px] tracking-[0.25em] uppercase font-mono text-[var(--theme-accent)] mb-1.5">
+                      {aftercareByCategory[submitted.category].titleKa}
+                    </div>
+                    <p className="text-sm text-foreground/85 leading-relaxed">
+                      {aftercareByCategory[submitted.category].tipKa}
+                    </p>
+                  </div>
+                )}
+
+                <Button
+                  onClick={resetForBookAnother}
+                  className="press-tap rounded-full h-12 px-6 bg-[var(--theme-accent)] hover:bg-[var(--theme-accent-hover)] text-[var(--theme-on-accent)] font-medium tracking-wide accent-glow"
+                  data-testid="button-book-another"
+                >
+                  ახალი ჯავშნა
+                </Button>
+              </motion.div>
+            ) : (
+              <motion.div
+                key={step}
+                custom={direction}
+                variants={stepVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                className="p-5 md:p-8"
+              >
+                {step === 1 && (
+                  <StepCategory
+                    selected={formData.serviceCategory}
+                    onSelect={(value) => {
+                      hapticTap();
+                      setFormData((p) => ({ ...p, serviceCategory: value, staffId: "" }));
+                    }}
+                  />
+                )}
+
+                {step === 2 && (
+                  <StepStaff
+                    staff={availableStaff}
+                    loading={staffLoading}
+                    selected={formData.staffId}
+                    onSelect={(id) => {
+                      hapticTap();
+                      setFormData((p) => ({ ...p, staffId: id }));
+                    }}
+                  />
+                )}
+
+                {step === 3 && (
+                  <StepDateTime
+                    date={date}
+                    setDate={(d) => {
+                      hapticTap();
+                      setDate(d);
+                      setFormData((p) => ({ ...p, time: "" }));
+                    }}
+                    time={formData.time}
+                    setTime={(t) => {
+                      hapticTap();
+                      setFormData((p) => ({ ...p, time: t }));
+                    }}
+                    availableTimes={availableTimes}
+                    hasAvailability={!!availabilityData}
+                  />
+                )}
+
+                {step === 4 && (
+                  <StepDetails
+                    formData={formData}
+                    onChange={(patch) => setFormData((p) => ({ ...p, ...patch }))}
+                  />
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
+
+        {/* Footer actions */}
+        {!submitted && (
+          <div className="flex items-center justify-between gap-3 mt-5">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={goBack}
+              disabled={step === 1}
+              className="press-tap rounded-full h-12 px-5 text-foreground/70 hover:text-foreground hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed"
+              data-testid="button-step-back"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1.5" />
+              უკან
+            </Button>
+
+            {step < totalSteps ? (
+              <Button
+                type="button"
+                onClick={goNext}
+                disabled={!canContinue}
+                className="press-tap accent-glow rounded-full h-12 px-6 bg-[var(--theme-accent)] hover:bg-[var(--theme-accent-hover)] text-[var(--theme-on-accent)] font-medium tracking-wide disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
+                data-testid="button-step-next"
+              >
+                გაგრძელება
+                <ArrowRight className="w-4 h-4 ml-1.5" />
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                onClick={handleSubmit}
+                disabled={!canContinue || createBookingMutation.isPending}
+                className="press-tap accent-glow rounded-full h-12 px-6 bg-[var(--theme-accent)] hover:bg-[var(--theme-accent-hover)] text-[var(--theme-on-accent)] font-medium tracking-wide disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
+                data-testid="button-confirm-booking"
+              >
+                {createBookingMutation.isPending ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
+                    გაგზავნა...
+                  </>
+                ) : (
+                  <>
+                    <Check className="w-4 h-4 mr-1.5" />
+                    დადასტურება
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
+        )}
       </div>
     </section>
+  );
+}
+
+/* -------------- Sub-steps -------------- */
+
+function StepHeading({ title, subtitle }: { title: string; subtitle?: string }) {
+  return (
+    <div className="mb-5">
+      <h3 className="font-display text-xl md:text-2xl text-foreground tracking-tight">{title}</h3>
+      {subtitle && <p className="text-sm text-foreground/55 mt-1">{subtitle}</p>}
+    </div>
+  );
+}
+
+function StepCategory({
+  selected,
+  onSelect,
+}: {
+  selected: string;
+  onSelect: (value: string) => void;
+}) {
+  return (
+    <div data-testid="step-category">
+      <StepHeading title="რომელი სერვისი გაინტერესებს?" subtitle="აირჩიე კატეგორია" />
+      <div className="grid grid-cols-2 gap-2.5 md:gap-3">
+        {serviceCategories.map(({ value, label, hint, Icon }) => {
+          const isActive = selected === value;
+          return (
+            <button
+              key={value}
+              type="button"
+              onClick={() => onSelect(value)}
+              className={cn(
+                "press-tap text-left rounded-2xl border p-4 min-h-[110px] transition-all flex flex-col gap-2 justify-between",
+                isActive
+                  ? "border-[var(--theme-accent)] bg-[var(--theme-accent)]/12"
+                  : "border-white/10 bg-white/[0.02] hover:border-white/25 hover:bg-white/[0.05]"
+              )}
+              data-testid={`category-${value}`}
+              aria-pressed={isActive}
+            >
+              <div
+                className={cn(
+                  "w-8 h-8 rounded-full flex items-center justify-center",
+                  isActive ? "bg-[var(--theme-accent)]/20" : "bg-white/5"
+                )}
+              >
+                <Icon
+                  className={cn(
+                    "w-4 h-4",
+                    isActive ? "text-[var(--theme-accent)]" : "text-foreground/70"
+                  )}
+                  strokeWidth={1.6}
+                />
+              </div>
+              <div>
+                <div className="text-[15px] font-medium text-foreground leading-tight">{label}</div>
+                <div className="text-[11px] text-foreground/45 mt-0.5">{hint}</div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function StepStaff({
+  staff,
+  loading,
+  selected,
+  onSelect,
+}: {
+  staff: Staff[];
+  loading: boolean;
+  selected: string;
+  onSelect: (id: string) => void;
+}) {
+  return (
+    <div data-testid="step-staff">
+      <StepHeading title="აირჩიე სპეციალისტი" subtitle="ვინ შეასრულებს პროცედურას" />
+
+      {loading && (
+        <div className="flex items-center justify-center py-10 text-foreground/50">
+          <Loader2 className="w-5 h-5 animate-spin mr-2" />
+          იტვირთება...
+        </div>
+      )}
+
+      {!loading && staff.length === 0 && (
+        <div className="text-center py-10 text-foreground/50 text-sm">
+          ამ კატეგორიისთვის სპეციალისტი მიუწვდომელია.
+        </div>
+      )}
+
+      {!loading && staff.length > 0 && (
+        <div className="space-y-2">
+          {staff.map((s) => {
+            const isActive = selected === s.id;
+            return (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => onSelect(s.id)}
+                className={cn(
+                  "press-tap w-full text-left rounded-2xl border p-3.5 transition-all flex items-center gap-3.5",
+                  isActive
+                    ? "border-[var(--theme-accent)] bg-[var(--theme-accent)]/12"
+                    : "border-white/10 bg-white/[0.02] hover:border-white/25 hover:bg-white/[0.05]"
+                )}
+                data-testid={`staff-${s.id}`}
+                aria-pressed={isActive}
+              >
+                <div
+                  className={cn(
+                    "w-11 h-11 rounded-full flex items-center justify-center shrink-0",
+                    isActive ? "bg-[var(--theme-accent)]/20" : "bg-white/5"
+                  )}
+                >
+                  <User
+                    className={cn(
+                      "w-5 h-5",
+                      isActive ? "text-[var(--theme-accent)]" : "text-foreground/70"
+                    )}
+                    strokeWidth={1.6}
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[15px] font-medium text-foreground leading-tight truncate">
+                    {s.name}
+                  </div>
+                </div>
+                {isActive && <Check className="w-5 h-5 text-[var(--theme-accent)] shrink-0" />}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function StepDateTime({
+  date,
+  setDate,
+  time,
+  setTime,
+  availableTimes,
+  hasAvailability,
+}: {
+  date: Date | undefined;
+  setDate: (d: Date | undefined) => void;
+  time: string;
+  setTime: (t: string) => void;
+  availableTimes: string[];
+  hasAvailability: boolean;
+}) {
+  return (
+    <div data-testid="step-datetime">
+      <StepHeading title="როდის გერჩივნა?" subtitle="აირჩიე თარიღი და დრო" />
+
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className={cn(
+              "press-tap w-full rounded-2xl border border-white/10 bg-white/[0.02] px-4 h-14 flex items-center gap-3 text-left transition-colors hover:bg-white/[0.05]",
+              date && "border-[var(--theme-accent)]/40 bg-[var(--theme-accent)]/8"
+            )}
+            data-testid="datetime-date-trigger"
+          >
+            <CalendarIcon className="w-5 h-5 text-foreground/60 shrink-0" strokeWidth={1.6} />
+            <div className="flex-1">
+              <div className="text-[10px] tracking-[0.25em] uppercase text-foreground/40 font-mono">
+                თარიღი
+              </div>
+              <div className="text-[15px] text-foreground">
+                {date ? format(date, "d MMMM, yyyy", { locale: ka }) : "აირჩიე თარიღი"}
+              </div>
+            </div>
+            <ArrowRight className="w-4 h-4 text-foreground/30" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent
+          className="w-auto p-0 border-border bg-card backdrop-blur-xl"
+          align="start"
+        >
+          <Calendar
+            mode="single"
+            selected={date}
+            onSelect={setDate}
+            initialFocus
+            locale={ka}
+            disabled={(d) => isBefore(d, startOfToday())}
+            className="rounded-none border-0"
+          />
+        </PopoverContent>
+      </Popover>
+
+      {date && (
+        <div className="mt-5">
+          <div className="flex items-center gap-2 mb-2.5">
+            <Clock className="w-4 h-4 text-foreground/50" strokeWidth={1.6} />
+            <span className="text-[11px] tracking-[0.2em] uppercase text-foreground/50 font-mono">
+              ხელმისაწვდომი დრო
+            </span>
+          </div>
+
+          {!hasAvailability ? (
+            <div className="text-sm text-foreground/50 py-4 text-center">იტვირთება...</div>
+          ) : availableTimes.length === 0 ? (
+            <div className="text-sm text-foreground/50 py-4 text-center">
+              ამ თარიღზე სრულად დაჯავშნულია. სცადე სხვა დღე.
+            </div>
+          ) : (
+            <div className="grid grid-cols-4 gap-2">
+              {availableTimes.map((t) => {
+                const isActive = time === t;
+                return (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setTime(t)}
+                    className={cn(
+                      "press-tap rounded-xl h-11 text-sm font-medium tabular-nums transition-colors",
+                      isActive
+                        ? "bg-[var(--theme-accent)] text-[var(--theme-on-accent)]"
+                        : "bg-white/[0.04] text-foreground/80 hover:bg-white/[0.08] border border-white/10"
+                    )}
+                    data-testid={`time-${t}`}
+                    aria-pressed={isActive}
+                  >
+                    {t}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function StepDetails({
+  formData,
+  onChange,
+}: {
+  formData: {
+    fullName: string;
+    email: string;
+    phone: string;
+    serviceDetails: string;
+    notes: string;
+  };
+  onChange: (patch: Partial<typeof formData>) => void;
+}) {
+  return (
+    <div data-testid="step-details">
+      <StepHeading title="ბოლო შეხება" subtitle="საკონტაქტო ინფორმაცია" />
+
+      <div className="space-y-4">
+        <FieldWithIcon Icon={User} label="სახელი და გვარი">
+          <Input
+            value={formData.fullName}
+            onChange={(e) => onChange({ fullName: e.target.value })}
+            placeholder="თქვენი სახელი"
+            className="bg-transparent border-0 p-0 h-auto text-[15px] text-foreground placeholder:text-foreground/30 focus-visible:ring-0"
+            data-testid="input-full-name"
+            required
+          />
+        </FieldWithIcon>
+
+        <FieldWithIcon Icon={Mail} label="ელ. ფოსტა">
+          <Input
+            type="email"
+            value={formData.email}
+            onChange={(e) => onChange({ email: e.target.value })}
+            placeholder="example@email.com"
+            className="bg-transparent border-0 p-0 h-auto text-[15px] text-foreground placeholder:text-foreground/30 focus-visible:ring-0"
+            data-testid="input-email"
+            required
+          />
+        </FieldWithIcon>
+
+        <FieldWithIcon Icon={PhoneIcon} label="ტელეფონი">
+          <Input
+            type="tel"
+            value={formData.phone}
+            onChange={(e) => onChange({ phone: e.target.value })}
+            placeholder="+995 555 000 000"
+            className="bg-transparent border-0 p-0 h-auto text-[15px] text-foreground placeholder:text-foreground/30 focus-visible:ring-0"
+            data-testid="input-phone"
+            required
+          />
+        </FieldWithIcon>
+
+        <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-3.5">
+          <Label className="text-[10px] tracking-[0.25em] uppercase text-foreground/40 font-mono mb-2 block">
+            პროცედურის დეტალები
+          </Label>
+          <Textarea
+            value={formData.serviceDetails}
+            onChange={(e) => onChange({ serviceDetails: e.target.value })}
+            placeholder="მიუთითე სასურველი პროცედურა..."
+            className="bg-transparent border-0 p-0 min-h-[60px] text-[15px] text-foreground placeholder:text-foreground/30 focus-visible:ring-0 resize-none"
+            data-testid="textarea-service-details"
+            required
+          />
+        </div>
+
+        <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-3.5">
+          <Label className="text-[10px] tracking-[0.25em] uppercase text-foreground/40 font-mono mb-2 block">
+            შენიშვნები (არასავალდებულო)
+          </Label>
+          <Textarea
+            value={formData.notes}
+            onChange={(e) => onChange({ notes: e.target.value })}
+            placeholder="სპეციალური სურვილები..."
+            className="bg-transparent border-0 p-0 min-h-[50px] text-[15px] text-foreground placeholder:text-foreground/30 focus-visible:ring-0 resize-none"
+            data-testid="textarea-notes"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* -------------- Bits -------------- */
+
+function FieldWithIcon({
+  Icon,
+  label,
+  children,
+}: {
+  Icon: LucideIcon;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-3.5 flex items-center gap-3">
+      <div className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center shrink-0">
+        <Icon className="w-4 h-4 text-foreground/60" strokeWidth={1.6} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="text-[10px] tracking-[0.25em] uppercase text-foreground/40 font-mono">
+          {label}
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function SummaryRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-baseline justify-between gap-3">
+      <span className="text-[10px] tracking-[0.25em] uppercase text-foreground/40 font-mono">
+        {label}
+      </span>
+      <span className="text-sm text-foreground text-right">{value || "—"}</span>
+    </div>
   );
 }

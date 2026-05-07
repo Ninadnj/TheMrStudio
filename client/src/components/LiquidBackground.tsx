@@ -9,8 +9,8 @@ const LiquidShaderMaterial = {
         uTime: { value: 0 },
         uMouse: { value: new Vector2(0, 0) },
         uResolution: { value: new Vector2(1, 1) },
-        uColorStart: { value: new THREE.Color("#E6DED5") }, // Lighter Accent
-        uColorEnd: { value: new THREE.Color("#D4C9BD") },   // Main Accent
+        uColorStart: { value: new THREE.Color("#A6BBA3") }, // Light sage
+        uColorEnd: { value: new THREE.Color("#8EA58C") },   // Soft coastal green
     },
     vertexShader: `
     varying vec2 vUv;
@@ -88,8 +88,8 @@ function GradientPlane() {
                 uTime: { value: 0 },
                 uMouse: { value: new Vector2(0, 0) },
                 uResolution: { value: new Vector2(viewport.width, viewport.height) },
-                uColorStart: { value: new THREE.Color("#E6DED5") },
-                uColorEnd: { value: new THREE.Color("#D4C9BD") },
+                uColorStart: { value: new THREE.Color("#A6BBA3") },
+                uColorEnd: { value: new THREE.Color("#8EA58C") },
             },
             vertexShader: LiquidShaderMaterial.vertexShader,
             fragmentShader: LiquidShaderMaterial.fragmentShader,

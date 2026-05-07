@@ -7,11 +7,13 @@ import Gallery from "@/components/Gallery";
 import BookingForm from "@/components/BookingForm";
 import PriceList from "@/components/PriceList";
 import Footer from "@/components/Footer";
+import MobileBottomNav from "@/components/MobileBottomNav";
+import InstallPrompt from "@/components/InstallPrompt";
 // import ChatWidget from "@/components/ChatWidget";
 
 export default function Home() {
   return (
-    <div className="min-h-screen overflow-x-hidden">
+    <div id="home" className="min-h-screen overflow-x-hidden md:pb-0 pb-tabbar">
       <SpecialOfferBanner />
       <Header />
       <Hero />
@@ -22,6 +24,8 @@ export default function Home() {
       <PriceList />
       <BookingForm />
       <Footer />
+      <MobileBottomNav />
+      <InstallPrompt />
       {/* <ChatWidget /> */}
     </div>
   );

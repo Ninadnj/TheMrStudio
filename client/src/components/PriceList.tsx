@@ -1,15 +1,16 @@
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useState, useMemo, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
+import { Search, ChevronRight, X, ChevronDown, Share2 } from "lucide-react";
 import type { Service } from "@shared/schema";
 import { cn } from "@/lib/utils";
+import SectionHeader from "@/components/SectionHeader";
+import { hapticTap } from "@/lib/haptics";
 
 type PriceListItem = {
   id: string;
   category: string;
   subtitle: string;
-  icon: string;
-  color: string;
   items: Array<{ name: string; nameKa: string; price: number | string }>;
 };
 
@@ -17,9 +18,7 @@ const staticPriceLists: PriceListItem[] = [
   {
     id: "nails",
     category: "ფრჩხილები",
-    subtitle: "მანიკური / პედიკური",
-    icon: "✦",
-    color: "from-[#D4B483]/20 to-[#A89B8E]/10",
+    subtitle: "Nails — Manicure & Pedicure",
     items: [
       { name: "Gel Polish + Cuticle Care", nameKa: "გელ-ლაქი + კუტიკულის მოვლა", price: 35 },
       { name: "Gel Polish + Cuticle Removal", nameKa: "გელ-ლაქი + კუტიკულის მოცილება", price: 25 },
@@ -33,10 +32,8 @@ const staticPriceLists: PriceListItem[] = [
   },
   {
     id: "laser-women",
-    category: "ლაზერი (ქალბ.)",
-    subtitle: "ლაზერული ეპილაცია — ქალბატონები",
-    icon: "◈",
-    color: "from-[#8B7355]/20 to-[#6B5A45]/10",
+    category: "ლაზერი — ქალბატონები",
+    subtitle: "Laser hair removal — Women",
     items: [
       { name: "Full Body (Economy Package)", nameKa: "მთელი სხეული (ეკონომ პაკეტი)", price: 75 },
       { name: "Full Body + Face", nameKa: "მთელი სხეული + სახე", price: 85 },
@@ -49,10 +46,8 @@ const staticPriceLists: PriceListItem[] = [
   },
   {
     id: "laser-men",
-    category: "ლაზერი (მამ.)",
-    subtitle: "ლაზერული ეპილაცია — მამაკაცები",
-    icon: "◈",
-    color: "from-[#6B5A45]/20 to-[#4A3D30]/10",
+    category: "ლაზერი — მამაკაცები",
+    subtitle: "Laser hair removal — Men",
     items: [
       { name: "Full Body", nameKa: "მთელი სხეული", price: 75 },
       { name: "Full Back", nameKa: "ზურგი (მთელი)", price: 50 },
@@ -65,9 +60,7 @@ const staticPriceLists: PriceListItem[] = [
   {
     id: "cosmetology",
     category: "კოსმეტოლოგია",
-    subtitle: "სახის კოსმეტოლოგია / ინექციები",
-    icon: "✧",
-    color: "from-[#C4A882]/20 to-[#9A8170]/10",
+    subtitle: "Cosmetology — Skin & Injectables",
     items: [
       { name: "Juvederm Filler", nameKa: "ჯუვედერმ ფილერი", price: 500 },
       { name: "ReMedium Filler", nameKa: "რიმედიუმ ფილერი", price: 250 },
@@ -79,201 +72,265 @@ const staticPriceLists: PriceListItem[] = [
   },
 ];
 
+function scrollToBooking() {
+  document.getElementById("booking")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function priceFromOf(cat: PriceListItem): number {
+  return cat.items.reduce(
+    (min, it) => (typeof it.price === "number" && it.price < min ? it.price : min),
+    Infinity
+  );
+}
+
 export default function PriceList() {
-  const [activeCategory, setActiveCategory] = useState<string>(staticPriceLists[0].id);
-  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [activeFilter, setActiveFilter] = useState<string>("all");
+  const [search, setSearch] = useState("");
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [canShare, setCanShare] = useState(false);
 
-  const { data: services = [] } = useQuery<Service[]>({
-    queryKey: ["/api/services"],
-  });
+  useEffect(() => {
+    setCanShare(typeof navigator !== "undefined" && typeof navigator.share === "function");
+  }, []);
 
-  const scrollToCategory = (id: string) => {
-    const element = document.getElementById(`category-${id}`);
-    if (element) {
-      const offset = 120;
-      const bodyRect = document.body.getBoundingClientRect().top;
-      const elementRect = element.getBoundingClientRect().top;
-      const elementPosition = elementRect - bodyRect;
-      const offsetPosition = elementPosition - offset;
-      window.scrollTo({ top: offsetPosition, behavior: "smooth" });
-      setActiveCategory(id);
+  const shareService = async (
+    item: { name: string; nameKa: string; price: number | string },
+    categoryLabel: string
+  ) => {
+    hapticTap();
+    const url = `${window.location.origin}/#booking`;
+    const text = `${item.nameKa} — ${item.price} ₾ · ${categoryLabel} · THE MR Studio`;
+    try {
+      await navigator.share({ title: "THE MR Studio", text, url });
+    } catch {
+      /* user cancelled or browser threw */
     }
   };
 
+  // Keep server query alive for parity with the original; result is unused for layout.
+  useQuery<Service[]>({
+    queryKey: ["/api/services"],
+  });
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return staticPriceLists
+      .filter((cat) => activeFilter === "all" || cat.id === activeFilter)
+      .map((cat) => {
+        if (!q) return cat;
+        return {
+          ...cat,
+          items: cat.items.filter(
+            (it) =>
+              it.name.toLowerCase().includes(q) ||
+              it.nameKa.toLowerCase().includes(q)
+          ),
+        };
+      })
+      .filter((cat) => cat.items.length > 0);
+  }, [activeFilter, search]);
+
+  // Auto-open behavior: if a chip narrows to a single category, open it.
+  // If search has results, open the first matching category.
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveCategory(entry.target.id.replace("category-", ""));
-          }
-        });
-      },
-      { rootMargin: "-20% 0px -60% 0px" }
-    );
+    if (activeFilter !== "all") {
+      setOpenId(activeFilter);
+      return;
+    }
+    if (search.trim() && filtered.length > 0) {
+      setOpenId(filtered[0].id);
+    }
+  }, [activeFilter, search, filtered]);
 
-    staticPriceLists.forEach((list) => {
-      const element = document.getElementById(`category-${list.id}`);
-      if (element) observer.observe(element);
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, x: -10 },
-    visible: { opacity: 1, x: 0, transition: { duration: 0.4, ease: "easeOut" } },
-  };
+  const filters: { id: string; label: string }[] = [
+    { id: "all", label: "ყველა" },
+    ...staticPriceLists.map((c) => ({ id: c.id, label: c.category.split(" — ")[0] })),
+  ];
 
   return (
-    <section id="prices" className="relative bg-background py-24 lg:py-36">
-      {/* Subtle top border */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--theme-accent)]/30 to-transparent" />
+    <section id="prices" className="relative bg-background pt-10 md:pt-20 pb-12 md:pb-24">
+      <div className="max-w-3xl mx-auto px-5 md:px-6">
+        <SectionHeader
+          kicker="04 — Prices"
+          title="ფასები"
+          subtitle="გამჭვირვალე ფასები. გადახდა — ვიზიტის შემდეგ."
+          align="center"
+          className="mb-5 md:mb-8 mx-auto"
+        />
 
-      <div className="max-w-7xl mx-auto px-6">
-
-        {/* Mobile Header */}
-        <div className="lg:hidden mb-12 text-center">
-          <span className="text-theme-muted tracking-widest text-xs uppercase mb-2 block">სერვისი / ფასი</span>
-          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl mb-4 text-foreground">ფასები</h2>
+        {/* Search */}
+        <div className="relative mb-3">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/40" />
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="მოძებნე სერვისი..."
+            className="w-full h-11 pl-11 pr-10 rounded-2xl bg-secondary/70 border border-transparent focus:border-[var(--theme-accent)]/60 focus:outline-none text-sm placeholder:text-foreground/40 transition-colors"
+            data-testid="prices-search"
+          />
+          {search && (
+            <button
+              onClick={() => setSearch("")}
+              className="press-tap absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center text-foreground/50 hover:text-foreground"
+              aria-label="Clear search"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
+        {/* Segmented chips */}
+        <div className="flex gap-2 overflow-x-auto pb-1 -mx-5 md:mx-0 px-5 md:px-0 scrollbar-hide mb-5 md:mb-6">
+          {filters.map((f) => {
+            const isActive = activeFilter === f.id;
+            return (
+              <button
+                key={f.id}
+                onClick={() => {
+                  hapticTap();
+                  setActiveFilter(f.id);
+                }}
+                className={cn(
+                  "press-tap shrink-0 min-h-[34px] px-3.5 rounded-full text-xs font-medium tracking-tight transition-colors",
+                  isActive
+                    ? "bg-[var(--theme-accent)] text-[var(--theme-on-accent)]"
+                    : "bg-secondary text-foreground/70 hover:text-foreground"
+                )}
+                data-testid={`price-filter-${f.id}`}
+              >
+                {f.label}
+              </button>
+            );
+          })}
+        </div>
 
-          {/* Sticky Sidebar */}
-          <div className="lg:col-span-4 lg:relative">
-            <div className="sticky top-24 z-30">
+        {/* Collapsed accordion list */}
+        <div className="space-y-3">
+          {filtered.length === 0 && (
+            <div className="text-center py-12 text-foreground/50 text-sm">
+              ვერაფერი მოიძებნა "{search}"
+            </div>
+          )}
 
-              {/* Desktop Title */}
-              <div className="hidden lg:block mb-12">
-                <span className="text-theme-muted tracking-widest text-xs uppercase mb-4 block">სერვისი / ფასი</span>
-                <h2 className="font-display text-5xl text-foreground leading-none">
-                  სერვისების<br />
-                  <span className="italic opacity-60 font-light">ფასები</span>
-                </h2>
-              </div>
-
-              {/* Category Navigation */}
-              <nav className="flex lg:flex-col gap-3 overflow-x-auto pb-4 lg:pb-0 scrollbar-hide">
-                {staticPriceLists.map((list) => (
-                  <button
-                    key={list.id}
-                    onClick={() => scrollToCategory(list.id)}
-                    className={cn(
-                      `flex items-center gap-4 group transition-all duration-300 min-w-max lg:min-w-0 text-left px-4 py-4 rounded-none border`,
-                      activeCategory === list.id
-                        ? "border-[var(--theme-accent)] bg-[var(--theme-accent)] text-theme-bg"
-                        : "border-[var(--theme-accent)]/20 hover:border-[var(--theme-accent)] bg-transparent text-foreground/50"
-                    )}
-                  >
-                    <span className={cn(
-                      "font-mono text-lg transition-all duration-300 hidden md:block",
-                      activeCategory === list.id ? "text-theme-bg" : "text-foreground/30"
-                    )}>
-                      0{staticPriceLists.indexOf(list) + 1}
-                    </span>
-                    <div className="text-left">
-                      <span className={cn(
-                        "text-sm lg:text-base font-mono uppercase tracking-widest block transition-all duration-300",
-                        activeCategory === list.id ? "text-theme-bg" : "text-foreground/50 group-hover:text-foreground/80"
-                      )}>
-                        {list.category}
+          {filtered.map((cat) => {
+            const isOpen = openId === cat.id;
+            const fromPrice = priceFromOf(cat);
+            return (
+              <motion.div
+                key={cat.id}
+                id={`category-${cat.id}`}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-30px" }}
+                transition={{ duration: 0.4 }}
+                className="scroll-mt-24 rounded-2xl border border-border bg-card overflow-hidden"
+              >
+                {/* Category header — tap to expand */}
+                <button
+                  onClick={() => {
+                    hapticTap();
+                    setOpenId(isOpen ? null : cat.id);
+                  }}
+                  className="press-tap w-full flex items-center gap-3 px-4 py-3.5 text-left"
+                  aria-expanded={isOpen}
+                  data-testid={`price-category-${cat.id}`}
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-baseline gap-2 flex-wrap">
+                      <h3 className="font-display text-base md:text-lg tracking-tight text-foreground">
+                        {cat.category}
+                      </h3>
+                      <span className="text-[10px] tracking-widest uppercase font-mono text-foreground/40">
+                        {cat.items.length} სერვისი
                       </span>
                     </div>
-                  </button>
-                ))}
-              </nav>
-
-              {/* Booking CTA below nav */}
-              <div className="hidden lg:block mt-12 pt-8 border-t border-border/40">
-                <p className="text-xs text-foreground/40 font-sans mb-4 leading-relaxed">
-                  ფასები შეიძლება განსხვავდებოდეს. დეტალებისთვის დაგვიკავშირდით.
-                </p>
-                <button
-                  onClick={() => document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" })}
-                  className="text-sm text-theme-accent font-medium tracking-wider uppercase transition-opacity hover:opacity-70 flex items-center gap-2"
-                >
-                  <span>დაჯავშნა</span>
-                  <span className="text-lg leading-none">→</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Service Items */}
-          <div className="lg:col-span-8 space-y-20">
-            {staticPriceLists.map((list, listIdx) => (
-              <motion.div
-                key={list.id}
-                id={`category-${list.id}`}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-80px" }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="scroll-mt-32"
-              >
-                {/* Brutalist Category Header */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between border-b-2 border-[var(--theme-accent)] pb-4 mb-8 mt-16 first:mt-0 gap-4">
-                  <div className="flex items-center gap-6">
-                    <span className="font-mono text-3xl md:text-5xl text-[var(--theme-accent)]">0{listIdx + 1}</span>
-                    <h3 className="font-display text-4xl md:text-6xl text-foreground uppercase tracking-tighter">
-                      {list.category}
-                    </h3>
+                    {!isOpen && (
+                      <p className="text-[11px] text-foreground/50 mt-0.5">
+                        From {fromPrice} ₾ · {cat.subtitle}
+                      </p>
+                    )}
                   </div>
-                  <span className="font-mono text-xs text-[var(--theme-accent)] tracking-widest uppercase">
-                    {list.subtitle}
-                  </span>
-                </div>
+                  <motion.div
+                    animate={{ rotate: isOpen ? 180 : 0 }}
+                    transition={{ duration: 0.25 }}
+                    className="shrink-0 text-foreground/40"
+                  >
+                    <ChevronDown className="w-5 h-5" />
+                  </motion.div>
+                </button>
 
-                {/* Ledger Items */}
-                <motion.div
-                  className="space-y-0"
-                  variants={containerVariants}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                >
-                  {list.items.map((item, itemIdx) => (
+                <AnimatePresence initial={false}>
+                  {isOpen && (
                     <motion.div
-                      key={itemIdx}
-                      variants={itemVariants}
-                      className="group flex flex-col md:flex-row md:items-end justify-between gap-2 md:gap-6 py-4 md:py-6 border-b border-[var(--theme-accent)]/20 hover:border-[var(--theme-accent)] transition-colors duration-300 cursor-default"
+                      key="rows"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                      className="overflow-hidden"
                     >
-                      <div className="flex flex-col">
-                        <span className="text-xl md:text-2xl font-sans font-medium text-foreground tracking-tight uppercase">
-                          {item.name}
-                        </span>
-                        <span className="text-xs md:text-sm font-mono text-foreground/50 tracking-widest uppercase mt-1">
-                          {item.nameKa}
-                        </span>
-                      </div>
-                      <div className="hidden md:block flex-1 border-b border-dashed border-foreground/10 mb-2 group-hover:border-[var(--theme-accent)]/50 transition-colors duration-300" />
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-xs font-mono text-foreground/40 uppercase tracking-widest">₾</span>
-                        <span className="text-lg md:text-xl font-mono text-foreground group-hover:text-[var(--theme-accent)] transition-colors duration-300">
-                          {typeof item.price === "number" ? item.price.toFixed(2) : item.price}
-                        </span>
+                      <div className="border-t border-border/60">
+                        {cat.items.map((item, i) => (
+                          <div
+                            key={i}
+                            className={cn(
+                              "flex items-stretch transition-colors hover:bg-secondary/50",
+                              i !== cat.items.length - 1 && "border-b border-border/60"
+                            )}
+                          >
+                            <button
+                              onClick={() => {
+                                hapticTap();
+                                scrollToBooking();
+                              }}
+                              className="press-tap flex-1 text-left flex items-center gap-3 px-4 py-3 min-w-0"
+                              data-testid={`price-row-${cat.id}-${i}`}
+                            >
+                            <div className="flex-1 min-w-0">
+                              <div className="text-[14px] font-medium text-foreground truncate">
+                                {item.nameKa}
+                              </div>
+                              <div className="text-[11px] text-foreground/45 mt-0.5 truncate">
+                                {item.name}
+                              </div>
+                            </div>
+                            <div className="flex items-baseline gap-1 tabular-nums shrink-0">
+                              <span className="text-sm font-medium text-foreground">
+                                {typeof item.price === "number" ? item.price : item.price}
+                              </span>
+                              <span className="text-[11px] text-foreground/50">₾</span>
+                            </div>
+                            <ChevronRight className="w-4 h-4 text-foreground/30 shrink-0" />
+                            </button>
+                            {canShare && (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  shareService(item, cat.category);
+                                }}
+                                className="press-tap shrink-0 px-3 mr-1 my-1 rounded-xl text-foreground/40 hover:text-[var(--theme-accent)] hover:bg-[var(--theme-accent)]/8 transition-colors flex items-center justify-center"
+                                aria-label="Share service"
+                                data-testid={`price-share-${cat.id}-${i}`}
+                              >
+                                <Share2 className="w-4 h-4" strokeWidth={1.6} />
+                              </button>
+                            )}
+                          </div>
+                        ))}
                       </div>
                     </motion.div>
-                  ))}
-                </motion.div>
+                  )}
+                </AnimatePresence>
               </motion.div>
-            ))}
-
-            {/* Bottom Note */}
-            <div className="pt-4 text-center lg:text-left">
-              <p className="text-xs text-foreground/30 font-sans">
-                * ყველა ფასი მითითებულია ლარში (₾). ფასები შეიძლება შეიცვალოს.
-              </p>
-            </div>
-          </div>
-
+            );
+          })}
         </div>
+
+        <p className="text-center text-[11px] text-foreground/40 mt-6 md:mt-8">
+          * ყველა ფასი მითითებულია ლარში (₾). შეიძლება განსხვავდებოდეს.
+        </p>
       </div>
     </section>
   );

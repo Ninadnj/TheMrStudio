@@ -48,7 +48,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-end justify-start bg-[#141311] pt-32 pb-20 px-6 md:px-12 overflow-hidden overflow-x-hidden">
+    <section className="dark relative min-h-[64vh] md:min-h-screen flex items-end justify-start bg-background pt-20 md:pt-32 pb-10 md:pb-20 px-5 md:px-12 overflow-hidden overflow-x-hidden">
       {/* Brutalist Background Image (Bleeding out right) */}
       <motion.div
         className="absolute top-0 right-[-10%] w-[110%] md:w-[70%] h-full origin-top-right z-0"
@@ -73,9 +73,9 @@ export default function Hero() {
             />
           );
         })()}
-        {/* Harsh Gradient cutoff to blend with Obsidian */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#141311] via-[#141311]/50 to-transparent w-[40%]"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-[#141311] via-[#141311]/80 to-transparent h-[40%] bottom-0 mt-auto"></div>
+        {/* Gradient blend with section background */}
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/50 to-transparent w-[40%]"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent h-[40%] bottom-0 mt-auto"></div>
       </motion.div>
 
       {/* Massive Typographic Overlay */}
@@ -87,31 +87,31 @@ export default function Hero() {
           className="w-full"
         >
           {/* Metadata Kicker */}
-          <div className="flex items-center gap-6 mb-8 mt-20">
-            <span className="text-[10px] text-[var(--theme-accent)] tracking-[0.3em] uppercase font-mono border border-[var(--theme-accent)]/30 px-3 py-1">
+          <div className="flex items-center gap-4 md:gap-6 mb-4 md:mb-8 mt-4 md:mt-20">
+            <span className="text-[10px] text-[var(--theme-accent)] tracking-[0.3em] uppercase font-mono border border-[var(--theme-accent)]/30 px-3 py-1 rounded-full">
               Est. 2026 // Tbilisi
             </span>
             <div className="h-px bg-[var(--theme-accent)]/30 flex-1 max-w-[100px]" />
           </div>
 
-          {/* Brutalist Headline */}
-          <h1 className="font-display text-[10vw] md:text-[8vw] leading-[0.8] text-[#F2EFE9] tracking-tighter uppercase mb-12 sm:mb-8 pb-4">
+          {/* Brand Headline — capped on mobile, fluid on desktop */}
+          <h1 className="font-display leading-[0.85] text-foreground tracking-tighter uppercase mb-8 md:mb-8 pb-2 md:pb-4 text-[clamp(2.75rem,12vw,4.5rem)] md:text-[8vw]">
             <span className="block pr-4 relative z-10 drop-shadow-2xl">THE MR</span>
-            <span className="block italic text-[12vw] md:text-[9vw] font-serif text-[var(--theme-accent)] pr-4 relative z-10 drop-shadow-2xl">Studio</span>
+            <span className="block italic font-serif text-[var(--theme-accent)] pr-4 relative z-10 drop-shadow-2xl text-[clamp(3.25rem,14vw,5.5rem)] md:text-[9vw]">Studio</span>
           </h1>
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8 sm:gap-12 pl-2 sm:pl-4 max-w-4xl">
             <motion.div>
-              <p className="font-sans text-sm md:text-base text-[#F2EFE9]/70 font-light leading-relaxed tracking-wide border-l border-[var(--theme-accent)]/30 pl-6">
+              <p className="font-sans text-sm md:text-base text-foreground/70 font-light leading-relaxed tracking-wide border-l border-[var(--theme-accent)]/30 pl-6">
                 Redefining the standard of premium<br />Nail and Laser Aesthetics.
               </p>
             </motion.div>
 
-            <motion.div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+            <motion.div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
               <MagneticButton>
                 <button
                   onClick={() => document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" })}
-                  className="w-full sm:w-auto bg-[var(--theme-accent)] hover:bg-[#fafafa] hover:text-theme-bg text-theme-bg px-10 md:px-12 py-7 md:py-8 text-xs md:text-sm font-mono tracking-[0.2em] uppercase rounded-none transition-colors duration-500"
+                  className="press-tap accent-glow w-full sm:w-auto min-h-[52px] bg-[var(--theme-accent)] hover:bg-[var(--theme-accent-hover)] text-[var(--theme-on-accent)] px-8 md:px-12 py-4 md:py-6 text-xs md:text-sm font-medium tracking-[0.18em] uppercase rounded-full transition-colors duration-300"
                 >
                   დაჯავშნა
                 </button>
@@ -120,9 +120,9 @@ export default function Hero() {
               <MagneticButton>
                 <button
                   onClick={() => document.getElementById("services")?.scrollIntoView({ behavior: "smooth" })}
-                  className="w-full sm:w-auto border-[var(--theme-accent)]/30 text-[#fafafa] hover:border-[var(--theme-accent)] hover:bg-[var(--theme-accent)]/10 px-10 md:px-12 py-7 md:py-8 text-xs md:text-sm font-mono tracking-[0.2em] uppercase rounded-none transition-colors duration-500 bg-transparent"
+                  className="press-tap w-full sm:w-auto min-h-[52px] border border-[var(--theme-accent)]/40 text-foreground hover:border-[var(--theme-accent)] hover:bg-[var(--theme-accent)]/10 px-8 md:px-12 py-4 md:py-6 text-xs md:text-sm font-medium tracking-[0.18em] uppercase rounded-full transition-colors duration-300 bg-transparent"
                 >
-                  მენიუ
+                  სერვისები
                 </button>
               </MagneticButton>
             </motion.div>
@@ -136,7 +136,7 @@ export default function Hero() {
           transition={{ delay: 1, duration: 1 }}
           className="absolute bottom-12 right-6 md:right-12 flex flex-col items-center gap-6"
         >
-          <span className="text-[10px] text-[#fafafa]/40 font-mono tracking-[0.3em] uppercase rotate-90 origin-right translate-y-8">
+          <span className="text-[10px] text-foreground/40 font-mono tracking-[0.3em] uppercase rotate-90 origin-right translate-y-8">
             Scroll
           </span>
           <div className="w-px h-24 bg-gradient-to-b from-[var(--theme-accent)] to-transparent" />

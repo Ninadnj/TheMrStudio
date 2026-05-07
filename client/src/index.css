@@ -5,80 +5,100 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-/* Silk & Sand Theme - Light Mode (Clean Girl Aesthetic -> Brutalist Crisp) */
+/* MR Studio — Soft Luxury / Clinical Beauty (Sage · Ivory · Evergreen) */
 :root {
-  --theme-bg: #FFFFFF;
-  --theme-text: #09090b;
-  --theme-muted1: #71717a;
-  --theme-muted2: #a1a1aa;
+  /* Custom theme tokens */
+  --theme-bg: #F7F6F2;            /* soft mist ivory */
+  --theme-surface: #FFFDF8;       /* cream cards / panels */
+  --theme-surface-muted: #D7D9CD; /* sand / muted surface */
+  --theme-text: #1E1816;          /* espresso black */
+  --theme-muted1: #6F766B;        /* muted olive-gray text */
+  --theme-muted2: #A8AEA0;
 
-  /* Cashmere & Stone Accent (Unified to preferred light beige) */
-  --theme-accent: #D4C9BD;
-  --theme-accent-hover: #E6DED5;
-  /* Deep Emerald Alternative (Old Money Premium) */
-  /* --theme-accent: #064E3B; */
-  /* --theme-accent-hover: #022C22; */
+  /* Primary = evergreen — used for CTAs, selected states, brand marks */
+  --theme-accent: #344C3D;        /* evergreen (primary) */
+  --theme-accent-hover: #26382D;
+  --theme-on-accent: #FFFFFF;     /* foreground that pairs with --theme-accent */
 
-  --theme-surface: #f4f4f5;
-  --theme-line: #e4e4e7;
+  /* Supporting greens */
+  --theme-secondary: #738A6E;     /* sage — supporting elements */
+  --theme-soft: #8EA58C;          /* soft coastal green — highlights, selected pills */
 
-  /* Shadcn/UI Mappings - Stark Light */
-  --background: 0 0% 100%;
-  --foreground: 240 10% 4%;
-  --card: 0 0% 100%;
-  --card-foreground: 240 10% 4%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 240 10% 4%;
-  --primary: 240 10% 4%;
-  --primary-foreground: 0 0% 98%;
-  --secondary: 240 5% 96%;
-  --secondary-foreground: 240 10% 4%;
-  --muted: 240 5% 96%;
-  --muted-foreground: 240 4% 46%;
-  --accent: 32 35% 54%;
-  --accent-foreground: 0 0% 100%;
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 240 6% 90%;
-  --input: 240 6% 90%;
-  --ring: 240 10% 4%;
-  --radius: 0rem;
+  /* Status & decorative */
+  --theme-success: #8A9A7B;
+  --theme-rose: #B76E79;          /* dusty rose, sparingly */
+
+  --theme-line: #C9CDC2;          /* pale taupe / soft border */
+  --theme-cream: #F2EFE9;         /* warm cream — text on dark surfaces */
+  --theme-ink: #141311;           /* canonical dark ink — used for hero/booking */
+
+  /* Shadcn/UI HSL Mappings — bit-for-bit synced to canonical palette hex */
+  --background: 48 24% 96%;             /* #F7F6F2 */
+  --foreground: 15 15% 10%;             /* #1E1816 */
+  --card: 43 100% 99%;                  /* #FFFDF8 */
+  --card-foreground: 15 15% 10%;
+  --popover: 43 100% 99%;
+  --popover-foreground: 15 15% 10%;
+  --primary: 143 19% 25%;               /* #344C3D evergreen */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 70 14% 83%;              /* #D7D9CD sand */
+  --secondary-foreground: 15 15% 10%;
+  --muted: 67 15% 90%;                  /* #E8E9E1 lighter sand */
+  --muted-foreground: 98 5% 44%;        /* #6F766B muted olive-gray */
+  --accent: 115 12% 60%;                /* #8EA58C soft coastal green */
+  --accent-foreground: 15 15% 10%;
+  --destructive: 0 65% 55%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 82 10% 78%;                 /* #C9CDC2 */
+  --input: 82 10% 78%;
+  --ring: 143 19% 25%;
+  --radius: 1rem;
 }
 
-/* Silk & Sand - Dark Mode (Obsidian Bronze) */
+/* MR Studio — Dark Mode (Forest Lounge) */
 .dark {
   --theme-bg: #141311;
+  --theme-surface: #1E1D1B;
+  --theme-surface-muted: #2A2A26;
   --theme-text: #F2EFE9;
   --theme-muted1: #A3A09A;
   --theme-muted2: #5C5A56;
 
-  /* Cashmere & Stone Accent (Organic Luxury) */
-  --theme-accent: #D4C9BD;
-  --theme-accent-hover: #E6DED5;
+  /* In dark mode, accent shifts to soft coastal green so it reads against dark bg */
+  --theme-accent: #8EA58C;
+  --theme-accent-hover: #A6BBA3;
+  --theme-on-accent: #1E1816;
 
-  --theme-surface: #1E1D1B;
+  --theme-secondary: #738A6E;
+  --theme-soft: #8EA58C;
+
+  --theme-success: #8A9A7B;
+  --theme-rose: #B76E79;
+
   --theme-line: #33312E;
+  --theme-cream: #F2EFE9;
+  --theme-ink: #141311;
 
-  /* Shadcn/UI Mappings - Stark Dark (Adjusted for Warmer Tone) */
-  --background: 40 5% 7%;
-  --foreground: 40 15% 93%;
-  --card: 40 5% 10%;
-  --card-foreground: 40 15% 93%;
-  --popover: 40 5% 10%;
-  --popover-foreground: 40 15% 93%;
-  --primary: 40 15% 93%;
-  --primary-foreground: 40 5% 7%;
-  --secondary: 40 5% 15%;
-  --secondary-foreground: 40 15% 93%;
-  --muted: 40 5% 15%;
-  --muted-foreground: 40 5% 60%;
-  --accent: 32 35% 54%;
-  --accent-foreground: 0 0% 98%;
-  --destructive: 0 62% 30%;
+  /* Shadcn/UI Mappings — Dark (bit-for-bit synced) */
+  --background: 40 8% 7%;               /* #141311 ink */
+  --foreground: 40 26% 93%;             /* #F2EFE9 cream */
+  --card: 40 5% 11%;                    /* #1E1D1B */
+  --card-foreground: 40 26% 93%;
+  --popover: 40 5% 11%;
+  --popover-foreground: 40 26% 93%;
+  --primary: 115 12% 60%;               /* #8EA58C light sage as primary in dark */
+  --primary-foreground: 15 15% 10%;
+  --secondary: 40 6% 17%;
+  --secondary-foreground: 40 26% 93%;
+  --muted: 40 6% 17%;
+  --muted-foreground: 40 8% 62%;
+  --accent: 115 12% 60%;
+  --accent-foreground: 15 15% 10%;
+  --destructive: 0 50% 35%;
   --destructive-foreground: 0 0% 98%;
-  --border: 240 4% 16%;
-  --input: 240 4% 16%;
-  --ring: 32 35% 54%;
+  --border: 40 6% 22%;
+  --input: 40 6% 22%;
+  --ring: 115 12% 60%;
 }
 
 @layer base {
@@ -87,7 +107,7 @@
   }
 
   body {
-    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", ui-sans-serif, system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     color: var(--theme-text);
@@ -154,7 +174,39 @@
 
   .bg-theme-accent {
     background-color: var(--theme-accent);
-    color: #141311;
+    color: var(--theme-on-accent);
+  }
+
+  .text-theme-accent {
+    color: var(--theme-accent);
+  }
+
+  .text-theme-bg {
+    color: var(--theme-bg);
+  }
+
+  .bg-theme-surface {
+    background-color: var(--theme-surface);
+  }
+
+  .border-theme-line {
+    border-color: var(--theme-line);
+  }
+
+  .text-theme-secondary {
+    color: var(--theme-secondary);
+  }
+
+  .bg-theme-accent-hover {
+    background-color: var(--theme-accent-hover);
+  }
+
+  .hover\:bg-theme-accent-hover:hover {
+    background-color: var(--theme-accent-hover);
+  }
+
+  .hover\:text-theme-accent:hover {
+    color: var(--theme-accent);
   }
 
   /* Editorial Typography */
@@ -244,6 +296,76 @@
     margin-right: auto;
     padding-left: 1.5rem;
     padding-right: 1.5rem;
+  }
+
+  /* ============================================
+     iOS 26 LIQUID GLASS — APP-LIKE FOUNDATIONS
+     ============================================ */
+
+  /* Safe-area aware spacers (iPhone notch / home indicator) */
+  .safe-bottom {
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+
+  .pb-tabbar {
+    /* Reserve room for the floating tab bar so content isn't covered */
+    padding-bottom: calc(6.5rem + env(safe-area-inset-bottom));
+  }
+
+  /* Frosted-glass surface (iOS liquid glass) */
+  .ios-glass {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: saturate(180%) blur(24px);
+    -webkit-backdrop-filter: saturate(180%) blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+  }
+
+  .dark .ios-glass {
+    background: rgba(20, 19, 17, 0.62);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* Micro-press: instant haptic-feel feedback on tap */
+  .press-tap {
+    transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+  }
+
+  .press-tap:active {
+    transform: scale(0.96);
+  }
+
+  /* Evergreen accent glow — for primary CTAs */
+  .accent-glow {
+    box-shadow: 0 10px 32px -10px rgba(52, 76, 61, 0.45), 0 2px 8px -2px rgba(52, 76, 61, 0.22);
+  }
+
+  .dark .accent-glow {
+    box-shadow: 0 10px 32px -10px rgba(142, 165, 140, 0.55), 0 0 0 1px rgba(142, 165, 140, 0.2);
+  }
+
+  /* Spring entrance for floating elements */
+  @keyframes floatIn {
+    0% {
+      opacity: 0;
+      transform: translateY(20px) scale(0.96);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .float-in {
+    animation: floatIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  /* Hide scrollbars on horizontal scroll containers (chips, etc.) */
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }
 

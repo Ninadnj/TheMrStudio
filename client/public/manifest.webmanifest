@@ -1,0 +1,21 @@
+{
+  "name": "THE MR Studio",
+  "short_name": "MR Studio",
+  "description": "Premium nail, laser & cosmetology studio in Tbilisi. Book in seconds.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F7F6F2",
+  "theme_color": "#344C3D",
+  "lang": "ka",
+  "categories": ["lifestyle", "beauty", "health"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-import { Instagram, Facebook, Mail, Phone, MapPin, Coffee } from "lucide-react";
+import { Instagram, Facebook, Mail, Phone, MapPin, Copyright } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MagneticButton from "@/components/MagneticButton";
 
@@ -102,8 +102,9 @@ export default function Footer() {
         </div>
 
         <div className="flex flex-col md:flex-row justify-between items-center pt-8 gap-4 border-t border-border">
-          <p className="text-sm text-muted-foreground">
-            © 2026 THE MR Nail & Laser Studio. ყველა უფლება დაცულია.
+          <p className="text-sm text-muted-foreground inline-flex items-center gap-1.5">
+            <Copyright className="w-3.5 h-3.5 shrink-0" aria-hidden="true" strokeWidth={1.6} />
+            <span>2026 THE MR Nail &amp; Laser Studio. ყველა უფლება დაცულია.</span>
           </p>
 
           {/* Social Icons with Hover Fade (2025 Design Brief) */}

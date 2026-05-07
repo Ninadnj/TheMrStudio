@@ -24,7 +24,7 @@ export default function Preloader() {
 
     return (
         <motion.div
-            className="fixed inset-0 z-[1000] flex items-center justify-center bg-theme-bg"
+            className="fixed inset-0 z-[1000] flex items-center justify-center bg-background"
             initial={{ y: 0 }}
             animate={{ y: "-100%" }}
             transition={{

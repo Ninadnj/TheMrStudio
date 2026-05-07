@@ -1,139 +1,165 @@
 import { useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion, useInView } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 import type { ServicesSection } from "@shared/schema";
 import { isVideoUrl } from "@/lib/videoUtils";
+import SectionHeader from "@/components/SectionHeader";
+import { hapticTap } from "@/lib/haptics";
+
+type Category = {
+  id: string;
+  title: string;
+  subtitle: string;
+  image: string;
+  description: string;
+  priceFrom: string;
+  priceAnchor: string;
+};
+
+const categories: Category[] = [
+  {
+    id: "nails",
+    title: "ფრჩხილები",
+    subtitle: "Nails",
+    image: "/assets/services/nails.png",
+    description: "მანიკური, პედიკური, გელ-ლაქი და დაგრძელება პრემიუმ მასალებით.",
+    priceFrom: "5",
+    priceAnchor: "category-nails",
+  },
+  {
+    id: "laser",
+    title: "ლაზერი",
+    subtitle: "Laser",
+    image: "/assets/services/laser.png",
+    description: "უახლესი დიოდური ლაზერული ეპილაცია — სწრაფი და უსაფრთხო.",
+    priceFrom: "10",
+    priceAnchor: "category-laser-women",
+  },
+  {
+    id: "cosmetology",
+    title: "ესთეტიკა",
+    subtitle: "Cosmetology",
+    image: "/assets/services/cosmetology.png",
+    description: "ფილერი, ბოტოქსი, ბიორევიტალიზაცია, პილინგი და მეზოთერაპია.",
+    priceFrom: "100",
+    priceAnchor: "category-cosmetology",
+  },
+];
+
+function scrollToId(id: string) {
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
 
 export default function Services() {
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, amount: 0.1 });
 
-  const { data: servicesSection } = useQuery<ServicesSection>({
+  // Keep the existing query for server-driven section content.
+  useQuery<ServicesSection>({
     queryKey: ["/api/services-section"],
   });
 
-  const categoryDescriptions: Record<string, string> = servicesSection
-    ? JSON.parse(servicesSection.categoryDescriptions)
-    : {};
-
-  const services = [
-    {
-      id: "nails",
-      title: "ფრჩხილები",
-      scents: "მანიკური / პედიკური",
-      image: "/assets/services/nails.png",
-      description: "პრემიუმ მასალებით შესრულებული ექსკლუზიური ფრჩხილის ესთეტიკა."
-    },
-    {
-      id: "laser",
-      title: "ლაზერი",
-      scents: "ლაზერული ეპილაცია",
-      image: "/assets/services/laser.png",
-      description: "უახლესი დიოდური ლაზერული ტექნოლოგია."
-    },
-    {
-      id: "cosmetology",
-      title: "ესთეტიკა",
-      scents: "კოსმეტოლოგია",
-      image: "/assets/services/cosmetology.png",
-      description: "სახის მოწინავე პროცედურები და ინექციები."
-    }
-  ];
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2
-      }
-    }
-  };
-
   const cardVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: {
+    hidden: { opacity: 0, y: 24 },
+    visible: (i: number) => ({
       opacity: 1,
       y: 0,
-      transition: {
-        duration: 0.8,
-        ease: [0.22, 1, 0.36, 1]
-      }
-    }
+      transition: { duration: 0.55, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] },
+    }),
   };
 
   return (
-    <section id="services" className="py-24 md:py-36 bg-theme relative overflow-hidden" ref={sectionRef}>
-      <div className="max-w-[100rem] mx-auto px-6 md:px-12">
-        <motion.div
-          className="mb-16 md:mb-24"
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ duration: 0.8 }}
-        >
-          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl leading-[0.9] text-[#fafafa] tracking-tighter uppercase">
-            ჩვენი სერვისები
-          </h2>
-        </motion.div>
+    <section id="services" className="py-10 md:py-24 bg-background relative overflow-hidden" ref={sectionRef}>
+      <div className="max-w-7xl mx-auto px-5 md:px-12">
+        <SectionHeader
+          kicker="01 — Services"
+          title="ჩვენი სერვისები"
+          subtitle="აირჩიე კატეგორია, ნახე ფასები, დაჯავშნე."
+          className="mb-6 md:mb-12"
+        />
 
-        <motion.div
-          className="flex flex-col border-t border-[var(--theme-accent)]/30 mt-12"
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-        >
-          {services.map((service, index) => (
-            <motion.div
-              key={service.id}
-              variants={cardVariants}
-              className="group relative border-b border-[var(--theme-accent)]/30 py-10 md:py-16 flex flex-col justify-center cursor-pointer overflow-hidden bg-theme hover:bg-[#fafafa] transition-colors duration-500"
-            >
-              <div className="relative z-10 flex flex-col md:flex-row md:items-end md:justify-between w-full px-4 md:px-8 pointer-events-none mix-blend-difference">
-                <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-12">
-                  <span className="font-mono text-xs text-[var(--theme-accent)] group-hover:text-[#FAFAFA] transition-colors duration-500 hidden md:block">
-                    0{index + 1}
-                  </span>
-                  <h3 className="font-display text-3xl md:text-4xl lg:text-5xl text-[#fafafa] group-hover:text-theme-bg transition-colors duration-500 uppercase tracking-tighter">
-                    {service.title}
-                  </h3>
-                </div>
-                <div className="mt-6 md:mt-0 flex flex-col items-start md:items-end text-left md:text-right mix-blend-normal">
-                  <p className="font-mono text-xs md:text-sm text-[#fafafa]/50 group-hover:text-theme-bg/50 transition-colors duration-500 uppercase tracking-widest mb-2">
-                    {service.scents}
-                  </p>
-                  <p className="font-sans text-sm text-[#fafafa]/40 group-hover:text-theme-bg/60 transition-colors duration-500 max-w-sm hidden md:block">
-                    {service.description}
-                  </p>
-                </div>
-              </div>
-
-              {/* Hover Image Reveal - Visible on mobile at low opacity, pops on hover/desktop */}
-              <div className="absolute top-0 right-0 w-full md:w-[40%] h-full opacity-25 md:opacity-30 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none z-0">
-                <div className="absolute inset-0 bg-gradient-to-r from-theme-bg via-theme-bg/70 md:via-theme-bg/50 to-transparent group-hover:from-[#fafafa] group-hover:via-[#fafafa]/50 transition-colors duration-500 z-10" />
-                {(() => {
-                  const isVideo = isVideoUrl(service.image);
-                  const className = "w-full h-full object-cover transition-all duration-700 opacity-60 md:opacity-80 group-hover:opacity-100";
-                  return isVideo ? (
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6">
+          {categories.map((cat, i) => {
+            const isVideo = isVideoUrl(cat.image);
+            return (
+              <motion.article
+                key={cat.id}
+                custom={i}
+                variants={cardVariants}
+                initial="hidden"
+                animate={isInView ? "visible" : "hidden"}
+                className="press-tap group relative overflow-hidden rounded-2xl md:rounded-3xl border border-border bg-card flex flex-col"
+                data-testid={`service-card-${cat.id}`}
+              >
+                {/* Media */}
+                <div className="relative aspect-square md:aspect-[4/5] overflow-hidden bg-muted">
+                  {isVideo ? (
                     <video
-                      src={service.image}
+                      src={cat.image}
                       autoPlay
                       loop
                       muted
                       playsInline
-                      className={className}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                     />
                   ) : (
                     <img
-                      src={service.image}
-                      alt={service.title}
-                      className={className}
+                      src={cat.image}
+                      alt={cat.title}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                      loading="lazy"
                     />
-                  );
-                })()}
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+
+                  {/* Floating chip */}
+                  <div className="absolute top-2 left-2 md:top-3 md:left-3 ios-glass px-2 py-0.5 md:px-2.5 md:py-1 rounded-full text-[9px] md:text-[10px] tracking-[0.18em] uppercase font-mono">
+                    {cat.subtitle}
+                  </div>
+
+                  {/* Title overlay */}
+                  <div className="absolute inset-x-0 bottom-0 p-3 md:p-5">
+                    <h3 className="font-display text-lg md:text-3xl text-[var(--theme-cream)] tracking-tight uppercase leading-none">
+                      {cat.title}
+                    </h3>
+                    <div className="mt-1 flex items-baseline gap-1 text-[var(--theme-cream)]/80">
+                      <span className="text-[9px] md:text-[10px] tracking-widest uppercase font-mono opacity-70">From</span>
+                      <span className="text-xs md:text-sm font-medium tabular-nums">{cat.priceFrom} ₾</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Body — actions only on this compact card */}
+                <div className="p-3 md:p-5 flex items-center gap-2 md:gap-3">
+                  <button
+                    onClick={() => {
+                      hapticTap();
+                      scrollToId(cat.priceAnchor);
+                    }}
+                    className="press-tap flex-1 min-h-[38px] md:min-h-[40px] rounded-full text-[11px] md:text-xs font-medium text-foreground/80 hover:text-foreground bg-secondary/70 transition-colors"
+                    data-testid={`service-prices-${cat.id}`}
+                    aria-label={`View ${cat.subtitle} prices`}
+                  >
+                    ფასები
+                  </button>
+                  <button
+                    onClick={() => {
+                      hapticTap();
+                      scrollToId("booking");
+                    }}
+                    className="press-tap accent-glow flex-1 min-h-[38px] md:min-h-[40px] rounded-full text-[11px] md:text-xs font-medium bg-[var(--theme-accent)] hover:bg-[var(--theme-accent-hover)] text-[var(--theme-on-accent)] inline-flex items-center justify-center gap-1 transition-colors"
+                    data-testid={`service-book-${cat.id}`}
+                    aria-label={`Book ${cat.subtitle}`}
+                  >
+                    დაჯავშნა
+                    <ArrowRight className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                  </button>
+                </div>
+              </motion.article>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

@@ -422,9 +422,11 @@ export class MemStorage implements IStorage {
     };
 
     const staffData: InsertStaff[] = [
-      { name: "მარიამი", serviceCategory: "Nail", calendarId: "1", order: "1" },
-      { name: "რიტა", serviceCategory: "Nail", calendarId: "2", order: "2" },
-      { name: "სალომე", serviceCategory: "Epilation", calendarId: "3", order: "3" },
+      { name: "მარიამი", serviceCategory: "Manicure", calendarId: "1", order: "1" },
+      { name: "რიტა", serviceCategory: "Manicure", calendarId: "2", order: "2" },
+      { name: "მარიამი", serviceCategory: "Pedicure", calendarId: "3", order: "3" },
+      { name: "სალომე", serviceCategory: "Epilation", calendarId: "4", order: "4" },
+      { name: "ნინო", serviceCategory: "Cosmetology", calendarId: "5", order: "5" },
     ];
     staffData.forEach((s, i) => {
       const id = (i + 1).toString();

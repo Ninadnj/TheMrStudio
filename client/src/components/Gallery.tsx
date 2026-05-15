@@ -163,7 +163,7 @@ export default function Gallery() {
                       type="button"
                       className="press-tap editorial-grain relative aspect-[3/4] rounded-2xl overflow-hidden bg-[var(--theme-surface-muted)] border border-[var(--theme-line)]/60 group"
                       initial={{ opacity: 0, y: 12 }}
-                      animate={isInView ? { opacity: 1, y: 0 } : {}}
+                      animate={{ opacity: 1, y: 0 }}
                       transition={{
                         duration: 0.45,
                         delay: Math.min(index * 0.04, 0.4),

@@ -1,16 +1,9 @@
 import { useEffect, useState } from "react";
 import { Home, List, Image as ImageIcon, Phone, CalendarCheck, type LucideIcon } from "lucide-react";
 import { hapticTap } from "@/lib/haptics";
+import { useLang } from "@/lib/i18n";
 
 type SectionId = "home" | "services" | "gallery" | "booking" | "contact";
-
-const tabs: { id: SectionId; labelKa: string; icon: LucideIcon }[] = [
-  { id: "home", labelKa: "მთავარი", icon: Home },
-  { id: "services", labelKa: "სერვისები", icon: List },
-  { id: "gallery", labelKa: "გალერეა", icon: ImageIcon },
-  { id: "booking", labelKa: "დაჯავშნა", icon: CalendarCheck },
-  { id: "contact", labelKa: "კონტაქტი", icon: Phone },
-];
 
 function scrollToId(id: SectionId) {
   if (id === "home") {
@@ -21,7 +14,16 @@ function scrollToId(id: SectionId) {
 }
 
 export default function MobileBottomNav() {
+  const { t } = useLang();
   const [active, setActive] = useState<SectionId>("home");
+
+  const tabs: { id: SectionId; label: string; icon: LucideIcon }[] = [
+    { id: "home", label: t("მთავარი", "Home"), icon: Home },
+    { id: "services", label: t("სერვისები", "Services"), icon: List },
+    { id: "gallery", label: t("გალერეა", "Gallery"), icon: ImageIcon },
+    { id: "booking", label: t("დაჯავშნა", "Book"), icon: CalendarCheck },
+    { id: "contact", label: t("კონტაქტი", "Contact"), icon: Phone },
+  ];
 
   useEffect(() => {
     const ids: SectionId[] = ["home", "services", "gallery", "booking", "contact"];
@@ -43,9 +45,9 @@ export default function MobileBottomNav() {
 
   return (
     <div className="md:hidden fixed inset-x-0 bottom-0 z-50 pointer-events-none">
-      <div className="relative w-full safe-bottom pb-3 px-4 float-in">
+      <div className="relative w-full safe-bottom pb-2.5 px-3 float-in">
         <nav
-          className="ios-glass pointer-events-auto mx-auto flex items-center justify-around gap-1 px-2 py-2 rounded-full shadow-[0_18px_54px_-32px_rgba(0,0,0,0.55)] max-w-[380px]"
+          className="pointer-events-auto mx-auto flex items-center justify-around gap-0.5 px-1.5 py-1.5 rounded-full max-w-[400px] bg-[color:color-mix(in_srgb,var(--theme-surface)_88%,transparent)] backdrop-blur-xl border border-[var(--theme-line)]/70 shadow-[var(--ios-shadow-2)]"
           aria-label="Primary"
         >
           {tabs.map((tab) => {
@@ -58,9 +60,9 @@ export default function MobileBottomNav() {
                   hapticTap();
                   scrollToId(tab.id);
                 }}
-                aria-label={tab.labelKa}
+                aria-label={tab.label}
                 aria-current={isActive ? "page" : undefined}
-                className={`press-tap relative flex flex-col items-center justify-center min-w-[44px] min-h-[44px] px-2 py-1.5 rounded-full transition-colors duration-200 ${
+                className={`press-tap relative flex flex-col items-center justify-center flex-1 min-w-[44px] min-h-[48px] px-1 py-1 rounded-full transition-colors duration-200 ${
                   isActive
                     ? "text-[var(--theme-accent)]"
                     : "text-[var(--theme-muted1)]"
@@ -70,15 +72,15 @@ export default function MobileBottomNav() {
                 {isActive && (
                   <span
                     aria-hidden
-                    className="absolute inset-0 rounded-full bg-[var(--theme-soft)]/36"
+                    className="absolute inset-0 rounded-full bg-[color:color-mix(in_srgb,var(--theme-soft)_38%,transparent)]"
                   />
                 )}
                 <Icon
-                  className={`relative w-[22px] h-[22px]`}
+                  className="relative w-[20px] h-[20px]"
                   strokeWidth={isActive ? 2.2 : 1.6}
                 />
-                <span className="relative text-[10px] mt-0.5 font-medium tracking-normal leading-none">
-                  {tab.labelKa}
+                <span className="relative text-[9.5px] mt-0.5 font-medium leading-none">
+                  {tab.label}
                 </span>
               </button>
             );

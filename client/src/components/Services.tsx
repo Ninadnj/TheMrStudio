@@ -1,44 +1,96 @@
-import { useRef } from "react";
+import { useRef, useMemo, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion, useInView } from "framer-motion";
-import { Activity, CalendarCheck, Hand, ReceiptText, ScanLine, type LucideIcon } from "lucide-react";
-import type { ServicesSection } from "@shared/schema";
+import { ChevronRight } from "lucide-react";
+import type { ServicesSection, GalleryImage } from "@shared/schema";
 import SectionHeader from "@/components/SectionHeader";
 import { hapticTap } from "@/lib/haptics";
+import { isVideoUrl } from "@/lib/videoUtils";
+import { useLang } from "@/lib/i18n";
+
+/* ─── Hairline marks — minimal abstract symbols per category ─── */
+
+const NailMark = (
+  <svg viewBox="0 0 56 72" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" aria-hidden>
+    {/* almond / nail silhouette */}
+    <path d="M28 8 C 14 14, 14 50, 28 64 C 42 50, 42 14, 28 8 Z" />
+    <path d="M22 22 C 26 18, 30 18, 34 22" opacity="0.5" />
+  </svg>
+);
+
+const LaserMark = (
+  <svg viewBox="0 0 56 72" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" aria-hidden>
+    {/* vertical beam with diffraction marks */}
+    <line x1="28" y1="6" x2="28" y2="66" />
+    <line x1="18" y1="22" x2="38" y2="22" opacity="0.55" />
+    <line x1="14" y1="38" x2="42" y2="38" opacity="0.85" />
+    <line x1="18" y1="54" x2="38" y2="54" opacity="0.55" />
+    <circle cx="28" cy="38" r="2.2" fill="currentColor" stroke="none" />
+  </svg>
+);
+
+const AestheticsMark = (
+  <svg viewBox="0 0 56 72" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" aria-hidden>
+    {/* concentric circles — soft mirror/lens */}
+    <circle cx="28" cy="36" r="20" />
+    <circle cx="28" cy="36" r="12" opacity="0.55" />
+    <circle cx="28" cy="36" r="3" fill="currentColor" stroke="none" opacity="0.7" />
+  </svg>
+);
 
 type Category = {
   id: string;
-  title: string;
-  subtitle: string;
-  description: string;
+  titleKa: string;
+  titleEn: string;
+  subtitleKa: string;
+  subtitleEn: string;
+  descriptionKa: string;
+  descriptionEn: string;
+  count: number;
   priceAnchor: string;
-  Icon: LucideIcon;
+  matchKeywords: string[];
+  mark: ReactNode;
 };
 
 const categories: Category[] = [
   {
     id: "nails",
-    title: "ფრჩხილები",
-    subtitle: "Nails",
-    description: "მანიკური, პედიკური, გელ-ლაქი და დაგრძელება პრემიუმ მასალებით.",
+    titleKa: "ფრჩხილები",
+    titleEn: "Nails",
+    subtitleKa: "მანიკური · პედიკური",
+    subtitleEn: "Manicure · Pedicure",
+    descriptionKa: "მანიკური, პედიკური, გელ-ლაქი და დაგრძელება პრემიუმ მასალებით.",
+    descriptionEn: "Manicure, pedicure, gel polish, and extensions in premium materials.",
+    count: 8,
     priceAnchor: "category-nails",
-    Icon: Hand,
+    matchKeywords: ["nail", "manicure", "pedicure", "gel", "ფრჩხ", "მანიკ", "პედიკ"],
+    mark: NailMark,
   },
   {
     id: "laser",
-    title: "ლაზერი",
-    subtitle: "Laser",
-    description: "უახლესი დიოდური ლაზერული ეპილაცია — სწრაფი და უსაფრთხო.",
+    titleKa: "ლაზერი",
+    titleEn: "Laser",
+    subtitleKa: "ეპილაცია",
+    subtitleEn: "Hair removal",
+    descriptionKa: "უახლესი დიოდური ლაზერული ეპილაცია — სწრაფი და უსაფრთხო.",
+    descriptionEn: "Latest-generation diode laser hair removal — fast and gentle.",
+    count: 13,
     priceAnchor: "category-laser-women",
-    Icon: ScanLine,
+    matchKeywords: ["laser", "epilation", "ლაზერ", "ეპილ"],
+    mark: LaserMark,
   },
   {
     id: "cosmetology",
-    title: "ესთეტიკა",
-    subtitle: "Cosmetology",
-    description: "ფილერი, ბოტოქსი, ბიორევიტალიზაცია, პილინგი და მეზოთერაპია.",
+    titleKa: "ესთეტიკა",
+    titleEn: "Aesthetics",
+    subtitleKa: "კოსმეტოლოგია",
+    subtitleEn: "Cosmetology",
+    descriptionKa: "ფილერი, ბოტოქსი, ბიორევიტალიზაცია, პილინგი და მეზოთერაპია.",
+    descriptionEn: "Filler, botox, biorevitalization, peeling, and mesotherapy.",
+    count: 6,
     priceAnchor: "category-cosmetology",
-    Icon: Activity,
+    matchKeywords: ["cosmet", "skin", "face", "filler", "botox", "კოსმეტ", "ესთეტ", "სახ"],
+    mark: AestheticsMark,
   },
 ];
 
@@ -49,103 +101,131 @@ function scrollToId(id: string) {
 export default function Services() {
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, amount: 0.1 });
+  const { t } = useLang();
 
-  // Keep the existing query for server-driven section content.
   useQuery<ServicesSection>({
     queryKey: ["/api/services-section"],
   });
 
+  const { data: galleryImages = [] } = useQuery<GalleryImage[]>({
+    queryKey: ["/api/gallery"],
+  });
+
+  const thumbnailByCategory = useMemo(() => {
+    const map = new Map<string, GalleryImage>();
+    for (const cat of categories) {
+      const match = galleryImages.find((img) => {
+        const haystack = `${img.category}`.toLowerCase();
+        return cat.matchKeywords.some((kw) => haystack.includes(kw.toLowerCase()));
+      });
+      if (match) map.set(cat.id, match);
+    }
+    return map;
+  }, [galleryImages]);
+
   const cardVariants = {
-    hidden: { opacity: 0, y: 24 },
+    hidden: { opacity: 0, y: 16 },
     visible: (i: number) => ({
       opacity: 1,
       y: 0,
-      transition: { duration: 0.55, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] },
+      transition: { duration: 0.45, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] },
     }),
   };
 
   return (
-    <section id="services" className="scroll-mt-24 py-14 md:scroll-mt-28 md:py-24 bg-background relative overflow-hidden" ref={sectionRef}>
-      <div className="max-w-7xl mx-auto px-5 md:px-12">
+    <section
+      id="services"
+      className="scroll-mt-20 app-section md:scroll-mt-24"
+      ref={sectionRef}
+    >
+      <div className="app-shell">
         <SectionHeader
-          kicker="01 — Services"
-          title="ჩვენი სერვისები"
-          subtitle="აირჩიე კატეგორია, ნახე ფასები, დაჯავშნე."
-          className="mb-6 md:mb-12"
+          kicker={t("Studio menu", "Studio menu")}
+          title={t("სერვისები", "Services")}
+          subtitle={t(
+            "ზუსტი კატეგორიები სწრაფი არჩევისთვის.",
+            "Precise categories for a faster choice."
+          )}
+          className="mb-5 md:mb-7"
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+        <div className="services-card-stack">
           {categories.map((cat, i) => {
-            const Icon = cat.Icon;
+            const thumb = thumbnailByCategory.get(cat.id);
+            const thumbIsVideo = thumb ? isVideoUrl(thumb.imageUrl) : false;
             return (
-              <motion.article
+              <motion.button
                 key={cat.id}
                 custom={i}
                 variants={cardVariants}
                 initial="hidden"
                 animate={isInView ? "visible" : "hidden"}
-                className="press-tap group relative min-h-[350px] overflow-hidden rounded-[8px] border border-border/80 bg-card/95 flex flex-col shadow-[0_24px_70px_-58px_rgba(0,0,0,0.58)] transition-all duration-500 hover:-translate-y-1 hover:border-[var(--theme-accent)]/35"
+                onClick={() => {
+                  hapticTap();
+                  scrollToId(cat.priceAnchor);
+                }}
+                className="service-card press-tap group"
                 data-testid={`service-card-${cat.id}`}
+                aria-label={`Open ${cat.subtitleEn} prices`}
               >
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_4%,rgba(191,207,187,0.32),transparent_32%),linear-gradient(145deg,rgba(247,250,246,0.98),rgba(191,207,187,0.18))]" />
-                <div className="absolute -right-16 -top-14 h-44 w-44 rounded-full border border-[var(--theme-accent)]/10" />
-                <div className="absolute -left-20 bottom-14 h-48 w-48 rounded-full border border-[var(--theme-accent)]/10" />
-                <Icon className="absolute right-1 top-24 h-24 w-24 text-[var(--theme-accent)] opacity-[0.08] transition-transform duration-500 group-hover:scale-105" strokeWidth={1} />
+                <span className="service-card-index" aria-hidden>
+                  0{i + 1}
+                </span>
 
-                <div className="relative flex flex-1 flex-col p-5 md:p-6">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="rounded-full border border-[var(--theme-accent)]/18 bg-white/45 px-3 py-1 text-[10px] uppercase font-mono text-foreground/62 backdrop-blur-sm">
-                      {cat.subtitle}
-                    </div>
-                    <div className="text-[11px] font-mono text-foreground/34">
-                      {String(i + 1).padStart(2, "0")}
+                {/* Editorial portrait thumbnail (only when a real photo exists) */}
+                {thumb && (
+                  <div className="service-card-media editorial-grain">
+                    {thumbIsVideo ? (
+                      <video
+                        src={thumb.imageUrl}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <img
+                        src={thumb.imageUrl}
+                        alt=""
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                        loading="lazy"
+                      />
+                    )}
+                  </div>
+                )}
+
+                {/* Mark rail (when no photo) — hairline abstract symbol */}
+                {!thumb && (
+                  <div className="service-card-rail">
+                    <div className="service-card-mark">
+                      {cat.mark}
                     </div>
                   </div>
+                )}
 
-                  <div className="my-6">
-                    <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-[var(--theme-accent)]/18 bg-white/40 backdrop-blur-sm transition-transform duration-500 group-hover:scale-[1.03]">
-                      <div className="absolute inset-2 rounded-full border border-[var(--theme-accent)]/10" />
-                      <Icon className="relative h-7 w-7 text-[var(--theme-accent)]" strokeWidth={1.35} />
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="font-display text-3xl md:text-4xl tracking-normal uppercase leading-none text-foreground">
-                      {cat.title}
+                {/* Content column */}
+                <div className="service-card-body">
+                  <div className="min-w-0 pr-8">
+                    <p className="service-card-kicker">{t(cat.subtitleKa, cat.subtitleEn)}</p>
+                    <h3 className="service-card-title">
+                      {t(cat.titleKa, cat.titleEn)}
                     </h3>
-                    <p className="mt-3 min-h-[60px] text-sm leading-relaxed text-foreground/62">
-                      {cat.description}
+                    <p className="service-card-copy">
+                      {t(cat.descriptionKa, cat.descriptionEn)}
                     </p>
                   </div>
 
-                  <div className="mt-auto grid grid-cols-2 gap-2.5 pt-4">
-                    <button
-                      onClick={() => {
-                        hapticTap();
-                        scrollToId(cat.priceAnchor);
-                      }}
-                      className="press-tap inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full border border-border/80 bg-background/60 text-xs font-medium text-foreground/75 transition-colors hover:border-[var(--theme-accent)]/40 hover:text-foreground"
-                      data-testid={`service-prices-${cat.id}`}
-                      aria-label={`View ${cat.subtitle} prices`}
-                    >
-                      <ReceiptText className="w-3.5 h-3.5" strokeWidth={1.7} />
-                      ფასები
-                    </button>
-                    <button
-                      onClick={() => {
-                        hapticTap();
-                        scrollToId("booking");
-                      }}
-                      className="press-tap accent-glow inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-[var(--theme-accent)] text-xs font-medium text-[var(--theme-on-accent)] transition-colors hover:bg-[var(--theme-accent-hover)]"
-                      data-testid={`service-book-${cat.id}`}
-                      aria-label={`Book ${cat.subtitle}`}
-                    >
-                      <CalendarCheck className="w-3.5 h-3.5" strokeWidth={1.8} />
-                      დაჯავშნა
-                    </button>
+                  <div className="service-card-footer">
+                    <span className="service-card-count">
+                      {cat.count} {t("სერვისი", "services")}
+                    </span>
+                    <span className="service-card-arrow" aria-hidden>
+                      <ChevronRight className="w-4 h-4" strokeWidth={1.8} />
+                    </span>
                   </div>
                 </div>
-              </motion.article>
+              </motion.button>
             );
           })}
         </div>

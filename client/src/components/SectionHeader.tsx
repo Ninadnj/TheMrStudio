@@ -8,7 +8,7 @@ type Props = {
   subtitle?: string;
   align?: "left" | "center";
   className?: string;
-  /** Deprecated — kept for backward compat. Dark sections now scope `dark` themselves. */
+  /** Deprecated — kept for backward compat. */
   light?: boolean;
 };
 
@@ -23,25 +23,15 @@ export default function SectionHeader({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className={cn("flex flex-col gap-3 md:gap-4", alignment, className)}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      className={cn("flex flex-col gap-1.5", alignment, className)}
     >
-      {kicker && (
-        <span className="text-[10px] md:text-xs text-[var(--theme-accent)] tracking-normal uppercase font-mono">
-          {kicker}
-        </span>
-      )}
-      <h2 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-none tracking-normal text-foreground">
-        {stripDecorativeSymbols(title)}
-      </h2>
-      {subtitle && (
-        <p className="text-sm md:text-base font-light leading-relaxed max-w-xl text-foreground/60">
-          {stripDecorativeSymbols(subtitle)}
-        </p>
-      )}
+      {kicker && <span className="app-eyebrow">{stripDecorativeSymbols(kicker)}</span>}
+      <h2 className="app-title">{stripDecorativeSymbols(title)}</h2>
+      {subtitle && <p className="app-subtle max-w-xl">{stripDecorativeSymbols(subtitle)}</p>}
     </motion.div>
   );
 }

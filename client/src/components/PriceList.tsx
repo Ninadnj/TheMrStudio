@@ -1,11 +1,12 @@
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { Search, ChevronRight, X, ChevronDown, Share2 } from "lucide-react";
+import { Search, ChevronRight, X, ChevronDown } from "lucide-react";
 import type { Service } from "@shared/schema";
 import { cn } from "@/lib/utils";
 import SectionHeader from "@/components/SectionHeader";
 import { hapticTap } from "@/lib/haptics";
+import { useLang } from "@/lib/i18n";
 
 type PriceListItem = {
   id: string;
@@ -84,30 +85,12 @@ function priceFromOf(cat: PriceListItem): number {
 }
 
 export default function PriceList() {
+  const { t, lang } = useLang();
   const [activeFilter, setActiveFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [openId, setOpenId] = useState<string | null>(null);
-  const [canShare, setCanShare] = useState(false);
 
-  useEffect(() => {
-    setCanShare(typeof navigator !== "undefined" && typeof navigator.share === "function");
-  }, []);
-
-  const shareService = async (
-    item: { name: string; nameKa: string; price: number | string },
-    categoryLabel: string
-  ) => {
-    hapticTap();
-    const url = `${window.location.origin}/#booking`;
-    const text = `${item.nameKa} — ${item.price} ₾ · ${categoryLabel} · THE MR Studio`;
-    try {
-      await navigator.share({ title: "THE MR Studio", text, url });
-    } catch {
-      /* user cancelled or browser threw */
-    }
-  };
-
-  // Keep server query alive for parity with the original; result is unused for layout.
+  // Keep server query alive for parity with the original.
   useQuery<Service[]>({
     queryKey: ["/api/services"],
   });
@@ -130,8 +113,6 @@ export default function PriceList() {
       .filter((cat) => cat.items.length > 0);
   }, [activeFilter, search]);
 
-  // Auto-open behavior: if a chip narrows to a single category, open it.
-  // If search has results, open the first matching category.
   useEffect(() => {
     if (activeFilter !== "all") {
       setOpenId(activeFilter);
@@ -143,36 +124,43 @@ export default function PriceList() {
   }, [activeFilter, search, filtered]);
 
   const filters: { id: string; label: string }[] = [
-    { id: "all", label: "ყველა" },
-    ...staticPriceLists.map((c) => ({ id: c.id, label: c.category.split(" — ")[0] })),
+    { id: "all", label: t("ყველა", "All") },
+    ...staticPriceLists.map((c) => ({
+      id: c.id,
+      label: lang === "ka" ? c.category.split(" — ")[0] : c.subtitle.split(" — ")[0],
+    })),
   ];
 
   return (
-    <section id="prices" className="relative scroll-mt-24 bg-background pt-12 pb-14 md:scroll-mt-28 md:pt-20 md:pb-24">
-      <div className="max-w-3xl mx-auto px-5 md:px-6">
+    <section
+      id="prices"
+      className="relative scroll-mt-20 app-section md:scroll-mt-24"
+    >
+      <div className="app-shell">
         <SectionHeader
-          kicker="04 / Prices"
-          title="ფასები"
-          subtitle="გამჭვირვალე ფასები. გადახდა — ვიზიტის შემდეგ."
-          align="center"
-          className="mb-5 md:mb-8 mx-auto"
+          title={t("ფასები", "Prices")}
+          subtitle={t(
+            "გადახდა ვიზიტის შემდეგ.",
+            "Payment after your visit."
+          )}
+          className="mb-5"
         />
 
         {/* Search */}
         <div className="relative mb-3">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/40" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--theme-muted1)]/60" />
           <input
             type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="მოძებნე სერვისი..."
-            className="w-full h-12 pl-11 pr-10 rounded-[8px] bg-card/90 border border-border/80 focus:border-[var(--theme-accent)]/60 focus:outline-none text-sm placeholder:text-foreground/40 transition-colors shadow-sm"
+            placeholder={t("მოძებნე სერვისი...", "Search a service…")}
+            className="ios-input pl-10 pr-10"
             data-testid="prices-search"
           />
           {search && (
             <button
               onClick={() => setSearch("")}
-              className="press-tap absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center text-foreground/50 hover:text-foreground"
+              className="press-tap absolute right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center text-[var(--theme-muted1)] hover:text-[var(--theme-text)]"
               aria-label="Clear search"
             >
               <X className="w-4 h-4" />
@@ -180,8 +168,8 @@ export default function PriceList() {
           )}
         </div>
 
-        {/* Segmented chips */}
-        <div className="flex gap-2 overflow-x-auto pb-1 -mx-5 md:mx-0 px-5 md:px-0 scrollbar-hide mb-5 md:mb-6">
+        {/* Filter chips */}
+        <div className="flex gap-2 overflow-x-auto pb-1 -mx-5 px-5 md:mx-0 md:px-0 scrollbar-hide mb-4">
           {filters.map((f) => {
             const isActive = activeFilter === f.id;
             return (
@@ -191,12 +179,8 @@ export default function PriceList() {
                   hapticTap();
                   setActiveFilter(f.id);
                 }}
-                className={cn(
-                  "press-tap shrink-0 min-h-[34px] px-3.5 rounded-full text-xs font-medium tracking-normal transition-colors",
-                  isActive
-                    ? "bg-[var(--theme-accent)] text-[var(--theme-on-accent)]"
-                    : "bg-secondary text-foreground/70 hover:text-foreground"
-                )}
+                className="ios-chip"
+                data-active={isActive}
                 data-testid={`price-filter-${f.id}`}
               >
                 {f.label}
@@ -205,11 +189,11 @@ export default function PriceList() {
           })}
         </div>
 
-        {/* Collapsed accordion list */}
-        <div className="space-y-3">
+        {/* Category groups (iOS grouped list) */}
+        <div className="space-y-4">
           {filtered.length === 0 && (
-            <div className="text-center py-12 text-foreground/50 text-sm">
-              ვერაფერი მოიძებნა "{search}"
+            <div className="text-center py-12 text-[var(--theme-muted1)] text-sm">
+              {t(`ვერაფერი მოიძებნა "${search}"`, `No results for "${search}"`)}
             </div>
           )}
 
@@ -224,37 +208,29 @@ export default function PriceList() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-30px" }}
                 transition={{ duration: 0.4 }}
-                className="scroll-mt-24 rounded-[8px] border border-border/80 bg-card/95 overflow-hidden shadow-[0_18px_60px_-52px_rgba(0,0,0,0.5)]"
+                className="scroll-mt-20"
               >
-                {/* Category header — tap to expand */}
                 <button
                   onClick={() => {
                     hapticTap();
                     setOpenId(isOpen ? null : cat.id);
                   }}
-                  className="press-tap w-full flex items-center gap-3 px-4 py-3.5 text-left"
+                  className="press-tap w-full app-card flex items-center gap-3 px-4 py-3.5 text-left mb-0"
                   aria-expanded={isOpen}
                   data-testid={`price-category-${cat.id}`}
                 >
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-baseline gap-2 flex-wrap">
-                      <h3 className="font-display text-base md:text-lg tracking-normal text-foreground">
-                        {cat.category}
-                      </h3>
-                      <span className="text-[10px] uppercase font-mono text-foreground/40">
-                        {cat.items.length} სერვისი
-                      </span>
-                    </div>
-                    {!isOpen && (
-                      <p className="text-[11px] text-foreground/50 mt-0.5">
-                        {fromPrice} ₾ · {cat.subtitle}
-                      </p>
-                    )}
+                    <h3 className="text-[16px] font-semibold text-[var(--theme-text)] tracking-[-0.01em]">
+                      {lang === "ka" ? cat.category : cat.subtitle}
+                    </h3>
+                    <p className="text-[12px] text-[var(--theme-muted1)] mt-0.5">
+                      {cat.items.length} {t("სერვისი", "services")} · {t("დან", "from")} {fromPrice} ₾
+                    </p>
                   </div>
                   <motion.div
                     animate={{ rotate: isOpen ? 180 : 0 }}
-                    transition={{ duration: 0.25 }}
-                    className="shrink-0 text-foreground/40"
+                    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                    className="shrink-0 text-[var(--theme-muted1)]/60"
                   >
                     <ChevronDown className="w-5 h-5" />
                   </motion.div>
@@ -270,54 +246,38 @@ export default function PriceList() {
                       transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
                       className="overflow-hidden"
                     >
-                      <div className="border-t border-border/60">
+                      <div className="app-list mt-2">
                         {cat.items.map((item, i) => (
-                          <div
+                          <button
                             key={i}
+                            onClick={() => {
+                              hapticTap();
+                              scrollToBooking();
+                            }}
                             className={cn(
-                              "flex items-stretch transition-colors hover:bg-secondary/50",
-                              i !== cat.items.length - 1 && "border-b border-border/60"
+                              "press-tap app-row w-full text-left",
+                              "min-h-[60px]"
                             )}
+                            data-testid={`price-row-${cat.id}-${i}`}
                           >
-                            <button
-                              onClick={() => {
-                                hapticTap();
-                                scrollToBooking();
-                              }}
-                              className="press-tap flex-1 text-left flex items-center gap-3 px-4 py-3 min-w-0"
-                              data-testid={`price-row-${cat.id}-${i}`}
-                            >
-                              <div className="flex-1 min-w-0">
-                                <div className="text-[14px] font-medium text-foreground truncate">
-                                  {item.nameKa}
-                                </div>
-                                <div className="text-[11px] text-foreground/45 mt-0.5 truncate">
+                            <div className="flex-1 min-w-0">
+                              <div className="text-[15px] font-medium text-[var(--theme-text)] truncate">
+                                {lang === "ka" ? item.nameKa : item.name}
+                              </div>
+                              {lang === "ka" && (
+                                <div className="text-[11.5px] text-[var(--theme-muted1)]/80 mt-0.5 truncate">
                                   {item.name}
                                 </div>
-                              </div>
-                              <div className="flex items-baseline gap-1 tabular-nums shrink-0">
-                                <span className="text-sm font-medium text-foreground">
-                                  {typeof item.price === "number" ? item.price : item.price}
-                                </span>
-                                <span className="text-[11px] text-foreground/50">₾</span>
-                              </div>
-                              <ChevronRight className="w-4 h-4 text-foreground/30 shrink-0" />
-                            </button>
-                            {canShare && (
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  shareService(item, cat.category);
-                                }}
-                                className="press-tap shrink-0 px-3 mr-1 my-1 rounded-xl text-foreground/40 hover:text-[var(--theme-accent)] hover:bg-[var(--theme-accent)]/10 transition-colors flex items-center justify-center"
-                                aria-label="Share service"
-                                data-testid={`price-share-${cat.id}-${i}`}
-                              >
-                                <Share2 className="w-4 h-4" strokeWidth={1.6} />
-                              </button>
-                            )}
-                          </div>
+                              )}
+                            </div>
+                            <div className="flex items-baseline gap-1 tabular-nums shrink-0 mr-1">
+                              <span className="text-[15px] font-semibold text-[var(--theme-text)]">
+                                {typeof item.price === "number" ? item.price : item.price}
+                              </span>
+                              <span className="text-[12px] text-[var(--theme-muted1)]">₾</span>
+                            </div>
+                            <ChevronRight className="w-4 h-4 text-[var(--theme-muted1)]/40 shrink-0" />
+                          </button>
                         ))}
                       </div>
                     </motion.div>
@@ -328,8 +288,11 @@ export default function PriceList() {
           })}
         </div>
 
-        <p className="text-center text-[11px] text-foreground/40 mt-6 md:mt-8">
-          * ყველა ფასი მითითებულია ლარში (₾). შეიძლება განსხვავდებოდეს.
+        <p className="text-center text-[11px] text-[var(--theme-muted1)]/70 mt-6">
+          {t(
+            "* ყველა ფასი მითითებულია ლარში (₾). შეიძლება განსხვავდებოდეს.",
+            "* All prices are in Georgian Lari (₾). Subject to change."
+          )}
         </p>
       </div>
     </section>

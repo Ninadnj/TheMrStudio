@@ -10,28 +10,29 @@ import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
 import ScrollProgress from "@/components/ScrollProgress";
 import SmoothScroll from "@/components/SmoothScroll";
-import CustomCursor from "@/components/CustomCursor";
-import LiquidBackground from "@/components/LiquidBackground";
 import Preloader from "@/components/Preloader";
 
 const pageVariants = {
   initial: {
     opacity: 0,
+    y: 8,
   },
   animate: {
     opacity: 1,
+    y: 0,
     transition: {
-      duration: 0.3,
-      ease: "easeOut"
-    }
+      duration: 0.45,
+      ease: [0.22, 1, 0.36, 1],
+    },
   },
   exit: {
     opacity: 0,
+    y: -4,
     transition: {
-      duration: 0.2,
-      ease: "easeIn"
-    }
-  }
+      duration: 0.25,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
 };
 
 function AnimatedRoute({ component: Component, ...props }: any) {
@@ -73,8 +74,6 @@ function App() {
       <SmoothScroll>
         <Preloader />
         <TooltipProvider>
-          <CustomCursor />
-          <LiquidBackground />
           <ScrollProgress />
           <Toaster />
           <Router />

@@ -9,6 +9,7 @@ import PriceList from "@/components/PriceList";
 import Footer from "@/components/Footer";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import InstallPrompt from "@/components/InstallPrompt";
+import ConciergeButton from "@/components/ConciergeButton";
 // import ChatWidget from "@/components/ChatWidget";
 
 export default function Home() {
@@ -16,17 +17,18 @@ export default function Home() {
     <div id="home" className="min-h-screen overflow-x-hidden md:pb-0 pb-tabbar">
       <SpecialOfferBanner />
       <Header />
-      <Hero />
-      <Services />
-      {/* What's Trendy Now Section */}
-      <TrendsSection />
-      <Gallery />
-      <PriceList />
-      <BookingForm />
+      <main>
+        <Hero />
+        <Services />
+        <TrendsSection />
+        <Gallery />
+        <PriceList />
+        <BookingForm />
+      </main>
       <Footer />
       <MobileBottomNav />
+      <ConciergeButton />
       <InstallPrompt />
-      {/* <ChatWidget /> */}
     </div>
   );
 }

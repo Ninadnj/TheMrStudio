@@ -935,7 +935,7 @@ function StepDetails({
         subtitle={t("საკონტაქტო ინფორმაცია", "Contact information")}
       />
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         <FieldWithIcon Icon={User} label={t("სახელი და გვარი", "Full name")}>
           <Input
             id="booking-full-name"
@@ -943,7 +943,7 @@ function StepDetails({
             value={formData.fullName}
             onChange={(e) => onChange({ fullName: e.target.value })}
             placeholder={t("თქვენი სახელი", "Your name")}
-            className="bg-transparent border-0 p-0 h-auto text-[15px] text-[var(--theme-text)] placeholder:text-[var(--theme-muted1)]/50 focus-visible:ring-0"
+            className="bg-transparent border-0 p-0 h-auto text-[16px] text-[var(--theme-text)] placeholder:text-[var(--theme-muted1)]/50 focus-visible:ring-0"
             data-testid="input-full-name"
             required
           />
@@ -957,7 +957,7 @@ function StepDetails({
             value={formData.email}
             onChange={(e) => onChange({ email: e.target.value })}
             placeholder="example@email.com"
-            className="bg-transparent border-0 p-0 h-auto text-[15px] text-[var(--theme-text)] placeholder:text-[var(--theme-muted1)]/50 focus-visible:ring-0"
+            className="bg-transparent border-0 p-0 h-auto text-[16px] text-[var(--theme-text)] placeholder:text-[var(--theme-muted1)]/50 focus-visible:ring-0"
             data-testid="input-email"
             required
           />
@@ -972,35 +972,35 @@ function StepDetails({
             value={formData.phone}
             onChange={(e) => onChange({ phone: e.target.value })}
             placeholder="+995 555 000 000"
-            className="bg-transparent border-0 p-0 h-auto text-[15px] text-[var(--theme-text)] placeholder:text-[var(--theme-muted1)]/50 focus-visible:ring-0 tabular-nums"
+            className="bg-transparent border-0 p-0 h-auto text-[16px] text-[var(--theme-text)] placeholder:text-[var(--theme-muted1)]/50 focus-visible:ring-0 tabular-nums"
             data-testid="input-phone"
             required
           />
         </FieldWithIcon>
 
-        <div className="rounded-2xl border border-[var(--theme-line)]/70 bg-[var(--theme-surface)] p-3.5">
-          <div className="text-[11px] text-[var(--theme-muted1)] mb-1.5">
+        <div className="rounded-2xl border border-[var(--theme-line)]/70 bg-[var(--theme-surface)] p-4">
+          <div className="text-[12px] font-medium text-[var(--theme-muted1)] mb-2">
             {t("პროცედურის დეტალები", "Treatment details")}
           </div>
           <Textarea
             value={formData.serviceDetails}
             onChange={(e) => onChange({ serviceDetails: e.target.value })}
             placeholder={t("მიუთითე სასურველი პროცედურა...", "Describe the treatment you'd like…")}
-            className="bg-transparent border-0 p-0 min-h-[60px] text-[15px] text-[var(--theme-text)] placeholder:text-[var(--theme-muted1)]/50 focus-visible:ring-0 resize-none"
+            className="bg-transparent border-0 p-0 min-h-[76px] text-[16px] text-[var(--theme-text)] placeholder:text-[var(--theme-muted1)]/50 focus-visible:ring-0 resize-none leading-relaxed"
             data-testid="textarea-service-details"
             required
           />
         </div>
 
-        <div className="rounded-2xl border border-[var(--theme-line)]/70 bg-[var(--theme-surface)] p-3.5">
-          <div className="text-[11px] text-[var(--theme-muted1)] mb-1.5">
+        <div className="rounded-2xl border border-[var(--theme-line)]/70 bg-[var(--theme-surface)] p-4">
+          <div className="text-[12px] font-medium text-[var(--theme-muted1)] mb-2">
             {t("შენიშვნები (არასავალდებულო)", "Notes (optional)")}
           </div>
           <Textarea
             value={formData.notes}
             onChange={(e) => onChange({ notes: e.target.value })}
             placeholder={t("სპეციალური სურვილები...", "Anything we should know…")}
-            className="bg-transparent border-0 p-0 min-h-[50px] text-[15px] text-[var(--theme-text)] placeholder:text-[var(--theme-muted1)]/50 focus-visible:ring-0 resize-none"
+            className="bg-transparent border-0 p-0 min-h-[64px] text-[16px] text-[var(--theme-text)] placeholder:text-[var(--theme-muted1)]/50 focus-visible:ring-0 resize-none leading-relaxed"
             data-testid="textarea-notes"
           />
         </div>
@@ -1021,12 +1021,12 @@ function FieldWithIcon({
   children: React.ReactNode;
 }) {
   return (
-    <div className="booking-field rounded-2xl border border-[var(--theme-line)]/70 bg-[var(--theme-surface)] p-3 flex items-center gap-3">
-      <div className="w-10 h-10 rounded-xl bg-[color:color-mix(in_srgb,var(--theme-soft)_25%,transparent)] flex items-center justify-center shrink-0">
-        <Icon className="w-4 h-4 text-[var(--theme-muted1)]" strokeWidth={1.7} />
+    <div className="booking-field rounded-2xl border border-[var(--theme-line)]/70 bg-[var(--theme-surface)] p-4 flex items-center gap-3.5">
+      <div className="w-11 h-11 rounded-xl bg-[color:color-mix(in_srgb,var(--theme-soft)_25%,transparent)] flex items-center justify-center shrink-0">
+        <Icon className="w-[18px] h-[18px] text-[var(--theme-muted1)]" strokeWidth={1.7} />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="text-[11px] text-[var(--theme-muted1)]">{label}</div>
+        <div className="text-[12px] font-medium text-[var(--theme-muted1)] mb-0.5">{label}</div>
         {children}
       </div>
     </div>

@@ -5,10 +5,20 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+@font-face {
+  font-family: 'BPG Nino Mtavruli';
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: local('BPG Nino Mtavruli'),
+       url('/fonts/bpg_nino_mtavruli.woff') format('woff');
+  unicode-range: U+10A0-10FF, U+1C90-1CBF, U+2D00-2D2F;
+}
+
 /* MR Studio visual system: porcelain, rose-gold, cypress, glacial aqua. */
 :root {
-  --font-sans: "Neue Haas Grotesk Display Pro", "Geist", "Noto Sans Georgian", -apple-system, BlinkMacSystemFont, "SF Pro Text", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Instrument Serif", "Playfair Display", Georgia, serif;
+  --font-sans: "BPG Nino Mtavruli", "Neue Haas Grotesk Display Pro", "Geist", "Noto Sans Georgian", -apple-system, BlinkMacSystemFont, "SF Pro Text", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "BPG Nino Mtavruli", "Instrument Serif", "Playfair Display", Georgia, serif;
   --font-mono: "Geist", "SFMono-Regular", Consolas, ui-monospace, monospace;
 
   /* Custom theme tokens */

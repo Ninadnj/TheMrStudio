@@ -34,11 +34,11 @@ export default function ThemeSwitch() {
       size="icon"
       variant="ghost"
       onClick={toggleTheme}
-      className="rounded-full border border-current/10 bg-current/[0.03] hover:bg-current/[0.08]"
+      className="h-9 w-9 rounded-full border border-[var(--theme-line)] bg-transparent text-[var(--theme-text)] hover:border-[var(--theme-accent)] no-default-hover-elevate no-default-active-elevate"
       data-testid="button-theme-toggle"
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
     >
-      {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+      {isDark ? <Sun className="w-4 h-4" strokeWidth={1.5} /> : <Moon className="w-4 h-4" strokeWidth={1.5} />}
     </Button>
   );
 }

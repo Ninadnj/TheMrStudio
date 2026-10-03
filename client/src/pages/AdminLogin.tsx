@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,7 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Lock } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
+import Wordmark from "@/components/Wordmark";
 
 export default function AdminLogin() {
   const [, setLocation] = useLocation();
@@ -14,7 +16,15 @@ export default function AdminLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(() =>
+    new URLSearchParams(window.location.search).has("expired") ? "სესია დასრულდა. გთხოვთ, ხელახლა შეხვიდეთ." : ""
+  );
+
+  // Already logged in (e.g. opened from a bookmark): go straight to the dashboard
+  const { data: authData } = useQuery<{ authenticated: boolean }>({ queryKey: ["/api/admin/check"] });
+  useEffect(() => {
+    if (authData?.authenticated) setLocation("/admin/dashboard");
+  }, [authData, setLocation]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,27 +41,23 @@ export default function AdminLogin() {
       const data = await response.json();
 
       if (response.ok) {
-        toast({
-          title: "Welcome back!",
-          description: "You've successfully logged in.",
-        });
         // Invalidate auth check to refresh authentication state
         await queryClient.invalidateQueries({ queryKey: ["/api/admin/check"] });
         setLocation("/admin/dashboard");
       } else {
-        const errorMessage = data.error || "Invalid credentials";
+        const errorMessage = response.status === 401 ? "მომხმარებელი ან პაროლი არასწორია." : "შესვლა ვერ მოხერხდა. სცადეთ ხელახლა.";
         setError(errorMessage);
         toast({
-          title: "Login failed",
+          title: "შესვლა ვერ მოხერხდა",
           description: errorMessage,
           variant: "destructive",
         });
       }
     } catch (error) {
-      const errorMessage = "Failed to login. Please try again.";
+      const errorMessage = "შესვლა ვერ მოხერხდა. შეამოწმეთ ინტერნეტი და სცადეთ ხელახლა.";
       setError(errorMessage);
       toast({
-        title: "Error",
+        title: "შეცდომა",
         description: errorMessage,
         variant: "destructive",
       });
@@ -68,11 +74,10 @@ export default function AdminLogin() {
             <Lock className="w-6 h-6 text-theme-accent" />
           </div>
           <CardTitle className="text-2xl font-light tracking-normal">
-            <span style={{ opacity: 0.3 }}>THE </span>
-            <span className="font-bold">MR</span>
+            <Wordmark />
           </CardTitle>
           <CardDescription className="tracking-normal uppercase text-xs">
-            Admin Dashboard
+            მართვის პანელი
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -83,25 +88,27 @@ export default function AdminLogin() {
               </div>
             )}
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username">მომხმარებელი</Label>
               <Input
                 id="username"
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter username"
+                placeholder="მომხმარებლის სახელი"
+                autoComplete="username"
                 required
                 data-testid="input-username"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">პაროლი</Label>
               <Input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter password"
+                placeholder="პაროლი"
+                autoComplete="current-password"
                 required
                 data-testid="input-password"
               />
@@ -112,7 +119,7 @@ export default function AdminLogin() {
               disabled={isLoading}
               data-testid="button-login"
             >
-              {isLoading ? "Logging in..." : "Login"}
+              {isLoading ? "შესვლა…" : "შესვლა"}
             </Button>
           </form>
         </CardContent>

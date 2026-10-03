@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertGalleryImageSchema, type GalleryImage } from "@shared/schema";
@@ -47,6 +47,12 @@ export default function GalleryEditor() {
     },
   });
 
+  // New photos go to the end unless the owner picks a position
+  const nextOrder = String(images.reduce((max, img) => Math.max(max, parseInt(img.order) || 0), 0) + 1);
+  useEffect(() => {
+    if (!editingId && !form.getValues("order")) form.setValue("order", nextOrder);
+  }, [editingId, nextOrder, form]);
+
   const createMutation = useMutation({
     mutationFn: (data: any) => {
       console.log("[GalleryEditor] Creating gallery image with data:", data);
@@ -74,7 +80,7 @@ export default function GalleryEditor() {
       }
       queryClient.invalidateQueries({ queryKey: ["/api/admin/gallery"] });
       queryClient.invalidateQueries({ queryKey: ["/api/gallery"] });
-      toast({ title: "წარმატება", description: "ფოტო დაემატა გალერეას" });
+      toast({ title: "ფოტო დაემატა გალერეას" });
       form.reset();
     },
   });
@@ -102,7 +108,7 @@ export default function GalleryEditor() {
       }
       queryClient.invalidateQueries({ queryKey: ["/api/admin/gallery"] });
       queryClient.invalidateQueries({ queryKey: ["/api/gallery"] });
-      toast({ title: "წარმატება", description: "ფოტო განახლდა" });
+      toast({ title: "ფოტო განახლდა" });
       setEditingId(null);
       form.reset();
     },
@@ -113,7 +119,7 @@ export default function GalleryEditor() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/gallery"] });
       queryClient.invalidateQueries({ queryKey: ["/api/gallery"] });
-      toast({ title: "წარმატება", description: "ფოტო წაიშალა" });
+      toast({ title: "ფოტო წაიშალა" });
     },
   });
 
@@ -155,8 +161,8 @@ export default function GalleryEditor() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>{editingId ? "Edit Gallery Image" : "Add New Image"}</CardTitle>
-          <CardDescription>Upload photos to your gallery categories</CardDescription>
+          <CardTitle>{editingId ? "ფოტოს რედაქტირება" : "ახალი ფოტო"}</CardTitle>
+          <CardDescription>ატვირთეთ ფოტო ან ვიდეო და აირჩიეთ კატეგორია — საიტის გალერეაში მაშინვე გამოჩნდება.</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -167,7 +173,7 @@ export default function GalleryEditor() {
                   name="category"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Category</FormLabel>
+                      <FormLabel>კატეგორია</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger data-testid="select-category">
@@ -192,9 +198,9 @@ export default function GalleryEditor() {
                   name="order"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Order</FormLabel>
+                      <FormLabel>რიგითობა (1 = პირველი)</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="1" data-testid="input-order" />
+                        <Input {...field} inputMode="numeric" placeholder="1" data-testid="input-order" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -207,7 +213,7 @@ export default function GalleryEditor() {
                 name="imageUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Image URL</FormLabel>
+                    <FormLabel>ფოტო</FormLabel>
                     <div className="flex gap-2">
                       <FormControl>
                         <Input {...field} placeholder="https://..." data-testid="input-image-url" />
@@ -228,8 +234,8 @@ export default function GalleryEditor() {
                               console.log("[GalleryEditor] Setting form imageUrl to:", filePath);
                               form.setValue("imageUrl", filePath as string, { shouldValidate: true });
                               toast({
-                                title: "წარმატება",
-                                description: "ფოტო აიტვირთა. დააჭირეთ 'Add Image' შესანახად."
+                                title: "ფოტო აიტვირთა",
+                                description: "შესანახად დააჭირეთ „დამატებას“."
                               });
                             } else {
                               toast({
@@ -249,7 +255,7 @@ export default function GalleryEditor() {
                         }}
                       >
                         <Upload className="w-4 h-4 mr-2" />
-                        Upload
+                        ატვირთვა
                       </ObjectUploader>
                     </div>
                     <FormMessage />
@@ -275,7 +281,7 @@ export default function GalleryEditor() {
                     ) : (
                       <img
                         src={previewUrl}
-                        alt="Preview"
+                        alt="ფოტოს გადახედვა"
                         className={className}
                         onError={(e) => {
                           e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23ddd' width='100' height='100'/%3E%3C/svg%3E";
@@ -294,7 +300,7 @@ export default function GalleryEditor() {
                   data-testid="button-save-image"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  {editingId ? "Update Image" : "Add Image"}
+                  {editingId ? "შენახვა" : "დამატება"}
                 </Button>
                 {editingId && (
                   <Button
@@ -303,7 +309,7 @@ export default function GalleryEditor() {
                     onClick={handleCancelEdit}
                     data-testid="button-cancel-edit"
                   >
-                    Cancel
+                    გაუქმება
                   </Button>
                 )}
               </div>
@@ -314,8 +320,8 @@ export default function GalleryEditor() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Gallery Images</CardTitle>
-          <CardDescription>{images.length} images in gallery</CardDescription>
+          <CardTitle>გალერეის ფოტოები</CardTitle>
+          <CardDescription>სულ {images.length} ფოტო</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-8">
@@ -325,7 +331,7 @@ export default function GalleryEditor() {
                 <div key={cat.value}>
                   <h3 className="text-lg font-semibold mb-4">{cat.label}</h3>
                   {categoryImages.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">No images in this category</p>
+                    <p className="text-sm text-muted-foreground">ამ კატეგორიაში ფოტო ჯერ არ არის</p>
                   ) : (
                     <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                       {categoryImages
@@ -360,12 +366,13 @@ export default function GalleryEditor() {
                                   onClick={() => handleEdit(image)}
                                   data-testid={`button-edit-${image.id}`}
                                 >
-                                  Edit
+                                  რედაქტირება
                                 </Button>
                                 <Button
                                   size="sm"
                                   variant="destructive"
-                                  onClick={() => deleteMutation.mutate(image.id)}
+                                  onClick={() => confirm("წაიშალოს ეს ფოტო გალერეიდან?") && deleteMutation.mutate(image.id)}
+                                  aria-label="წაშლა"
                                   disabled={deleteMutation.isPending}
                                   data-testid={`button-delete-${image.id}`}
                                 >
@@ -373,7 +380,7 @@ export default function GalleryEditor() {
                                 </Button>
                               </div>
                             </div>
-                            <p className="text-xs text-muted-foreground text-center">Order: {image.order}</p>
+                            <p className="text-xs text-muted-foreground text-center">რიგითობა: {image.order}</p>
                           </div>
                         ))}
                     </div>

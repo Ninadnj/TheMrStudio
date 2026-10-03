@@ -35,16 +35,15 @@ export default function SpecialOffersEditor() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/special-offers"] });
       toast({
-        title: "Success",
-        description: "Special offer created successfully",
+        title: "აქცია დაემატა",
       });
       form.reset();
       setShowForm(false);
     },
     onError: () => {
       toast({
-        title: "Error",
-        description: "Failed to create special offer",
+        title: "შეცდომა",
+        description: "აქცია ვერ დაემატა. სცადეთ ხელახლა.",
         variant: "destructive",
       });
     },
@@ -56,14 +55,13 @@ export default function SpecialOffersEditor() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/special-offers"] });
       toast({
-        title: "Success",
-        description: "Special offer updated successfully",
+        title: "აქცია განახლდა",
       });
     },
     onError: () => {
       toast({
-        title: "Error",
-        description: "Failed to update special offer",
+        title: "შეცდომა",
+        description: "ვერ შეინახა. სცადეთ ხელახლა.",
         variant: "destructive",
       });
     },
@@ -74,14 +72,13 @@ export default function SpecialOffersEditor() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/special-offers"] });
       toast({
-        title: "Success",
-        description: "Special offer deleted successfully",
+        title: "აქცია წაიშალა",
       });
     },
     onError: () => {
       toast({
-        title: "Error",
-        description: "Failed to delete special offer",
+        title: "შეცდომა",
+        description: "ვერ წაიშალა. სცადეთ ხელახლა.",
         variant: "destructive",
       });
     },
@@ -109,8 +106,8 @@ export default function SpecialOffersEditor() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Special Offers</CardTitle>
-              <CardDescription>Manage promotional banners and seasonal offers</CardDescription>
+              <CardTitle>აქციები</CardTitle>
+              <CardDescription>ჩართული აქცია საიტის თავში ზოლად ჩანს. ერთ დროს ერთი აქცია ჩანს.</CardDescription>
             </div>
             <Button
               onClick={() => setShowForm(!showForm)}
@@ -118,7 +115,7 @@ export default function SpecialOffersEditor() {
               data-testid="button-toggle-offer-form"
             >
               <Plus className="w-4 h-4 mr-2" />
-              {showForm ? "Cancel" : "New Offer"}
+              {showForm ? "გაუქმება" : "ახალი აქცია"}
             </Button>
           </div>
         </CardHeader>
@@ -133,11 +130,11 @@ export default function SpecialOffersEditor() {
                       name="message"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Message</FormLabel>
+                          <FormLabel>ტექსტი</FormLabel>
                           <FormControl>
                             <Input
                               {...field}
-                              placeholder="Christmas Special: 20% off all services!"
+                              placeholder="მაგ. ლაზერული ეპილაცია −20% ამ კვირაში"
                               data-testid="input-offer-message"
                             />
                           </FormControl>
@@ -151,11 +148,11 @@ export default function SpecialOffersEditor() {
                       name="link"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Link (Optional)</FormLabel>
+                          <FormLabel>ბმული (არასავალდებულო)</FormLabel>
                           <FormControl>
                             <Input
                               {...field}
-                              placeholder="#booking or leave empty"
+                              placeholder="მაგ. #prices — ან დატოვეთ ცარიელი"
                               data-testid="input-offer-link"
                             />
                           </FormControl>
@@ -169,7 +166,7 @@ export default function SpecialOffersEditor() {
                       name="expiryDate"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Expiry Date (Optional)</FormLabel>
+                          <FormLabel>ბოლო დღე (არასავალდებულო)</FormLabel>
                           <FormControl>
                             <Input
                               {...field}
@@ -187,7 +184,7 @@ export default function SpecialOffersEditor() {
                       name="isActive"
                       render={({ field }) => (
                         <FormItem className="flex items-center gap-2">
-                          <FormLabel>Active</FormLabel>
+                          <FormLabel>ჩართულია</FormLabel>
                           <FormControl>
                             <Switch
                               checked={field.value}
@@ -206,7 +203,7 @@ export default function SpecialOffersEditor() {
                       disabled={createMutation.isPending}
                       data-testid="button-create-offer"
                     >
-                      {createMutation.isPending ? "Creating..." : "Create Offer"}
+                      {createMutation.isPending ? "ინახება…" : "დამატება"}
                     </Button>
                   </form>
                 </Form>
@@ -216,12 +213,13 @@ export default function SpecialOffersEditor() {
 
           {offers.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-8">
-              No special offers yet. Create one to display promotional banners.
+              აქცია ჯერ არ გაქვთ. დაამატეთ — და საიტის თავში ზოლად გამოჩნდება.
             </p>
           ) : (
             <div className="space-y-4">
               {offers.map((offer) => {
-                const isExpired = offer.expiryDate && new Date(offer.expiryDate) < new Date();
+                // Runs through the whole expiry day, Tbilisi time — matches the server
+                const isExpired = !!offer.expiryDate && new Date(`${offer.expiryDate}T23:59:59+04:00`) < new Date();
                 return (
                 <Card key={offer.id} className={`border-2 ${isExpired ? 'border-destructive/50 bg-destructive/5' : ''}`} data-testid={`offer-card-${offer.id}`}>
                   <CardContent className="pt-6">
@@ -231,23 +229,23 @@ export default function SpecialOffersEditor() {
                           <p className="text-sm font-medium">{offer.message}</p>
                           {isExpired && (
                             <span className="text-xs px-2 py-0.5 rounded-none bg-destructive/20 text-destructive font-medium">
-                              EXPIRED
+                              ვადა გავიდა
                             </span>
                           )}
                         </div>
                         <div className="flex items-center gap-4 text-xs text-muted-foreground">
                           {offer.expiryDate && (
                             <span className={isExpired ? 'text-destructive font-medium' : ''}>
-                              Expires: {new Date(offer.expiryDate).toLocaleDateString()}
+                              ბოლო დღე: {offer.expiryDate.split("-").reverse().join(".")}
                             </span>
                           )}
-                          {offer.link && <span>Link: {offer.link}</span>}
+                          {offer.link && <span>ბმული: {offer.link}</span>}
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="flex items-center gap-2">
                           <span className="text-xs text-muted-foreground">
-                            {offer.isActive ? "Active" : "Inactive"}
+                            {offer.isActive ? "ჩართულია" : "გამორთულია"}
                           </span>
                           <Switch
                             checked={offer.isActive}
@@ -258,7 +256,8 @@ export default function SpecialOffersEditor() {
                         <Button
                           size="icon"
                           variant="ghost"
-                          onClick={() => deleteMutation.mutate(offer.id)}
+                          onClick={() => confirm("წაიშალოს ეს აქცია?") && deleteMutation.mutate(offer.id)}
+                          aria-label="წაშლა"
                           data-testid={`button-delete-${offer.id}`}
                         >
                           <Trash2 className="w-4 h-4" />

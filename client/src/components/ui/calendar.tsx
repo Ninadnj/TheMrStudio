@@ -7,9 +7,8 @@ import { cn } from "@/lib/utils"
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
 /**
- * iOS-style calendar — tabular figures, sage-filled selected day,
- * soft circles, hairline separators. Designed to live inside an
- * .app-card surface.
+ * Calendar — tabular figures, espresso-filled selected day,
+ * soft circles, hairline separators. Lives in the booking sheet's popover.
  */
 function Calendar({
   className,
@@ -29,7 +28,7 @@ function Calendar({
           "text-[15px] font-semibold tracking-[-0.01em] text-[var(--theme-text)]",
         nav: "flex items-center",
         nav_button:
-          "h-8 w-8 rounded-full inline-flex items-center justify-center text-[var(--theme-muted1)] hover:text-[var(--theme-text)] hover:bg-[color:color-mix(in_srgb,var(--theme-soft)_28%,transparent)] transition-colors",
+          "h-8 w-8 rounded-full inline-flex items-center justify-center text-[var(--theme-muted1)] hover:text-[var(--theme-text)] hover:bg-[color:color-mix(in_srgb,var(--theme-surface-muted)_28%,transparent)] transition-colors",
         nav_button_previous: "absolute left-1",
         nav_button_next: "absolute right-1",
         table: "w-full border-collapse",
@@ -42,7 +41,7 @@ function Calendar({
         day: cn(
           "h-9 w-9 p-0 inline-flex items-center justify-center rounded-full font-medium text-[var(--theme-text)]",
           "transition-colors duration-200",
-          "hover:bg-[color:color-mix(in_srgb,var(--theme-soft)_30%,transparent)]",
+          "hover:bg-[color:color-mix(in_srgb,var(--theme-surface-muted)_30%,transparent)]",
           "focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:color-mix(in_srgb,var(--theme-accent)_45%,transparent)]"
         ),
         day_range_end: "day-range-end",
@@ -54,7 +53,7 @@ function Calendar({
         day_disabled:
           "text-[var(--theme-muted1)]/25 line-through decoration-[var(--theme-muted1)]/20",
         day_range_middle:
-          "aria-selected:bg-[color:color-mix(in_srgb,var(--theme-soft)_28%,transparent)] aria-selected:text-[var(--theme-text)]",
+          "aria-selected:bg-[color:color-mix(in_srgb,var(--theme-surface-muted)_28%,transparent)] aria-selected:text-[var(--theme-text)]",
         day_hidden: "invisible",
         ...classNames,
       }}

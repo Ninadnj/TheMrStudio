@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import ThemeSwitch from "@/components/ThemeSwitch";
 import LanguageToggle from "@/components/LanguageToggle";
+import Wordmark from "@/components/Wordmark";
 import { hapticTap } from "@/lib/haptics";
 import { useLang } from "@/lib/i18n";
+import { requestBooking } from "@/lib/serviceMenu";
+import { scrollBehavior } from "@/lib/motion";
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -12,66 +15,60 @@ export default function Header() {
     { id: "services", label: t("სერვისები", "Services") },
     { id: "prices", label: t("ფასები", "Prices") },
     { id: "gallery", label: t("გალერეა", "Gallery") },
-    { id: "booking", label: t("დაჯავშნა", "Book") },
     { id: "contact", label: t("კონტაქტი", "Contact") },
   ];
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 24);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 24);
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const scrollToSection = (id: string) => {
+  const scrollToSection = (event: React.MouseEvent, id: string) => {
+    event.preventDefault();
     hapticTap();
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    document.getElementById(id)?.scrollIntoView({ behavior: scrollBehavior() });
   };
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-out ${
-        isScrolled
-          ? "bg-[color:color-mix(in_srgb,var(--theme-bg)_82%,transparent)] backdrop-blur-xl border-b border-[var(--theme-line)]/60"
-          : "bg-transparent"
-      }`}
-    >
-      <div className="app-shell md:!max-w-3xl">
-        <div className="flex items-center justify-between h-14 md:h-16">
+    <header className="site-header" data-scrolled={isScrolled}>
+      <div className="shell site-header-row">
+        <a
+          href="#home"
+          onClick={(e) => {
+            e.preventDefault();
+            hapticTap();
+            window.scrollTo({ top: 0, behavior: scrollBehavior() });
+          }}
+          className="text-[17px] lg:text-[19px]"
+          data-testid="button-logo"
+        >
+          <Wordmark />
+        </a>
+
+        <nav className="site-nav" aria-label={t("მთავარი ნავიგაცია", "Main navigation")}>
+          {navItems.map((item) => (
+            <a key={item.id} href={`#${item.id}`} onClick={(e) => scrollToSection(e, item.id)}>
+              {item.label}
+            </a>
+          ))}
+        </nav>
+
+        <div className="site-tools">
+          <LanguageToggle />
+          <ThemeSwitch />
           <button
+            type="button"
             onClick={() => {
               hapticTap();
-              window.scrollTo({ top: 0, behavior: "smooth" });
+              requestBooking();
             }}
-            className="press-tap flex items-center group"
-            data-testid="button-logo"
+            className="btn-quiet header-book"
+            data-testid="header-book"
           >
-            <span className="font-sans text-[15px] tracking-[-0.01em] font-semibold text-[var(--theme-text)]">
-              <span className="opacity-50 font-normal">THE </span>
-              MR
-              <span className="font-serif italic font-normal text-[var(--theme-accent)] ml-0.5">Studio</span>
-            </span>
+            {t("დაჯავშნა", "Book")}
           </button>
-
-          {/* Desktop pill nav */}
-          <nav className="hidden md:flex items-center gap-1 rounded-full p-1">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => scrollToSection(item.id)}
-                className="press-tap text-[12.5px] font-medium px-3 py-1.5 rounded-full text-[var(--theme-muted1)] hover:text-[var(--theme-text)] hover:bg-[color:color-mix(in_srgb,var(--theme-soft)_28%,transparent)] transition-colors"
-              >
-                {item.label}
-              </button>
-            ))}
-          </nav>
-
-          <div className="flex items-center gap-1.5">
-            <LanguageToggle />
-            <ThemeSwitch />
-          </div>
         </div>
       </div>
     </header>

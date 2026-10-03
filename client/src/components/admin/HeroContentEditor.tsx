@@ -1,196 +1,110 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { useRef } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { insertHeroContentSchema, type HeroContent } from "@shared/schema";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import type { UploadResult } from "@uppy/core";
+import { RotateCcw, Upload } from "lucide-react";
+import type { HeroContent } from "@shared/schema";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
+import { isVideoUrl } from "@/lib/videoUtils";
 import { ObjectUploader } from "@/components/ObjectUploader";
-import type { UploadResult } from "@uppy/core";
-import { Image, Upload } from "lucide-react";
 
+/** The site's own artwork, shown whenever no custom image is set. */
+const DEFAULT_HERO = "/images/hero-768.webp";
+
+/**
+ * The hero is the studio's name over one image. Only the image is editable here;
+ * the old title/subtitle/tagline fields are no longer shown on the site.
+ */
 export default function HeroContentEditor() {
   const { toast } = useToast();
-  const currentUploadUrlRef = useRef<string>("");
-
-  const { data: heroContent } = useQuery<HeroContent>({
+  const { data: heroContent, isLoading } = useQuery<HeroContent>({
     queryKey: ["/api/admin/hero-content"],
   });
 
-  const form = useForm({
-    resolver: zodResolver(insertHeroContentSchema),
-    defaultValues: {
-      mainTitle: heroContent?.mainTitle || "",
-      subtitle: heroContent?.subtitle || "",
-      description: heroContent?.description || "",
-      tagline: heroContent?.tagline || "",
-    },
-    values: heroContent ? {
-      mainTitle: heroContent.mainTitle,
-      subtitle: heroContent.subtitle,
-      description: heroContent.description,
-      tagline: heroContent.tagline,
-    } : undefined,
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: (data: any) => apiRequest("PUT", "/api/admin/hero-content", data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/hero-content"] });
-      toast({
-        title: "Success",
-        description: "Hero content updated successfully",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to update hero content",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const onSubmit = (data: any) => {
-    updateMutation.mutate(data);
+  const refresh = () => {
+    queryClient.invalidateQueries({ queryKey: ["/api/admin/hero-content"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/hero-content"] });
   };
 
+  const setImage = useMutation({
+    mutationFn: (imageUrl: string) => apiRequest("PUT", "/api/admin/hero/background-image", { imageUrl }),
+    onSuccess: () => {
+      refresh();
+      toast({ title: "მთავარი ფოტო განახლდა", description: "საიტზე უკვე ჩანს." });
+    },
+    onError: () => toast({ title: "ფოტო ვერ შეინახა", description: "სცადეთ ხელახლა.", variant: "destructive" }),
+  });
+
+  const useDefault = useMutation({
+    // Same record, image cleared — the text fields are kept as they are
+    mutationFn: () => {
+      const { id: _id, ...rest } = heroContent!;
+      return apiRequest("PUT", "/api/admin/hero-content", { ...rest, backgroundImage: null });
+    },
+    onSuccess: () => {
+      refresh();
+      toast({ title: "დაბრუნდა საიტის ძირითადი ილუსტრაცია" });
+    },
+    onError: () => toast({ title: "ვერ მოხერხდა", description: "სცადეთ ხელახლა.", variant: "destructive" }),
+  });
+
+  const onUploaded = (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
+    const path = result.successful?.[0]?.response?.body?.uploadURL as string | undefined;
+    if (path) setImage.mutate(path);
+    else toast({ title: "ატვირთვა ვერ მოხერხდა", description: "სცადეთ JPG ან PNG ფაილი, 10 MB-მდე.", variant: "destructive" });
+  };
+
+  const custom = heroContent?.backgroundImage || null;
+  const shown = custom || DEFAULT_HERO;
+
   return (
-    <Card>
+    <Card className="max-w-3xl">
       <CardHeader>
-        <CardTitle>Hero Section Content</CardTitle>
-        <CardDescription>Update the main hero section text and branding</CardDescription>
+        <CardTitle>მთავარი ფოტო</CardTitle>
+        <CardDescription>
+          დიდი ფოტო მთავარი გვერდის ზედა ნაწილში. საუკეთესოდ ჩანს ვერტიკალური ფოტო (სიმაღლე მინიმუმ 1200px).
+        </CardDescription>
       </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="mainTitle"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Main Title</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="THE MR" data-testid="input-main-title" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+      <CardContent className="space-y-5">
+        <div className="grid gap-5 sm:grid-cols-[200px_1fr] sm:items-start">
+          <div className="aspect-[4/5] overflow-hidden rounded-md border bg-muted">
+            {!isLoading &&
+              (isVideoUrl(shown) ? (
+                <video src={shown} muted loop autoPlay playsInline className="h-full w-full object-cover" />
+              ) : (
+                <img src={shown} alt="ამჟამინდელი მთავარი ფოტო" className="h-full w-full object-cover" data-testid="img-hero-preview" />
+              ))}
+          </div>
 
-            <FormField
-              control={form.control}
-              name="subtitle"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Subtitle</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Nail & Laser Studio" data-testid="input-subtitle" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="tagline"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tagline</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Where Beauty Meets Precision" data-testid="input-tagline" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea {...field} placeholder="Expert nail artistry..." data-testid="textarea-description" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="space-y-4 pt-4 border-t">
-              <div className="flex items-center justify-between">
-                <div>
-                  <FormLabel>Background Image</FormLabel>
-                  <p className="text-sm text-muted-foreground">Upload a hero background image (persists across republishing)</p>
-                </div>
-                <ObjectUploader
-                  maxNumberOfFiles={1}
-                  maxFileSize={10485760}
-                  onComplete={(result) => {
-                    if (result.successful && result.successful.length > 0) {
-                      const filePath = result.successful[0].response?.body?.uploadURL;
-                      if (filePath) {
-                        (async () => {
-                          try {
-                            await apiRequest("PUT", "/api/admin/hero/background-image", {
-                              imageUrl: filePath,
-                            });
-                            queryClient.invalidateQueries({ queryKey: ["/api/admin/hero-content"] });
-                            toast({
-                              title: "Success",
-                              description: "Background image uploaded successfully",
-                            });
-                          } catch (error) {
-                            toast({
-                              title: "Error",
-                              description: "Failed to save background image",
-                              variant: "destructive",
-                            });
-                          }
-                        })();
-                      } else {
-                        toast({
-                          title: "Error",
-                          description: "Failed to get image path",
-                          variant: "destructive"
-                        });
-                      }
-                    }
-                  }}
+          <div className="space-y-4">
+            <p className="text-sm">
+              <span className="text-muted-foreground">ახლა ჩანს: </span>
+              <span className="font-medium" data-testid="text-hero-source">
+                {custom ? "თქვენი ატვირთული ფოტო" : "საიტის ძირითადი ილუსტრაცია"}
+              </span>
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <ObjectUploader maxNumberOfFiles={1} maxFileSize={10485760} onComplete={onUploaded}>
+                <Upload className="w-4 h-4 mr-2" />
+                {custom ? "ფოტოს შეცვლა" : "ფოტოს ატვირთვა"}
+              </ObjectUploader>
+              {custom && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => useDefault.mutate()}
+                  disabled={useDefault.isPending || !heroContent}
+                  data-testid="button-hero-default"
                 >
-                  <Upload className="w-4 h-4 mr-2" />
-                  Upload Background Image
-                </ObjectUploader>
-              </div>
-
-              {heroContent?.backgroundImage && (
-                <div className="flex items-center gap-2 p-3 bg-muted rounded-none">
-                  <Image className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground truncate flex-1">
-                    {heroContent.backgroundImage}
-                  </span>
-                </div>
+                  <RotateCcw className="w-4 h-4 mr-2" />
+                  ძირითადი ილუსტრაციის დაბრუნება
+                </Button>
               )}
             </div>
-
-            <Button
-              type="submit"
-              className="bg-theme-accent"
-              disabled={updateMutation.isPending}
-              data-testid="button-save-hero"
-            >
-              {updateMutation.isPending ? "Saving..." : "Save Changes"}
-            </Button>
-          </form>
-        </Form>
+            {setImage.isPending && <p className="text-sm text-muted-foreground">ინახება…</p>}
+          </div>
+        </div>
       </CardContent>
     </Card>
   );

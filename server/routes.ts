@@ -12,8 +12,12 @@ import {
   insertServicesSectionSchema,
   insertSpecialOfferSchema,
   insertTrendSchema,
-  insertTrendsSectionSchema
+  insertTrendsSectionSchema,
+  insertPriceGroupSchema,
+  insertPriceItemSchema,
+  insertStudioInfoSchema,
 } from "@shared/schema";
+import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { chatWithGemini } from "./gemini-chat";
 import multer from "multer";
@@ -38,6 +42,9 @@ import { ObjectPermission } from "./objectAcl";
 const uploadDir = process.env.PRIVATE_OBJECT_DIR || ".local/storage/uploads";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Price list + studio info tables: created and filled on first run (no migration step on deploy)
+  await storage.ensureContent();
+
   // Setup flexible local/cloud upload storage
   let storageConfig;
 
@@ -98,7 +105,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create a new booking (pending status by default)
   app.post("/api/bookings", async (req, res) => {
     try {
-      const validatedData = insertBookingSchema.parse(req.body);
+      // Status, duration and calendar fields are set by the studio, never by the client.
+      const { status, duration, calendarEventId, rejectionReason, ...clientFields } = req.body ?? {};
+      const validatedData = insertBookingSchema.parse(clientFields);
       const booking = await storage.createBooking(validatedData);
 
       // No calendar event is created here - it happens only on admin approval
@@ -263,8 +272,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get all bookings (optional, for admin/debugging)
-  app.get("/api/bookings", async (req, res) => {
+  // All bookings contain client contact details — admin only.
+  app.get("/api/bookings", requireAuth, async (req, res) => {
     try {
       const bookings = await storage.getAllBookings();
       res.json(bookings);
@@ -562,6 +571,120 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
         console.error("Chat error:", error);
         res.status(500).json({ error: "Failed to get chat response" });
       }
+    }
+  });
+
+  /* ---------- Owner-editable content: price list + studio info ---------- */
+
+  /** Turns a Zod error into the owner-facing (Georgian) message of its first problem. */
+  const sendValidationError = (res: any, error: any) => {
+    if (error?.name === "ZodError") {
+      return res.status(400).json({ error: error.errors?.[0]?.message || fromZodError(error).message });
+    }
+    console.error(error);
+    return res.status(500).json({ error: "Server error" });
+  };
+  const idList = z.object({ ids: z.array(z.string().min(1)).min(1) });
+
+  app.get("/api/price-menu", async (_req, res) => {
+    try {
+      res.json(await storage.getPriceMenu());
+    } catch (error) {
+      sendValidationError(res, error);
+    }
+  });
+
+  app.get("/api/studio-info", async (_req, res) => {
+    try {
+      res.json(await storage.getStudioInfo());
+    } catch (error) {
+      sendValidationError(res, error);
+    }
+  });
+
+  app.put("/api/admin/studio-info", requireAuth, async (req, res) => {
+    try {
+      res.json(await storage.updateStudioInfo(insertStudioInfoSchema.parse(req.body)));
+    } catch (error) {
+      sendValidationError(res, error);
+    }
+  });
+
+  app.post("/api/admin/price-groups", requireAuth, async (req, res) => {
+    try {
+      res.json(await storage.createPriceGroup(insertPriceGroupSchema.parse(req.body)));
+    } catch (error) {
+      sendValidationError(res, error);
+    }
+  });
+
+  app.put("/api/admin/price-groups/order", requireAuth, async (req, res) => {
+    try {
+      await storage.reorderPriceGroups(idList.parse(req.body).ids);
+      res.json({ ok: true });
+    } catch (error) {
+      sendValidationError(res, error);
+    }
+  });
+
+  app.put("/api/admin/price-groups/:id", requireAuth, async (req, res) => {
+    try {
+      const group = await storage.updatePriceGroup(req.params.id, insertPriceGroupSchema.partial().parse(req.body));
+      group ? res.json(group) : res.status(404).json({ error: "Not found" });
+    } catch (error) {
+      sendValidationError(res, error);
+    }
+  });
+
+  app.delete("/api/admin/price-groups/:id", requireAuth, async (req, res) => {
+    try {
+      (await storage.deletePriceGroup(req.params.id)) ? res.json({ ok: true }) : res.status(404).json({ error: "Not found" });
+    } catch (error) {
+      sendValidationError(res, error);
+    }
+  });
+
+  app.post("/api/admin/price-items", requireAuth, async (req, res) => {
+    try {
+      res.json(await storage.createPriceItem(insertPriceItemSchema.parse(req.body)));
+    } catch (error) {
+      sendValidationError(res, error);
+    }
+  });
+
+  app.put("/api/admin/price-items/order", requireAuth, async (req, res) => {
+    try {
+      await storage.reorderPriceItems(idList.parse(req.body).ids);
+      res.json({ ok: true });
+    } catch (error) {
+      sendValidationError(res, error);
+    }
+  });
+
+  app.put("/api/admin/price-items/:id", requireAuth, async (req, res) => {
+    try {
+      const item = await storage.updatePriceItem(req.params.id, insertPriceItemSchema.partial().parse(req.body));
+      item ? res.json(item) : res.status(404).json({ error: "Not found" });
+    } catch (error) {
+      sendValidationError(res, error);
+    }
+  });
+
+  app.delete("/api/admin/price-items/:id", requireAuth, async (req, res) => {
+    try {
+      (await storage.deletePriceItem(req.params.id)) ? res.json({ ok: true }) : res.status(404).json({ error: "Not found" });
+    } catch (error) {
+      sendValidationError(res, error);
+    }
+  });
+
+  // Public: the hero image the admin uploaded (the site falls back to its default art)
+  app.get("/api/hero-content", async (req, res) => {
+    try {
+      const content = await storage.getHeroContent();
+      res.json({ backgroundImage: content?.backgroundImage ?? null });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch hero content" });
     }
   });
 

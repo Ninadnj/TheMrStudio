@@ -10,6 +10,10 @@ import {
   type SpecialOffer, type InsertSpecialOffer,
   type Trend, type InsertTrend,
   type TrendsSection, type InsertTrendsSection,
+  type PriceGroup, type InsertPriceGroup,
+  type PriceItem, type InsertPriceItem,
+  type PriceMenuGroup,
+  type StudioInfo, type InsertStudioInfo,
   users as usersTable,
   staff as staffTable,
   bookings as bookingsTable,
@@ -20,10 +24,31 @@ import {
   specialOffers as specialOffersTable,
   galleryImages as galleryImagesTable,
   trends as trendsTable,
-  trendsSection as trendsSectionTable
+  trendsSection as trendsSectionTable,
+  priceGroups as priceGroupsTable,
+  priceItems as priceItemsTable,
+  studioInfo as studioInfoTable,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
+import { seedPriceMenu, seedStudioInfo } from "./seed-content";
+
+/** Nest items under their groups, both in display order. */
+function assembleMenu(groups: PriceGroup[], items: PriceItem[]): PriceMenuGroup[] {
+  return [...groups]
+    .sort((a, b) => a.position - b.position)
+    .map((group) => ({
+      ...group,
+      items: items.filter((it) => it.groupId === group.id).sort((a, b) => a.position - b.position),
+    }));
+}
+
+const nextPosition = (rows: { position: number }[]) => rows.reduce((max, r) => Math.max(max, r.position + 1), 0);
+
+/** An offer runs through the whole of its expiry day, Tbilisi time (UTC+4). */
+function offerIsRunning(offer: Pick<SpecialOffer, "expiryDate">) {
+  return !offer.expiryDate || new Date(`${offer.expiryDate}T23:59:59+04:00`) >= new Date();
+}
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -81,6 +106,20 @@ export interface IStorage {
 
   getTrendsSection(): Promise<TrendsSection | undefined>;
   updateTrendsSection(content: InsertTrendsSection): Promise<TrendsSection>;
+
+  /** Create the owner-editable tables if missing and fill them on first run. */
+  ensureContent(): Promise<void>;
+  getPriceMenu(): Promise<PriceMenuGroup[]>;
+  createPriceGroup(group: InsertPriceGroup): Promise<PriceGroup>;
+  updatePriceGroup(id: string, group: Partial<InsertPriceGroup>): Promise<PriceGroup | undefined>;
+  deletePriceGroup(id: string): Promise<boolean>;
+  reorderPriceGroups(ids: string[]): Promise<void>;
+  createPriceItem(item: InsertPriceItem): Promise<PriceItem>;
+  updatePriceItem(id: string, item: Partial<InsertPriceItem>): Promise<PriceItem | undefined>;
+  deletePriceItem(id: string): Promise<boolean>;
+  reorderPriceItems(ids: string[]): Promise<void>;
+  getStudioInfo(): Promise<StudioInfo>;
+  updateStudioInfo(info: InsertStudioInfo): Promise<StudioInfo>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -308,15 +347,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getActiveSpecialOffer(): Promise<SpecialOffer | undefined> {
-    const now = new Date();
     const offers = await db.select().from(specialOffersTable).where(eq(specialOffersTable.isActive, true));
-    return offers.find(offer => {
-      if (offer.expiryDate) {
-        const expiryDate = new Date(offer.expiryDate);
-        return expiryDate >= now;
-      }
-      return true;
-    });
+    return offers.find(offerIsRunning);
   }
 
   async createSpecialOffer(insertOffer: InsertSpecialOffer): Promise<SpecialOffer> {
@@ -383,6 +415,114 @@ export class DatabaseStorage implements IStorage {
       return created;
     }
   }
+
+  /* ---------- Owner-editable content ---------- */
+
+  async ensureContent(): Promise<void> {
+    // Self-migrating: the droplet deploy has no migration step, so the server creates what it needs.
+    await db.execute(sql`CREATE TABLE IF NOT EXISTS price_groups (
+      id varchar PRIMARY KEY DEFAULT gen_random_uuid(),
+      title_ka text NOT NULL, title_en text NOT NULL,
+      short_ka text NOT NULL, short_en text NOT NULL,
+      position integer NOT NULL DEFAULT 0)`);
+    await db.execute(sql`CREATE TABLE IF NOT EXISTS price_items (
+      id varchar PRIMARY KEY DEFAULT gen_random_uuid(),
+      group_id varchar NOT NULL,
+      name_ka text NOT NULL, name_en text NOT NULL,
+      price integer NOT NULL, duration_min integer,
+      booking text NOT NULL,
+      position integer NOT NULL DEFAULT 0)`);
+    await db.execute(sql`CREATE TABLE IF NOT EXISTS studio_info (
+      id varchar PRIMARY KEY DEFAULT gen_random_uuid(),
+      phone text NOT NULL, email text NOT NULL,
+      address_ka text NOT NULL, address_en text NOT NULL, map_query text NOT NULL,
+      hours_ka text NOT NULL DEFAULT '', hours_en text NOT NULL DEFAULT '',
+      instagram text NOT NULL DEFAULT '', facebook text NOT NULL DEFAULT '')`);
+
+    const anyGroup = await db.select({ id: priceGroupsTable.id }).from(priceGroupsTable).limit(1);
+    if (anyGroup.length === 0) {
+      await db.transaction(async (tx) => {
+        for (const { items, ...group } of seedPriceMenu) {
+          await tx.insert(priceGroupsTable).values(group);
+          if (items.length) await tx.insert(priceItemsTable).values(items.map((it) => ({ ...it, groupId: group.id })));
+        }
+      });
+      console.log("[content] Seeded the price list");
+    }
+    const anyInfo = await db.select({ id: studioInfoTable.id }).from(studioInfoTable).limit(1);
+    if (anyInfo.length === 0) {
+      await db.insert(studioInfoTable).values(seedStudioInfo);
+      console.log("[content] Seeded studio info");
+    }
+  }
+
+  async getPriceMenu(): Promise<PriceMenuGroup[]> {
+    const [groups, items] = await Promise.all([db.select().from(priceGroupsTable), db.select().from(priceItemsTable)]);
+    return assembleMenu(groups, items);
+  }
+
+  async createPriceGroup(group: InsertPriceGroup): Promise<PriceGroup> {
+    const position = group.position ?? nextPosition(await db.select().from(priceGroupsTable));
+    const [created] = await db.insert(priceGroupsTable).values({ ...group, position }).returning();
+    return created;
+  }
+
+  async updatePriceGroup(id: string, group: Partial<InsertPriceGroup>): Promise<PriceGroup | undefined> {
+    const [updated] = await db.update(priceGroupsTable).set(group).where(eq(priceGroupsTable.id, id)).returning();
+    return updated;
+  }
+
+  async deletePriceGroup(id: string): Promise<boolean> {
+    await db.delete(priceItemsTable).where(eq(priceItemsTable.groupId, id));
+    const deleted = await db.delete(priceGroupsTable).where(eq(priceGroupsTable.id, id)).returning();
+    return deleted.length > 0;
+  }
+
+  async reorderPriceGroups(ids: string[]): Promise<void> {
+    await Promise.all(ids.map((id, position) => db.update(priceGroupsTable).set({ position }).where(eq(priceGroupsTable.id, id))));
+  }
+
+  async createPriceItem(item: InsertPriceItem): Promise<PriceItem> {
+    const position = item.position ?? nextPosition(await db.select().from(priceItemsTable).where(eq(priceItemsTable.groupId, item.groupId)));
+    const [created] = await db.insert(priceItemsTable).values({ ...item, position }).returning();
+    return created;
+  }
+
+  async updatePriceItem(id: string, item: Partial<InsertPriceItem>): Promise<PriceItem | undefined> {
+    const [current] = await db.select().from(priceItemsTable).where(eq(priceItemsTable.id, id));
+    if (!current) return undefined;
+    const changes = { ...item };
+    // Moved to another group: it goes to the end there
+    if (item.groupId && item.groupId !== current.groupId && item.position === undefined) {
+      changes.position = nextPosition(await db.select().from(priceItemsTable).where(eq(priceItemsTable.groupId, item.groupId)));
+    }
+    const [updated] = await db.update(priceItemsTable).set(changes).where(eq(priceItemsTable.id, id)).returning();
+    return updated;
+  }
+
+  async deletePriceItem(id: string): Promise<boolean> {
+    const deleted = await db.delete(priceItemsTable).where(eq(priceItemsTable.id, id)).returning();
+    return deleted.length > 0;
+  }
+
+  async reorderPriceItems(ids: string[]): Promise<void> {
+    await Promise.all(ids.map((id, position) => db.update(priceItemsTable).set({ position }).where(eq(priceItemsTable.id, id))));
+  }
+
+  async getStudioInfo(): Promise<StudioInfo> {
+    const [info] = await db.select().from(studioInfoTable).limit(1);
+    return info ?? { id: "seed", ...seedStudioInfo, hoursKa: seedStudioInfo.hoursKa ?? "", hoursEn: seedStudioInfo.hoursEn ?? "", instagram: seedStudioInfo.instagram ?? "", facebook: seedStudioInfo.facebook ?? "" };
+  }
+
+  async updateStudioInfo(info: InsertStudioInfo): Promise<StudioInfo> {
+    const [existing] = await db.select().from(studioInfoTable).limit(1);
+    if (existing) {
+      const [updated] = await db.update(studioInfoTable).set(info).where(eq(studioInfoTable.id, existing.id)).returning();
+      return updated;
+    }
+    const [created] = await db.insert(studioInfoTable).values(info).returning();
+    return created;
+  }
 }
 
 export class MemStorage implements IStorage {
@@ -397,6 +537,9 @@ export class MemStorage implements IStorage {
   private siteSettings: SiteSettings | undefined;
   private servicesSection: ServicesSection | undefined;
   private trendsSection: TrendsSection | undefined;
+  private priceGroups = new Map<string, PriceGroup>();
+  private priceItems = new Map<string, PriceItem>();
+  private studio: StudioInfo | undefined;
 
   constructor() {
     this.seed();
@@ -617,7 +760,7 @@ export class MemStorage implements IStorage {
     return this.servicesSection;
   }
   async getAllSpecialOffers() { return Array.from(this.specialOffers.values()); }
-  async getActiveSpecialOffer() { return Array.from(this.specialOffers.values()).find(o => o.isActive); }
+  async getActiveSpecialOffer() { return Array.from(this.specialOffers.values()).find(o => o.isActive && offerIsRunning(o)); }
   async createSpecialOffer(o: InsertSpecialOffer) {
     const id = Math.random().toString(36).substr(2, 9);
     const offer = { ...o, id, isActive: o.isActive ?? true };
@@ -652,6 +795,74 @@ export class MemStorage implements IStorage {
   async updateTrendsSection(t: InsertTrendsSection) {
     this.trendsSection = { ...this.trendsSection, ...t } as TrendsSection;
     return this.trendsSection;
+  }
+
+  /* ---------- Owner-editable content ---------- */
+
+  async ensureContent() {
+    if (this.priceGroups.size === 0) {
+      for (const { items, ...group } of seedPriceMenu) {
+        this.priceGroups.set(group.id, { ...group, position: group.position ?? 0 } as PriceGroup);
+        items.forEach((it) => {
+          const id = Math.random().toString(36).slice(2, 11);
+          this.priceItems.set(id, { ...it, id, groupId: group.id, durationMin: it.durationMin ?? null, position: it.position ?? 0 } as PriceItem);
+        });
+      }
+    }
+    if (!this.studio) this.studio = { id: "local", ...seedStudioInfo } as StudioInfo;
+  }
+  async getPriceMenu() {
+    return assembleMenu(Array.from(this.priceGroups.values()), Array.from(this.priceItems.values()));
+  }
+  async createPriceGroup(g: InsertPriceGroup) {
+    const id = Math.random().toString(36).slice(2, 11);
+    const group = { ...g, id, position: g.position ?? nextPosition(Array.from(this.priceGroups.values())) } as PriceGroup;
+    this.priceGroups.set(id, group);
+    return group;
+  }
+  async updatePriceGroup(id: string, g: Partial<InsertPriceGroup>) {
+    const existing = this.priceGroups.get(id);
+    if (!existing) return undefined;
+    const updated = { ...existing, ...g } as PriceGroup;
+    this.priceGroups.set(id, updated);
+    return updated;
+  }
+  async deletePriceGroup(id: string) {
+    Array.from(this.priceItems.values()).filter((it) => it.groupId === id).forEach((it) => this.priceItems.delete(it.id));
+    return this.priceGroups.delete(id);
+  }
+  async reorderPriceGroups(ids: string[]) {
+    ids.forEach((id, position) => { const g = this.priceGroups.get(id); if (g) this.priceGroups.set(id, { ...g, position }); });
+  }
+  async createPriceItem(i: InsertPriceItem) {
+    const id = Math.random().toString(36).slice(2, 11);
+    const siblings = Array.from(this.priceItems.values()).filter((it) => it.groupId === i.groupId);
+    const item = { ...i, id, durationMin: i.durationMin ?? null, position: i.position ?? nextPosition(siblings) } as PriceItem;
+    this.priceItems.set(id, item);
+    return item;
+  }
+  async updatePriceItem(id: string, i: Partial<InsertPriceItem>) {
+    const existing = this.priceItems.get(id);
+    if (!existing) return undefined;
+    const changes = { ...i };
+    if (i.groupId && i.groupId !== existing.groupId && i.position === undefined) {
+      changes.position = nextPosition(Array.from(this.priceItems.values()).filter((it) => it.groupId === i.groupId));
+    }
+    const updated = { ...existing, ...changes } as PriceItem;
+    this.priceItems.set(id, updated);
+    return updated;
+  }
+  async deletePriceItem(id: string) { return this.priceItems.delete(id); }
+  async reorderPriceItems(ids: string[]) {
+    ids.forEach((id, position) => { const it = this.priceItems.get(id); if (it) this.priceItems.set(id, { ...it, position }); });
+  }
+  async getStudioInfo() {
+    if (!this.studio) await this.ensureContent();
+    return this.studio!;
+  }
+  async updateStudioInfo(info: InsertStudioInfo) {
+    this.studio = { ...(this.studio ?? { id: "local" }), ...info } as StudioInfo;
+    return this.studio;
   }
 }
 

@@ -10,7 +10,7 @@
  * old caches are evicted on the next visit.
  */
 
-const VERSION = "v2";
+const VERSION = "v3";
 const RUNTIME_CACHE = `mr-runtime-${VERSION}`;
 const SHELL_CACHE = `mr-shell-${VERSION}`;
 const SHELL_URLS = ["/", "/manifest.webmanifest", "/app-icon-192.png", "/app-icon-512.png"];

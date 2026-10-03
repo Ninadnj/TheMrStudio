@@ -28,9 +28,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Pencil, Trash2, UserPlus } from "lucide-react";
 
 const staffFormSchema = insertStaffSchema.extend({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  serviceCategory: z.string().min(1, "Service category is required"),
-  order: z.string().min(1, "Order is required"),
+  name: z.string().trim().min(2, "ჩაწერეთ სახელი (მინიმუმ 2 ასო)"),
+  serviceCategory: z.string().min(1, "აირჩიეთ სერვისი"),
+  order: z.string().min(1, "მიუთითეთ რიგითობა"),
 });
 
 type StaffFormData = z.infer<typeof staffFormSchema>;
@@ -62,15 +62,14 @@ export function StaffEditor() {
       form.reset();
       setEditingId(null);
       toast({
-        title: "Success",
-        description: "Staff member added successfully",
+        title: "სპეციალისტი დაემატა",
       });
     },
     onError: (error: any) => {
       console.error("Staff creation error:", error);
       toast({
         title: "შეცდომა",
-        description: error?.message || "Failed to add staff member",
+        description: "ვერ დაემატა. სცადეთ ხელახლა.",
         variant: "destructive",
       });
     },
@@ -85,15 +84,14 @@ export function StaffEditor() {
       form.reset();
       setEditingId(null);
       toast({
-        title: "Success",
-        description: "Staff member updated successfully",
+        title: "ცვლილება შენახულია",
       });
     },
     onError: (error: any) => {
       console.error("Staff update error:", error);
       toast({
         title: "შეცდომა",
-        description: error?.message || "Failed to update staff member",
+        description: "ვერ შეინახა. სცადეთ ხელახლა.",
         variant: "destructive",
       });
     },
@@ -106,14 +104,13 @@ export function StaffEditor() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/staff"] });
       toast({
-        title: "Success",
-        description: "Staff member deleted successfully",
+        title: "სპეციალისტი წაიშალა",
       });
     },
     onError: () => {
       toast({
-        title: "Error",
-        description: "Failed to delete staff member",
+        title: "შეცდომა",
+        description: "ვერ წაიშალა. სცადეთ ხელახლა.",
         variant: "destructive",
       });
     },
@@ -148,7 +145,7 @@ export function StaffEditor() {
   };
 
   if (isLoading) {
-    return <div className="p-6 text-muted-foreground">Loading staff...</div>;
+    return <div className="p-6 text-muted-foreground">იტვირთება…</div>;
   }
 
   return (
@@ -157,10 +154,10 @@ export function StaffEditor() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <UserPlus className="w-5 h-5" />
-            {editingId ? "Edit Staff Member" : "Add New Staff Member"}
+            {editingId ? "სპეციალისტის რედაქტირება" : "ახალი სპეციალისტი"}
           </CardTitle>
           <CardDescription>
-            Manage staff members and their service specializations
+            ვინ რა სერვისს ასრულებს — სპეციალისტები დაჯავშნის ფანჯარაში ამ სიიდან ჩანს.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -171,10 +168,10 @@ export function StaffEditor() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>სახელი</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="e.g., Mari, User 1"
+                        placeholder="მაგ. მარიამი"
                         {...field}
                         data-testid="input-staff-name"
                       />
@@ -189,15 +186,14 @@ export function StaffEditor() {
                 name="serviceCategory"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Service Category</FormLabel>
+                    <FormLabel>სერვისი</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger data-testid="select-service-category">
-                          <SelectValue placeholder="Select service category" />
+                          <SelectValue placeholder="აირჩიეთ სერვისი" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="Nail">მანიკური / პედიკური</SelectItem>
                         <SelectItem value="Manicure">მანიკური</SelectItem>
                         <SelectItem value="Pedicure">პედიკური</SelectItem>
                         <SelectItem value="Epilation">ლაზერული ეპილაცია</SelectItem>
@@ -214,10 +210,13 @@ export function StaffEditor() {
                 name="calendarId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Google Calendar ID (Optional)</FormLabel>
+                    <FormLabel>Google Calendar-ის ID</FormLabel>
+                    <p className="text-sm text-muted-foreground">
+                      დადასტურებული ვიზიტები ამ კალენდარში ემატება, ხოლო მასში დაკავებულ დროს საიტზე ვერ დაჯავშნიან.
+                    </p>
                     <FormControl>
                       <Input
-                        placeholder="For future Google Calendar integration"
+                        placeholder="name@gmail.com ან …@group.calendar.google.com"
                         {...field}
                         value={field.value || ""}
                         data-testid="input-calendar-id"
@@ -233,7 +232,7 @@ export function StaffEditor() {
                 name="order"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Display Order</FormLabel>
+                    <FormLabel>რიგითობა</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -253,7 +252,7 @@ export function StaffEditor() {
                   disabled={createMutation.isPending || updateMutation.isPending}
                   data-testid="button-save-staff"
                 >
-                  {editingId ? "Update Staff Member" : "Add Staff Member"}
+                  {editingId ? "შენახვა" : "დამატება"}
                 </Button>
                 {editingId && (
                   <Button
@@ -262,7 +261,7 @@ export function StaffEditor() {
                     onClick={handleCancelEdit}
                     data-testid="button-cancel-edit"
                   >
-                    Cancel
+                    გაუქმება
                   </Button>
                 )}
               </div>
@@ -273,14 +272,14 @@ export function StaffEditor() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Current Staff Members</CardTitle>
+          <CardTitle>სპეციალისტები</CardTitle>
           <CardDescription>
             {staff.length} staff member{staff.length !== 1 ? "s" : ""}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {staff.length === 0 ? (
-            <p className="text-muted-foreground text-sm">No staff members yet</p>
+            <p className="text-muted-foreground text-sm">სპეციალისტი ჯერ არ არის დამატებული</p>
           ) : (
             <div className="space-y-2">
               {staff.map((member) => (
@@ -297,9 +296,18 @@ export function StaffEditor() {
                                   member.serviceCategory === "Cosmetology" ? "კოსმეტოლოგია" :
                                     member.serviceCategory}
                         </p>
-                        {member.calendarId && (
+                        {member.serviceCategory === "Nail" && (
+                          <p className="text-xs text-destructive mt-1">
+                            საიტზე ვერ დაჯავშნიან: დააჭირეთ რედაქტირებას და აირჩიეთ მანიკური ან პედიკური.
+                          </p>
+                        )}
+                        {member.calendarId ? (
+                          <p className="text-xs text-muted-foreground mt-1 break-all">
+                            კალენდარი: {member.calendarId}
+                          </p>
+                        ) : (
                           <p className="text-xs text-muted-foreground mt-1">
-                            Calendar: {member.calendarId}
+                            კალენდარი არ არის მითითებული — ვიზიტები Google Calendar-ში არ დაემატება.
                           </p>
                         )}
                       </div>
@@ -316,7 +324,7 @@ export function StaffEditor() {
                           size="icon"
                           variant="ghost"
                           onClick={() => {
-                            if (confirm(`Delete ${member.name}?`)) {
+                            if (confirm(`წაიშალოს სპეციალისტი „${member.name}“?`)) {
                               deleteMutation.mutate(member.id);
                             }
                           }}

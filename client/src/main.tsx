@@ -1,15 +1,20 @@
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import { LangProvider } from "./lib/i18n";
+import "./lib/installPrompt";
+import { signConsole } from "./lib/signature";
+import { initReveals } from "./lib/reveal";
 import "./index.css";
-import "@uppy/core/css/style.min.css";
-import "@uppy/dashboard/css/style.min.css";
+
+initReveals();
 
 createRoot(document.getElementById("root")!).render(
   <LangProvider>
     <App />
   </LangProvider>
 );
+
+signConsole();
 
 // Register service worker only in production. In dev mode the SW interferes
 // with Vite HMR and asset fingerprinting.

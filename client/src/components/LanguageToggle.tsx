@@ -11,33 +11,22 @@ export default function LanguageToggle() {
   };
 
   return (
-    <div
-      role="group"
-      aria-label="Language"
-      className="inline-flex items-center rounded-full border border-[var(--theme-line)]/70 bg-[color:color-mix(in_srgb,var(--theme-surface)_88%,transparent)] backdrop-blur-md p-0.5 text-[11px] font-medium tracking-[0.04em] uppercase"
-    >
+    <div role="group" aria-label="Language / ენა" className="lang-toggle">
       <button
         type="button"
         onClick={() => set("ka")}
         aria-pressed={lang === "ka"}
-        className={`press-tap min-w-[28px] h-7 px-2 rounded-full transition-colors ${
-          lang === "ka"
-            ? "bg-[var(--theme-accent)] text-[var(--theme-on-accent)]"
-            : "text-[var(--theme-muted1)] hover:text-[var(--theme-text)]"
-        }`}
+        aria-label="ka · ქართული"
         data-testid="lang-ka"
       >
         ka
       </button>
+      <span aria-hidden />
       <button
         type="button"
         onClick={() => set("en")}
         aria-pressed={lang === "en"}
-        className={`press-tap min-w-[28px] h-7 px-2 rounded-full transition-colors ${
-          lang === "en"
-            ? "bg-[var(--theme-accent)] text-[var(--theme-on-accent)]"
-            : "text-[var(--theme-muted1)] hover:text-[var(--theme-text)]"
-        }`}
+        aria-label="en · English"
         data-testid="lang-en"
       >
         en

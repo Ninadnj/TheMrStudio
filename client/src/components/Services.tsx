@@ -1,42 +1,14 @@
-import { useRef, useMemo, type ReactNode } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { motion, useInView } from "framer-motion";
-import { ChevronRight } from "lucide-react";
-import type { ServicesSection, GalleryImage } from "@shared/schema";
-import SectionHeader from "@/components/SectionHeader";
+import { useMemo, useRef, useState, type ReactNode } from "react";
+import { ArrowRight } from "lucide-react";
+import type { GalleryImage } from "@shared/schema";
+import { PolishIcon, BeamIcon, DropIcon } from "@/components/StudioIcons";
 import { hapticTap } from "@/lib/haptics";
 import { isVideoUrl } from "@/lib/videoUtils";
 import { useLang } from "@/lib/i18n";
-
-/* ─── Hairline marks — minimal abstract symbols per category ─── */
-
-const NailMark = (
-  <svg viewBox="0 0 56 72" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" aria-hidden>
-    {/* almond / nail silhouette */}
-    <path d="M28 8 C 14 14, 14 50, 28 64 C 42 50, 42 14, 28 8 Z" />
-    <path d="M22 22 C 26 18, 30 18, 34 22" opacity="0.5" />
-  </svg>
-);
-
-const LaserMark = (
-  <svg viewBox="0 0 56 72" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" aria-hidden>
-    {/* vertical beam with diffraction marks */}
-    <line x1="28" y1="6" x2="28" y2="66" />
-    <line x1="18" y1="22" x2="38" y2="22" opacity="0.55" />
-    <line x1="14" y1="38" x2="42" y2="38" opacity="0.85" />
-    <line x1="18" y1="54" x2="38" y2="54" opacity="0.55" />
-    <circle cx="28" cy="38" r="2.2" fill="currentColor" stroke="none" />
-  </svg>
-);
-
-const AestheticsMark = (
-  <svg viewBox="0 0 56 72" fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinecap="round" aria-hidden>
-    {/* concentric circles — soft mirror/lens */}
-    <circle cx="28" cy="36" r="20" />
-    <circle cx="28" cy="36" r="12" opacity="0.55" />
-    <circle cx="28" cy="36" r="3" fill="currentColor" stroke="none" opacity="0.7" />
-  </svg>
-);
+import { usePriceMenu, type BookingCategory, type MenuGroup } from "@/lib/serviceMenu";
+import { scrollBehavior } from "@/lib/motion";
+import { stagger } from "@/lib/reveal";
+import { useGalleryImages } from "@/hooks/use-gallery";
 
 type Category = {
   id: string;
@@ -46,10 +18,10 @@ type Category = {
   subtitleEn: string;
   descriptionKa: string;
   descriptionEn: string;
-  count: number;
-  priceAnchor: string;
+  /** Bookable services in this category — its treatments are counted and its menu group is the scroll target. */
+  bookings: BookingCategory[];
   matchKeywords: string[];
-  mark: ReactNode;
+  icon: ReactNode;
 };
 
 const categories: Category[] = [
@@ -60,11 +32,10 @@ const categories: Category[] = [
     subtitleKa: "მანიკური · პედიკური",
     subtitleEn: "Manicure · Pedicure",
     descriptionKa: "მანიკური, პედიკური, გელ-ლაქი და დაგრძელება პრემიუმ მასალებით.",
-    descriptionEn: "Manicure, pedicure, gel polish, and extensions in premium materials.",
-    count: 8,
-    priceAnchor: "category-nails",
+    descriptionEn: "Manicure, pedicure, gel polish and extensions in premium materials.",
+    bookings: ["Manicure", "Pedicure"],
     matchKeywords: ["nail", "manicure", "pedicure", "gel", "ფრჩხ", "მანიკ", "პედიკ"],
-    mark: NailMark,
+    icon: <PolishIcon />,
   },
   {
     id: "laser",
@@ -73,11 +44,10 @@ const categories: Category[] = [
     subtitleKa: "ეპილაცია",
     subtitleEn: "Hair removal",
     descriptionKa: "უახლესი დიოდური ლაზერული ეპილაცია — სწრაფი და უსაფრთხო.",
-    descriptionEn: "Latest-generation diode laser hair removal — fast and gentle.",
-    count: 13,
-    priceAnchor: "category-laser-women",
+    descriptionEn: "Latest-generation diode laser hair removal, fast and gentle.",
+    bookings: ["Epilation"],
     matchKeywords: ["laser", "epilation", "ლაზერ", "ეპილ"],
-    mark: LaserMark,
+    icon: <BeamIcon />,
   },
   {
     id: "cosmetology",
@@ -86,146 +56,144 @@ const categories: Category[] = [
     subtitleKa: "კოსმეტოლოგია",
     subtitleEn: "Cosmetology",
     descriptionKa: "ფილერი, ბოტოქსი, ბიორევიტალიზაცია, პილინგი და მეზოთერაპია.",
-    descriptionEn: "Filler, botox, biorevitalization, peeling, and mesotherapy.",
-    count: 6,
-    priceAnchor: "category-cosmetology",
+    descriptionEn: "Filler, botox, biorevitalization, peeling and mesotherapy.",
+    bookings: ["Cosmetology"],
     matchKeywords: ["cosmet", "skin", "face", "filler", "botox", "კოსმეტ", "ესთეტ", "სახ"],
-    mark: AestheticsMark,
+    icon: <DropIcon />,
   },
 ];
 
-function scrollToId(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+const inCategory = (cat: Category) => (item: { booking: string }) => cat.bookings.includes(item.booking as BookingCategory);
+
+function treatmentCount(menu: MenuGroup[], cat: Category) {
+  return menu.reduce((sum, group) => sum + group.items.filter(inCategory(cat)).length, 0);
+}
+
+function showInMenu(menu: MenuGroup[], cat: Category) {
+  const group = menu.find((g) => g.items.some(inCategory(cat)));
+  const target = group ? document.getElementById(`category-${group.id}`) : document.getElementById("prices");
+  target?.scrollIntoView({ behavior: scrollBehavior(), block: "start" });
+}
+
+function Media({ image, alt }: { image: GalleryImage; alt: string }) {
+  return isVideoUrl(image.imageUrl) ? (
+    <video src={image.imageUrl} autoPlay loop muted playsInline aria-hidden className="h-full w-full object-cover" />
+  ) : (
+    <img src={image.imageUrl} alt={alt} loading="lazy" decoding="async" className="h-full w-full object-cover" />
+  );
 }
 
 export default function Services() {
-  const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { once: true, amount: 0.1 });
   const { t } = useLang();
+  const { data: galleryImages } = useGalleryImages();
+  const { menu } = usePriceMenu();
+  const indexRef = useRef<HTMLOListElement>(null);
+  const [hovered, setHovered] = useState<number | null>(null);
+  const [pointer, setPointer] = useState({ x: 0, y: 0 });
 
-  useQuery<ServicesSection>({
-    queryKey: ["/api/services-section"],
-  });
-
-  const { data: galleryImages = [] } = useQuery<GalleryImage[]>({
-    queryKey: ["/api/gallery"],
-  });
-
-  const thumbnailByCategory = useMemo(() => {
+  const imageByCategory = useMemo(() => {
     const map = new Map<string, GalleryImage>();
     for (const cat of categories) {
-      const match = galleryImages.find((img) => {
-        const haystack = `${img.category}`.toLowerCase();
-        return cat.matchKeywords.some((kw) => haystack.includes(kw.toLowerCase()));
-      });
+      const match = galleryImages.find((img) =>
+        cat.matchKeywords.some((kw) => img.category.toLowerCase().includes(kw.toLowerCase()))
+      );
       if (match) map.set(cat.id, match);
     }
     return map;
   }, [galleryImages]);
 
-  const cardVariants = {
-    hidden: { opacity: 0, y: 16 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.45, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] },
-    }),
-  };
+  const hoveredImage = hovered !== null ? imageByCategory.get(categories[hovered].id) : undefined;
 
   return (
-    <section
-      id="services"
-      className="scroll-mt-20 app-section md:scroll-mt-24"
-      ref={sectionRef}
-    >
-      <div className="app-shell">
-        <SectionHeader
-          kicker={t("Studio menu", "Studio menu")}
-          title={t("სერვისები", "Services")}
-          subtitle={t(
-            "ზუსტი კატეგორიები სწრაფი არჩევისთვის.",
-            "Precise categories for a faster choice."
-          )}
-          className="mb-5 md:mb-7"
-        />
+    <section id="services" className="section scroll-mt-20 md:scroll-mt-24" aria-labelledby="services-title">
+      <div className="shell">
+        <div className="section-head">
+          <p className="eyebrow" data-reveal="rise">{t("სტუდია", "The studio")}</p>
+          <h2 id="services-title" className="display section-title" data-reveal="mask">
+            <span>{t("სერვისები", "Services")}</span>
+          </h2>
+        </div>
 
-        <div className="services-card-stack">
-          {categories.map((cat, i) => {
-            const thumb = thumbnailByCategory.get(cat.id);
-            const thumbIsVideo = thumb ? isVideoUrl(thumb.imageUrl) : false;
-            return (
-              <motion.button
-                key={cat.id}
-                custom={i}
-                variants={cardVariants}
-                initial="hidden"
-                animate={isInView ? "visible" : "hidden"}
+        {/* Desktop: editorial index — numbered rows, a photo follows the pointer */}
+        <ol
+          ref={indexRef}
+          className="service-index"
+          onMouseMove={(e) => {
+            const box = indexRef.current?.getBoundingClientRect();
+            if (box) setPointer({ x: e.clientX - box.left, y: e.clientY - box.top });
+          }}
+          onMouseLeave={() => setHovered(null)}
+        >
+          {categories.map((cat, i) => (
+            <li key={cat.id} data-reveal="rise" style={stagger(i)}>
+              <button
+                type="button"
+                className="service-row"
+                onMouseEnter={() => setHovered(i)}
+                onFocus={() => setHovered(i)}
+                onBlur={() => setHovered(null)}
                 onClick={() => {
                   hapticTap();
-                  scrollToId(cat.priceAnchor);
+                  showInMenu(menu, cat);
                 }}
-                className="service-card press-tap group"
                 data-testid={`service-card-${cat.id}`}
-                aria-label={`Open ${cat.subtitleEn} prices`}
               >
-                <span className="service-card-index" aria-hidden>
+                <span className="service-row-num" aria-hidden>
                   0{i + 1}
                 </span>
+                <span className="service-row-title display">{t(cat.titleKa, cat.titleEn)}</span>
+                <span className="service-row-copy">
+                  <span className="service-row-sub">{t(cat.subtitleKa, cat.subtitleEn)}</span>
+                  <span>{t(cat.descriptionKa, cat.descriptionEn)}</span>
+                </span>
+                <span className="service-row-meta">
+                  {treatmentCount(menu, cat)} {t("პროცედურა", "treatments")}
+                  <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden />
+                </span>
+              </button>
+            </li>
+          ))}
 
-                {/* Editorial portrait thumbnail (only when a real photo exists) */}
-                {thumb && (
-                  <div className="service-card-media editorial-grain">
-                    {thumbIsVideo ? (
-                      <video
-                        src={thumb.imageUrl}
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <img
-                        src={thumb.imageUrl}
-                        alt=""
-                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                        loading="lazy"
-                      />
-                    )}
-                  </div>
-                )}
+          <li aria-hidden className="service-float-slot">
+            <figure
+              className="service-float"
+              data-visible={!!hoveredImage || undefined}
+              style={{ transform: `translate3d(${pointer.x}px, ${pointer.y}px, 0)` }}
+            >
+              {hoveredImage && <Media key={hoveredImage.id} image={hoveredImage} alt="" />}
+            </figure>
+          </li>
+        </ol>
 
-                {/* Mark rail (when no photo) — hairline abstract symbol */}
-                {!thumb && (
-                  <div className="service-card-rail">
-                    <div className="service-card-mark">
-                      {cat.mark}
-                    </div>
-                  </div>
-                )}
-
-                {/* Content column */}
-                <div className="service-card-body">
-                  <div className="min-w-0 pr-8">
-                    <p className="service-card-kicker">{t(cat.subtitleKa, cat.subtitleEn)}</p>
-                    <h3 className="service-card-title">
-                      {t(cat.titleKa, cat.titleEn)}
-                    </h3>
-                    <p className="service-card-copy">
-                      {t(cat.descriptionKa, cat.descriptionEn)}
-                    </p>
-                  </div>
-
-                  <div className="service-card-footer">
-                    <span className="service-card-count">
-                      {cat.count} {t("სერვისი", "services")}
-                    </span>
-                    <span className="service-card-arrow" aria-hidden>
-                      <ChevronRight className="w-4 h-4" strokeWidth={1.8} />
-                    </span>
-                  </div>
-                </div>
-              </motion.button>
+        {/* Phones and tablets: full-width tiles with the title over the photo */}
+        <div className="service-tiles">
+          {categories.map((cat, i) => {
+            const image = imageByCategory.get(cat.id);
+            return (
+              <button
+                key={cat.id}
+                type="button"
+                className="service-tile press-tap"
+                data-reveal="unveil"
+                style={stagger(i)}
+                data-photo={!!image || undefined}
+                onClick={() => {
+                  hapticTap();
+                  showInMenu(menu, cat);
+                }}
+                data-testid={`service-tile-${cat.id}`}
+              >
+                <span className="service-tile-media" aria-hidden>
+                  {image ? <Media image={image} alt="" /> : <span className="studio-seal service-tile-seal">{cat.icon}</span>}
+                </span>
+                <span className="service-tile-text">
+                  <span className="service-tile-num">0{i + 1}</span>
+                  <span className="service-tile-title display">{t(cat.titleKa, cat.titleEn)}</span>
+                  <span className="service-tile-meta">
+                    {t(cat.subtitleKa, cat.subtitleEn)} · {treatmentCount(menu, cat)} {t("პროცედურა", "treatments")}
+                  </span>
+                </span>
+              </button>
             );
           })}
         </div>

@@ -1,4 +1,4 @@
-import { QueryClient, QueryFunction } from "@tanstack/react-query";
+import { MutationCache, QueryCache, QueryClient, QueryFunction } from "@tanstack/react-query";
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
@@ -41,7 +41,20 @@ export const getQueryFn: <T>(options: {
     return await res.json();
   };
 
+/** The admin session expired (24h): send the owner back to the login page instead of failing quietly. */
+function onAdminAuthError(error: unknown) {
+  if (
+    error instanceof Error &&
+    error.message.startsWith("401") &&
+    window.location.pathname.startsWith("/admin/dashboard")
+  ) {
+    window.location.assign("/admin/login?expired=1");
+  }
+}
+
 export const queryClient = new QueryClient({
+  queryCache: new QueryCache({ onError: onAdminAuthError }),
+  mutationCache: new MutationCache({ onError: onAdminAuthError }),
   defaultOptions: {
     queries: {
       queryFn: getQueryFn({ on401: "throw" }),

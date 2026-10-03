@@ -5,9 +5,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5, viewport-fit=cover" />
 
+  <!-- Apply a saved dark theme before first paint (ThemeSwitch keeps it in sync after) -->
+  <script>try { if (localStorage.getItem("theme-mode") === "dark") document.documentElement.classList.add("dark"); } catch (e) {}</script>
+
   <!-- PWA / Theme -->
   <link rel="manifest" href="/manifest.webmanifest" />
-  <meta name="theme-color" content="#344C3D" />
+  <meta name="theme-color" content="#F5F1EB" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="MR Studio" />
@@ -16,49 +19,48 @@
   <link rel="apple-touch-startup-image" href="/app-icon.png" />
 
   <!-- SEO Meta Tags -->
-  <title>THE MR Studio | Nail &amp; Laser Artistic Studio</title>
+  <title>THE MR Studio · ფრჩხილები, ლაზერი, ესთეტიკა · Nails, laser &amp; aesthetics in Tbilisi</title>
   <meta name="description"
-    content="THE MR Studio – პრემიუმ ნოგელი და ლაზერული სტუდია. დაჯავშნეთ სერვისი ონლაინ. Premium nail art, laser treatments, and cosmetology in Tbilisi." />
+    content="ფრჩხილები, ლაზერული ეპილაცია და ესთეტიკა დიდ დიღომში, თბილისი. Nails, laser hair removal and aesthetics in Didi Dighomi, Tbilisi." />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://themrstudio.net/" />
 
   <!-- Open Graph / Social -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://themrstudio.net/" />
-  <meta property="og:title" content="THE MR Studio | Nail &amp; Laser Artistic Studio" />
+  <meta property="og:title" content="THE MR Studio · ფრჩხილები, ლაზერი, ესთეტიკა" />
   <meta property="og:description"
-    content="Premium nail art, laser treatments, and cosmetology. Book your appointment online." />
+    content="დიდი დიღომი, თბილისი. Nails, laser and aesthetics in Didi Dighomi, Tbilisi." />
   <meta property="og:site_name" content="THE MR Studio" />
   <meta property="og:image" content="https://themrstudio.net/og-image.png" />
-  <meta property="og:image:alt" content="THE MR Studio" />
+  <meta property="og:image:alt" content="THE MR Studio · ფრჩხილები, ლაზერი, ესთეტიკა" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="ka_GE" />
+  <meta property="og:locale:alternate" content="en_US" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="THE MR Studio | Nail &amp; Laser Artistic Studio" />
+  <meta name="twitter:title" content="THE MR Studio · ფრჩხილები, ლაზერი, ესთეტიკა" />
   <meta name="twitter:description"
-    content="Premium nail art, laser treatments, and cosmetology. Book your appointment online." />
+    content="ფრჩხილები, ლაზერი და ესთეტიკა თბილისში. Nails, laser and aesthetics in Tbilisi." />
   <meta name="twitter:image" content="https://themrstudio.net/og-image.png" />
 
-  <!-- Only load fonts actually used by the design system -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Inter:opsz,wght@14..32,300..700&display=swap"
-    rel="stylesheet" />
+  <!-- LCP: the default hero art (admin-uploaded hero images replace it) -->
+  <link rel="preload" as="image" href="/images/hero-1024.webp" type="image/webp"
+    imagesrcset="/images/hero-512.webp 512w, /images/hero-768.webp 768w, /images/hero-1024.webp 1024w"
+    imagesizes="(min-width: 1024px) 42vw, 100vw" fetchpriority="high" />
 
-  <!-- Favicon — M·R monogram (SVG primary, PNG fallback) -->
-  <link
-    rel="icon"
-    type="image/svg+xml"
-    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23344C3D'/%3E%3Ctext x='32' y='40' text-anchor='middle' font-family='Georgia,serif' font-style='italic' font-weight='400' font-size='28' fill='%23F6FAF4'%3EM%C2%B7R%3C/text%3E%3C/svg%3E"
-  />
+  <!-- Self-hosted fonts: preload only the two first-paint files (Georgian text + the hero wordmark) -->
+  <link rel="preload" href="/fonts/noto-sans-georgian-georgian.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/geist-latin.woff2" as="font" type="font/woff2" crossorigin />
+
+  <!-- Favicon — MR monogram, matches the wordmark -->
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
   <link rel="icon" type="image/png" sizes="512x512" href="/app-icon-512.png" />
 </head>
 
 <body>
-  <!-- Global Editorial Print Noise Overlay -->
-  <div class="bg-noise"></div>
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>

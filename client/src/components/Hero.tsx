@@ -1,111 +1,104 @@
-import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { CalendarCheck, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import type { HeroContent } from "@shared/schema";
-import heroBackground from "@assets/dnj0209_Stylized_illustration_of_a_fashionable_woman_wearing__c8336757-5e7e-4c3b-8d06-de464e7c4e40_1_1759491029908.png";
 
 import { isVideoUrl } from "@/lib/videoUtils";
 import { hapticTap } from "@/lib/haptics";
 import { useLang } from "@/lib/i18n";
+import { requestBooking } from "@/lib/serviceMenu";
+import { scrollBehavior } from "@/lib/motion";
+import { useStudio } from "@/lib/studio";
+
+/** Default hero art, pre-sized as WebP and preloaded in index.html. Admin uploads override it. */
+const DEFAULT_HERO = {
+  src: "/images/hero-1024.webp",
+  srcSet: "/images/hero-512.webp 512w, /images/hero-768.webp 768w, /images/hero-1024.webp 1024w",
+  sizes: "(min-width: 1024px) 42vw, 100vw",
+};
 
 export default function Hero() {
-  const { t } = useLang();
-  const { data: heroContent } = useQuery<HeroContent>({
+  const { t, lang } = useLang();
+  const studio = useStudio();
+  const { data: heroContent, isPending } = useQuery<Pick<HeroContent, "backgroundImage">>({
     queryKey: ["/api/hero-content"],
   });
 
-  const bgSrc = heroContent?.backgroundImage || heroBackground;
-  const isVideo = isVideoUrl(bgSrc);
+  // Wait for the (tiny) answer before drawing, so an uploaded image never flashes in over the default art.
+  // The figure keeps its size meanwhile; the default art is already preloaded, so it paints at once.
+  const customMedia = heroContent?.backgroundImage || null;
+  const mediaSrc = customMedia || DEFAULT_HERO.src;
+  const isVideo = isVideoUrl(mediaSrc);
 
   return (
-    <section
-      id="hero"
-      className="relative pt-20 md:pt-24 pb-10 md:pb-14"
-    >
-      <div className="app-shell">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="space-y-6"
-        >
-          {/* Hero card — image with elegant text overlay (poster-style) */}
-          <div className="editorial-grain relative overflow-hidden rounded-[28px] border border-[var(--theme-line)] bg-[var(--theme-ink)] shadow-[var(--ios-shadow-2)]">
-            <div className="relative aspect-[4/5] sm:aspect-[3/4] md:aspect-[4/5] w-full">
-              {isVideo ? (
-                <video
-                  src={bgSrc}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <img
-                  src={bgSrc}
-                  alt="THE MR Studio"
-                  className="h-full w-full object-cover"
-                />
-              )}
+    <section id="hero" className="hero" aria-labelledby="hero-title">
+      <div className="hero-grid shell">
+        <figure className="hero-media">
+          {isPending ? null : isVideo ? (
+            <video src={mediaSrc} autoPlay loop muted playsInline aria-hidden className="hero-media-el" />
+          ) : (
+            <img
+              src={mediaSrc}
+              srcSet={customMedia ? undefined : DEFAULT_HERO.srcSet}
+              sizes={customMedia ? undefined : DEFAULT_HERO.sizes}
+              alt={t("THE MR Studio — სტუდიის ესთეტიკა", "THE MR Studio — studio mood")}
+              className="hero-media-el"
+              width={1024}
+              height={1024}
+              // React 18 only passes the lowercase attribute through
+              {...{ fetchpriority: "high" }}
+              decoding="async"
+            />
+          )}
+        </figure>
 
-              {/* Stage gradient — readable text without burying the photo */}
-              <div
-                className="pointer-events-none absolute inset-0"
-                style={{
-                  background:
-                    "linear-gradient(to bottom, rgba(16,22,16,0.0) 0%, rgba(16,22,16,0.0) 38%, rgba(16,22,16,0.42) 64%, rgba(16,22,16,0.78) 100%)",
-                }}
-              />
+        {/* On phones this block sits over the image; on desktop it heads the copy column */}
+        <div className="hero-head">
+          <p className="eyebrow hero-eyebrow hero-rise" style={{ animationDelay: "120ms" }}>
+            {lang === "ka" ? studio.address.ka : studio.address.en}
+          </p>
 
-              {/* Top eyebrow — hairline meta */}
-              <div className="absolute top-5 left-5 right-5 flex items-center gap-2.5">
-                <span className="block h-px w-7 bg-white/70" />
-                <span className="text-[10.5px] font-medium tracking-[0.22em] uppercase text-white/85">
-                  {t("თბილისი · 2026", "Tbilisi · Est. 2026")}
+          {/* The studio's name is the headline — the same in both languages */}
+          <h1 id="hero-title" className="hero-title" aria-label="THE MR Studio">
+            <span className="hero-line">
+              <span style={{ animationDelay: "60ms" }}>
+                <span className="wordmark">
+                  <span className="wordmark-the">THE</span>
+                  <span className="wordmark-mr">MR</span>
+                  <span className="wordmark-studio">Studio</span>
                 </span>
-              </div>
+              </span>
+            </span>
+          </h1>
+        </div>
 
-              {/* Bottom: headline */}
-              <div className="absolute inset-x-0 bottom-0 px-5 pb-5 sm:px-6 sm:pb-6">
-                <h1 className="font-sans text-[2.1rem] sm:text-[2.4rem] md:text-[2.6rem] leading-[1.02] tracking-[-0.025em] font-semibold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]">
-                  <span className="opacity-65 font-light">THE </span>
-                  <span>MR</span>
-                  <span className="font-serif italic font-normal text-[var(--theme-soft)] ml-0.5">
-                    Studio
-                  </span>
-                </h1>
-              </div>
-            </div>
-          </div>
-
-          {/* Single primary CTA + secondary text link */}
-          <div className="flex flex-col gap-3">
+        <div className="hero-body">
+          <div className="hero-actions hero-rise" style={{ animationDelay: "320ms" }}>
             <button
+              type="button"
               onClick={() => {
                 hapticTap();
-                document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" });
+                requestBooking();
               }}
-              className="pill-primary w-full"
+              className="pill-primary"
               data-testid="hero-cta-book"
             >
-              <CalendarCheck className="w-[18px] h-[18px]" strokeWidth={2} />
               {t("დაჯავშნა", "Book appointment")}
             </button>
-
-            <button
-              onClick={() => {
+            <a
+              href="#prices"
+              onClick={(e) => {
+                e.preventDefault();
                 hapticTap();
-                document.getElementById("services")?.scrollIntoView({ behavior: "smooth" });
+                document.getElementById("prices")?.scrollIntoView({ behavior: scrollBehavior() });
               }}
-              className="inline-flex items-center justify-center gap-1.5 self-center text-[14px] font-medium text-[var(--theme-muted1)] hover:text-[var(--theme-text)] transition-colors press-tap py-2"
-              data-testid="hero-cta-services"
+              className="link-line"
+              data-testid="hero-view-prices"
             >
-              {t("სერვისების ნახვა", "Browse services")}
-              <ArrowRight className="w-3.5 h-3.5" strokeWidth={2} />
-            </button>
+              {t("ფასების ნახვა", "View prices")}
+              <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
+            </a>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

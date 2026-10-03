@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, date, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, date, boolean, integer } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -191,3 +191,93 @@ export const insertTrendsSectionSchema = createInsertSchema(trendsSection).omit(
 
 export type InsertTrendsSection = z.infer<typeof insertTrendsSectionSchema>;
 export type TrendsSection = typeof trendsSection.$inferSelect;
+
+/* ---------- Price menu (edited by the owner in the admin) ---------- */
+
+/** The four bookable services. Each treatment says which one it belongs to (and so which specialists do it). */
+export const BOOKING_CATEGORIES = ["Manicure", "Pedicure", "Epilation", "Cosmetology"] as const;
+
+export const priceGroups = pgTable("price_groups", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  titleKa: text("title_ka").notNull(),
+  titleEn: text("title_en").notNull(),
+  /** Short label for the price-list filter and the booking list, e.g. "ლაზერი · ქალი". */
+  shortKa: text("short_ka").notNull(),
+  shortEn: text("short_en").notNull(),
+  position: integer("position").notNull().default(0),
+});
+
+const requiredText = (label: string) => z.string().trim().min(1, label);
+
+export const insertPriceGroupSchema = createInsertSchema(priceGroups, {
+  titleKa: requiredText("ჩაწერეთ სათაური ქართულად"),
+  titleEn: requiredText("ჩაწერეთ სათაური ინგლისურად"),
+  shortKa: requiredText("ჩაწერეთ მოკლე სახელი ქართულად"),
+  shortEn: requiredText("ჩაწერეთ მოკლე სახელი ინგლისურად"),
+  position: z.number().int().min(0).optional(),
+}).omit({ id: true });
+
+export type InsertPriceGroup = z.infer<typeof insertPriceGroupSchema>;
+export type PriceGroup = typeof priceGroups.$inferSelect;
+
+export const priceItems = pgTable("price_items", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  groupId: varchar("group_id").notNull(),
+  nameKa: text("name_ka").notNull(),
+  nameEn: text("name_en").notNull(),
+  price: integer("price").notNull(),
+  /** Optional; shown next to the price when set. */
+  durationMin: integer("duration_min"),
+  booking: text("booking").notNull(),
+  position: integer("position").notNull().default(0),
+});
+
+export const insertPriceItemSchema = createInsertSchema(priceItems, {
+  groupId: requiredText("აირჩიეთ ჯგუფი"),
+  nameKa: requiredText("ჩაწერეთ სახელი ქართულად"),
+  nameEn: requiredText("ჩაწერეთ სახელი ინგლისურად"),
+  price: z.number({ invalid_type_error: "ჩაწერეთ ფასი" }).int("ფასი მთელი რიცხვი უნდა იყოს").min(0, "ფასი არ შეიძლება იყოს უარყოფითი"),
+  durationMin: z.number().int().positive().nullable().optional(),
+  booking: z.enum(BOOKING_CATEGORIES, { errorMap: () => ({ message: "აირჩიეთ სერვისი" }) }),
+  position: z.number().int().min(0).optional(),
+}).omit({ id: true });
+
+export type InsertPriceItem = z.infer<typeof insertPriceItemSchema>;
+export type PriceItem = typeof priceItems.$inferSelect;
+export type PriceMenuGroup = PriceGroup & { items: PriceItem[] };
+
+/* ---------- Studio info shown on the site (edited by the owner) ---------- */
+
+export const studioInfo = pgTable("studio_info", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  phone: text("phone").notNull(),
+  email: text("email").notNull(),
+  addressKa: text("address_ka").notNull(),
+  addressEn: text("address_en").notNull(),
+  /** What Google Maps searches for to place the pin. */
+  mapQuery: text("map_query").notNull(),
+  hoursKa: text("hours_ka").notNull().default(""),
+  hoursEn: text("hours_en").notNull().default(""),
+  instagram: text("instagram").notNull().default(""),
+  facebook: text("facebook").notNull().default(""),
+});
+
+const optionalUrl = z
+  .string()
+  .trim()
+  .refine((v) => v === "" || /^https?:\/\//.test(v), "ბმული უნდა იწყებოდეს https://-ით");
+
+export const insertStudioInfoSchema = createInsertSchema(studioInfo, {
+  phone: requiredText("ჩაწერეთ ტელეფონი"),
+  email: z.string().trim().email("შეამოწმეთ ელ. ფოსტა"),
+  addressKa: requiredText("ჩაწერეთ მისამართი ქართულად"),
+  addressEn: requiredText("ჩაწერეთ მისამართი ინგლისურად"),
+  mapQuery: requiredText("ჩაწერეთ რუკის მისამართი"),
+  hoursKa: z.string().trim(),
+  hoursEn: z.string().trim(),
+  instagram: optionalUrl,
+  facebook: optionalUrl,
+}).omit({ id: true });
+
+export type InsertStudioInfo = z.infer<typeof insertStudioInfoSchema>;
+export type StudioInfo = typeof studioInfo.$inferSelect;

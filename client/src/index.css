@@ -1272,6 +1272,8 @@
   }
 
   .booking-sheet[data-side="bottom"] {
+    /* Its height is fixed (and shrinks with the phone keyboard), so it can be a size container */
+    container: booking-sheet / size;
     left: 0;
     right: 0;
     bottom: 0;
@@ -1279,6 +1281,13 @@
     border-radius: var(--radius-m) var(--radius-m) 0 0;
     border-top: 1px solid color-mix(in srgb, var(--theme-line) 80%, transparent);
     box-shadow: 0 -24px 60px -30px rgba(31, 26, 23, 0.45);
+  }
+
+  /* Keyboard open on a small phone: drop the step indicator so the field being typed in has room */
+  @container booking-sheet (max-height: 480px) {
+    .booking-stepper {
+      display: none;
+    }
   }
 
   .booking-sheet[data-side="right"] {

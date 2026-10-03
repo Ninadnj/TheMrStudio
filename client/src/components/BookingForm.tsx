@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect, type CSSProperties } from "react";
+import { useState, useMemo, useRef, useEffect, useLayoutEffect, type CSSProperties } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useLenis } from "lenis/react";
 import { Drawer as DrawerPrimitive } from "vaul";
@@ -148,6 +148,12 @@ function isSlotPast(day: Date, time: string) {
   const [h, m] = time.split(":").map(Number);
   const slot = setMinutes(setHours(new Date(day), h), m);
   return !isBefore(new Date(Date.now() + 60 * 60 * 1000), slot);
+}
+
+/** Bring a form field to the middle of the sheet: clear of the sticky footer and the phone keyboard. */
+function revealField(el: Element | null) {
+  const field = el?.closest(".float-field") ?? el;
+  field?.scrollIntoView({ block: "center", behavior: scrollBehavior() });
 }
 
 function firstBookableDate() {
@@ -598,6 +604,29 @@ export default function BookingSheet({
   }, [open, flow.category]);
 
   const side = isMobile ? "bottom" : "right";
+
+  const keyboardTimer = useRef<number>();
+
+  // Phones: the keyboard covers the lower half of the sheet. Once it has opened (or after
+  // focus moves), re-centre the focused field so the client can see what she types.
+  const keepFieldInView = () => {
+    if (side !== "bottom") return;
+    window.clearTimeout(keyboardTimer.current);
+    keyboardTimer.current = window.setTimeout(() => {
+      const el = document.activeElement;
+      if (el && bodyRef.current?.contains(el) && el.matches("input, textarea")) revealField(el);
+    }, 320);
+  };
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!open || !vv) return;
+    vv.addEventListener("resize", keepFieldInView);
+    return () => {
+      vv.removeEventListener("resize", keepFieldInView);
+      window.clearTimeout(keyboardTimer.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, side]);
   const showCard = side === "right" && !flow.submitted;
 
   return (
@@ -647,7 +676,7 @@ export default function BookingSheet({
                 <BookingStepper t={t} labels={flow.stepLabels} step={flow.step} onJump={flow.goTo} />
               )}
 
-              <div ref={bodyRef} className="booking-sheet-body" data-lenis-prevent>
+              <div ref={bodyRef} className="booking-sheet-body" data-lenis-prevent onFocus={keepFieldInView}>
                 <BookingFlowBody flow={flow} onDone={() => setOpen(false)} />
               </div>
 
@@ -1376,6 +1405,17 @@ function StepDetails({
   onForgetSaved: () => void;
 }) {
   const [notesOpen, setNotesOpen] = useState(!!notes);
+  const notesRef = useRef<HTMLTextAreaElement>(null);
+  const justOpenedNotes = useRef(false);
+
+  // Opening the note: focus it (still inside the tap, so phones open the keyboard)
+  // and bring the whole field into view — it sits right above the sticky footer.
+  useLayoutEffect(() => {
+    if (!notesOpen || !justOpenedNotes.current) return;
+    justOpenedNotes.current = false;
+    notesRef.current?.focus({ preventScroll: true });
+    revealField(notesRef.current);
+  }, [notesOpen]);
   const isReturning = !!savedName && contact.fullName === savedName;
 
   return (
@@ -1486,9 +1526,9 @@ function StepDetails({
         {notesOpen ? (
           <FloatingField id="booking-notes" label={t("შენიშვნა (არასავალდებულო)", "Note · optional")}>
             <textarea
+              ref={notesRef}
               id="booking-notes"
               className="float-input float-textarea"
-              autoFocus
               rows={3}
               value={notes}
               onChange={(e) => onNotesChange(e.target.value)}
@@ -1501,6 +1541,7 @@ function StepDetails({
             type="button"
             onClick={() => {
               hapticTap();
+              justOpenedNotes.current = true;
               setNotesOpen(true);
             }}
             className="booking-add-note press-tap"

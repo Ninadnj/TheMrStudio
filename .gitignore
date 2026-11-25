@@ -8,3 +8,12 @@ vite.config.ts.*
 .local/
 .vscode/
 server.log
+# Claude Code: personal files and hook state
+.claude/settings.local.json
+.claude/.state/
+CLAUDE.local.md
+
+# Test output
+coverage/
+.pytest_cache/
+__pycache__/

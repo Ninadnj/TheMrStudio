@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Installed by `make setup` (git config core.hooksPath .githooks).
+# Same gate Claude's Stop hook runs, so humans and agents commit under one rule.
+# Limitation: it checks the working tree, not the staged snapshot. If you stage a broken
+# file and fix it without re-staging, the commit can include the broken version. CI
+# (`make check` on the pushed commit) is the backstop.
+set -euo pipefail
+make check-fast
+if command -v gitleaks >/dev/null 2>&1; then
+  gitleaks git --pre-commit --staged --redact --no-banner .
+else
+  echo "pre-commit: gitleaks not installed, staged secret scan skipped (CI enforces it)" >&2
+fi

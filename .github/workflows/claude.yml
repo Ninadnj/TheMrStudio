@@ -1,0 +1,37 @@
+name: Claude Code
+
+# Official Claude Code GitHub Action: responds to @claude in issue and PR comments.
+#
+# DISABLED BY DEFAULT. To enable:
+#   1. Install the Claude GitHub App on this repo: run `/install-github-app` in Claude Code,
+#      or follow https://code.claude.com/docs/en/github-actions (manual setup).
+#   2. Add the repository secret ANTHROPIC_API_KEY
+#      (or CLAUDE_CODE_OAUTH_TOKEN and swap the input below).
+#   3. Set the repository variable ENABLE_CLAUDE_ACTION=true
+#      (Settings > Secrets and variables > Actions > Variables).
+# Claude in CI reads the same CLAUDE.md, .claude/settings.json and hooks as locally.
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+
+jobs:
+  claude:
+    if: vars.ENABLE_CLAUDE_ACTION == 'true' && contains(github.event.comment.body, '@claude')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
+      - uses: anthropics/claude-code-action@9eb012b6d0900c2b9eede65ee1758cec4d2973e9 # v1.0.270
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}

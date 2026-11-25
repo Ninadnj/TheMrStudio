@@ -1,0 +1,169 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true, "defaultBranch": "main" },
+  "files": { "includes": ["client/src/**", "server/**", "shared/**", "tests/**", "*.ts"] },
+  "formatter": { "indentStyle": "space", "indentWidth": 2, "lineWidth": 120 },
+  "javascript": { "formatter": { "quoteStyle": "double", "semicolons": "always", "trailingCommas": "all" } },
+  // LEGACY DEBT (generated 2026-11-26 from `biome lint`): these files already broke these
+  // rules before the gates existed. The rules stay errors everywhere else. When you fix a
+  // file, delete it from its list; never add new entries (that hides new problems).
+  "overrides": [
+    {
+      "includes": ["client/src/components/ui/pagination.tsx"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "noRedundantRoles": "warn"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["client/src/components/BookingForm.tsx"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "noStaticElementInteractions": "warn"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "client/src/components/BookingForm.tsx",
+        "client/src/components/Footer.tsx",
+        "client/src/components/Wordmark.tsx",
+        "client/src/pages/AdminDashboard.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "useAriaPropsSupportedByRole": "warn"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["client/src/components/ui/breadcrumb.tsx"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "useFocusableInteractive": "warn"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["client/src/components/Gallery.tsx"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "useKeyWithClickEvents": "warn"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["client/src/components/Gallery.tsx"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "useMediaCaption": "warn"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "client/src/components/BookingForm.tsx",
+        "client/src/components/Gallery.tsx",
+        "client/src/components/LanguageToggle.tsx",
+        "client/src/components/PriceList.tsx",
+        "client/src/components/ui/breadcrumb.tsx",
+        "client/src/components/ui/carousel.tsx",
+        "client/src/components/ui/input-otp.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "useSemanticElements": "warn"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["client/src/components/Header.tsx", "client/src/components/Hero.tsx"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "useValidAnchor": "warn"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["client/src/components/admin/BookingsEditor.tsx", "client/src/components/ui/calendar.tsx"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noComponentHookFactories": "warn"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "client/src/components/BookingForm.tsx",
+        "client/src/components/ui/sidebar.tsx",
+        "client/src/hooks/use-toast.ts"
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "useExhaustiveDependencies": "warn"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["client/src/components/ui/chart.tsx"],
+      "linter": {
+        "rules": {
+          "security": {
+            "noDangerouslySetInnerHtml": "warn"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["server/routes.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noImplicitAnyLet": "warn"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["client/src/lib/sanitizeText.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noMisleadingCharacterClass": "warn"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["client/src/lib/reveal.ts", "server/routes.ts", "server/storage.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "useIterableCallbackReturn": "warn"
+          }
+        }
+      }
+    }
+  ]
+}

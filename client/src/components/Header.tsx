@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
-import ThemeSwitch from "@/components/ThemeSwitch";
+import { useEffect, useState } from "react";
 import LanguageToggle from "@/components/LanguageToggle";
+import ThemeSwitch from "@/components/ThemeSwitch";
 import Wordmark from "@/components/Wordmark";
 import { hapticTap } from "@/lib/haptics";
 import { useLang } from "@/lib/i18n";
-import { requestBooking } from "@/lib/serviceMenu";
 import { scrollBehavior } from "@/lib/motion";
+import { requestBooking } from "@/lib/serviceMenu";
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);

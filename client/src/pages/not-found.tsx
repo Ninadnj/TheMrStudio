@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Home } from "lucide-react";
 import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function NotFound() {
   return (
@@ -12,14 +12,15 @@ export default function NotFound() {
             <Home className="h-6 w-6 text-[var(--theme-accent)]" strokeWidth={1.7} />
           </div>
 
-          <h1 className="font-display text-3xl text-foreground tracking-normal">
-            გვერდი ვერ მოიძებნა
-          </h1>
+          <h1 className="font-display text-3xl text-foreground tracking-normal">გვერდი ვერ მოიძებნა</h1>
           <p className="mx-auto mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
             ეს მისამართი აღარ არსებობს ან დროებით მიუწვდომელია.
           </p>
 
-          <Button asChild className="mt-7 rounded-full bg-[var(--theme-accent)] text-[var(--theme-on-accent)] hover:bg-[var(--theme-accent-hover)]">
+          <Button
+            asChild
+            className="mt-7 rounded-full bg-[var(--theme-accent)] text-[var(--theme-on-accent)] hover:bg-[var(--theme-accent-hover)]"
+          >
             <Link href="/">მთავარზე დაბრუნება</Link>
           </Button>
         </CardContent>

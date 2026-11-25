@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import { insertStudioInfoSchema, type SiteSettings, type StudioInfo } from "@shared/schema";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { queryClient, apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { firstProblem, serverMessage } from "./adminUtils";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -18,7 +18,11 @@ const FIELDS: { key: keyof InfoForm; label: string; hint?: string; type?: string
   { key: "addressKa", label: "მისამართი (ქართულად)", wide: true },
   { key: "addressEn", label: "მისამართი (ინგლისურად)", wide: true },
   { key: "mapQuery", label: "რუკის მისამართი", hint: "ამ ტექსტით იძებნება წერტილი Google Maps-ზე", wide: true },
-  { key: "hoursKa", label: "სამუშაო საათები (ქართულად)", hint: "მაგ. „ორშ–შაბ · 10:00–20:00“. ცარიელი — საიტზე არ ჩანს" },
+  {
+    key: "hoursKa",
+    label: "სამუშაო საათები (ქართულად)",
+    hint: "მაგ. „ორშ–შაბ · 10:00–20:00“. ცარიელი — საიტზე არ ჩანს",
+  },
   { key: "hoursEn", label: "სამუშაო საათები (ინგლისურად)", hint: "მაგ. „Mon–Sat · 10:00–20:00“" },
   { key: "instagram", label: "Instagram-ის ბმული", hint: "ცარიელი — საიტზე არ ჩანს", type: "url" },
   { key: "facebook", label: "Facebook-ის ბმული", hint: "ცარიელი — საიტზე არ ჩანს", type: "url" },

@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import { Share2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { hapticTap } from "@/lib/haptics";
 import { useLang } from "@/lib/i18n";
 import { clearInstallPrompt, getInstallPrompt } from "@/lib/installPrompt";

@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import Wordmark from "@/components/Wordmark";
 import { hapticTap } from "@/lib/haptics";
 import { useLang } from "@/lib/i18n";
+import { stagger } from "@/lib/reveal";
 import { requestBooking } from "@/lib/serviceMenu";
 import { useStudio } from "@/lib/studio";
-import { stagger } from "@/lib/reveal";
 
 export default function Footer() {
   const { t, lang } = useLang();
@@ -24,7 +24,7 @@ export default function Footer() {
           io.disconnect();
         }
       },
-      { rootMargin: "300px 0px" }
+      { rootMargin: "300px 0px" },
     );
     io.observe(el);
     return () => io.disconnect();
@@ -93,24 +93,24 @@ export default function Footer() {
             </dd>
           </div>
           {(studio.instagram || studio.facebook) && (
-          <div>
-            <dt>{t("გამოგვყევით", "Follow")}</dt>
-            <dd className="footer-social">
-              {studio.instagram && (
-                <a href={studio.instagram} target="_blank" rel="noopener noreferrer" data-testid="button-instagram">
-                  Instagram
+            <div>
+              <dt>{t("გამოგვყევით", "Follow")}</dt>
+              <dd className="footer-social">
+                {studio.instagram && (
+                  <a href={studio.instagram} target="_blank" rel="noopener noreferrer" data-testid="button-instagram">
+                    Instagram
+                  </a>
+                )}
+                {studio.facebook && (
+                  <a href={studio.facebook} target="_blank" rel="noopener noreferrer" data-testid="button-facebook">
+                    Facebook
+                  </a>
+                )}
+                <a href={`mailto:${studio.email}`} className="sr-only" data-testid="button-email">
+                  {studio.email}
                 </a>
-              )}
-              {studio.facebook && (
-                <a href={studio.facebook} target="_blank" rel="noopener noreferrer" data-testid="button-facebook">
-                  Facebook
-                </a>
-              )}
-              <a href={`mailto:${studio.email}`} className="sr-only" data-testid="button-email">
-                {studio.email}
-              </a>
-            </dd>
-          </div>
+              </dd>
+            </div>
           )}
         </dl>
 

@@ -1,31 +1,18 @@
-import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { insertStaffSchema, type Staff } from "@shared/schema";
-import { queryClient, apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Pencil, Trash2, UserPlus } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Pencil, Trash2, UserPlus } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 const staffFormSchema = insertStaffSchema.extend({
   name: z.string().trim().min(2, "ჩაწერეთ სახელი (მინიმუმ 2 ასო)"),
@@ -156,9 +143,7 @@ export function StaffEditor() {
             <UserPlus className="w-5 h-5" />
             {editingId ? "სპეციალისტის რედაქტირება" : "ახალი სპეციალისტი"}
           </CardTitle>
-          <CardDescription>
-            ვინ რა სერვისს ასრულებს — სპეციალისტები დაჯავშნის ფანჯარაში ამ სიიდან ჩანს.
-          </CardDescription>
+          <CardDescription>ვინ რა სერვისს ასრულებს — სპეციალისტები დაჯავშნის ფანჯარაში ამ სიიდან ჩანს.</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -170,11 +155,7 @@ export function StaffEditor() {
                   <FormItem>
                     <FormLabel>სახელი</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="მაგ. მარიამი"
-                        {...field}
-                        data-testid="input-staff-name"
-                      />
+                      <Input placeholder="მაგ. მარიამი" {...field} data-testid="input-staff-name" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -234,12 +215,7 @@ export function StaffEditor() {
                   <FormItem>
                     <FormLabel>რიგითობა</FormLabel>
                     <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="1, 2, 3..."
-                        {...field}
-                        data-testid="input-order"
-                      />
+                      <Input type="number" placeholder="1, 2, 3..." {...field} data-testid="input-order" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -255,12 +231,7 @@ export function StaffEditor() {
                   {editingId ? "შენახვა" : "დამატება"}
                 </Button>
                 {editingId && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleCancelEdit}
-                    data-testid="button-cancel-edit"
-                  >
+                  <Button type="button" variant="outline" onClick={handleCancelEdit} data-testid="button-cancel-edit">
                     გაუქმება
                   </Button>
                 )}
@@ -289,12 +260,17 @@ export function StaffEditor() {
                       <div>
                         <h3 className="font-medium">{member.name}</h3>
                         <p className="text-sm text-muted-foreground">
-                          {member.serviceCategory === "Nail" ? "მანიკური / პედიკური" :
-                            member.serviceCategory === "Manicure" ? "მანიკური" :
-                              member.serviceCategory === "Pedicure" ? "პედიკური" :
-                                member.serviceCategory === "Epilation" ? "ლაზერული ეპილაცია" :
-                                  member.serviceCategory === "Cosmetology" ? "კოსმეტოლოგია" :
-                                    member.serviceCategory}
+                          {member.serviceCategory === "Nail"
+                            ? "მანიკური / პედიკური"
+                            : member.serviceCategory === "Manicure"
+                              ? "მანიკური"
+                              : member.serviceCategory === "Pedicure"
+                                ? "პედიკური"
+                                : member.serviceCategory === "Epilation"
+                                  ? "ლაზერული ეპილაცია"
+                                  : member.serviceCategory === "Cosmetology"
+                                    ? "კოსმეტოლოგია"
+                                    : member.serviceCategory}
                         </p>
                         {member.serviceCategory === "Nail" && (
                           <p className="text-xs text-destructive mt-1">
@@ -302,9 +278,7 @@ export function StaffEditor() {
                           </p>
                         )}
                         {member.calendarId ? (
-                          <p className="text-xs text-muted-foreground mt-1 break-all">
-                            კალენდარი: {member.calendarId}
-                          </p>
+                          <p className="text-xs text-muted-foreground mt-1 break-all">კალენდარი: {member.calendarId}</p>
                         ) : (
                           <p className="text-xs text-muted-foreground mt-1">
                             კალენდარი არ არის მითითებული — ვიზიტები Google Calendar-ში არ დაემატება.

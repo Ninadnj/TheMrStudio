@@ -1,15 +1,15 @@
+import type { GalleryImage } from "@shared/schema";
+import { useLenis } from "lenis/react";
+import { ArrowLeft, ArrowRight, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { ArrowLeft, ArrowRight, X } from "lucide-react";
-import { useLenis } from "lenis/react";
-import type { GalleryImage } from "@shared/schema";
-import { isVideoUrl } from "@/lib/videoUtils";
+import { useGalleryImages } from "@/hooks/use-gallery";
 import { hapticTap } from "@/lib/haptics";
 import { useLang } from "@/lib/i18n";
-import { requestBooking, type BookingCategory } from "@/lib/serviceMenu";
-import { useStudio } from "@/lib/studio";
 import { stagger } from "@/lib/reveal";
-import { useGalleryImages } from "@/hooks/use-gallery";
+import { type BookingCategory, requestBooking } from "@/lib/serviceMenu";
+import { useStudio } from "@/lib/studio";
+import { isVideoUrl } from "@/lib/videoUtils";
 
 /** Admin categories are Georgian words; give them English names and a booking target. */
 const CATEGORY_INFO: Record<string, { en: string; booking?: BookingCategory }> = {
@@ -32,9 +32,9 @@ export default function Gallery() {
   const categories = useMemo(() => Array.from(new Set(images.map((img) => img.category))).sort(), [images]);
   const shown = useMemo(
     () => [...images].filter((img) => !category || img.category === category).sort(byOrder),
-    [images, category]
+    [images, category],
   );
-  const label = (cat: string) => (lang === "ka" ? cat : CATEGORY_INFO[cat]?.en ?? cat);
+  const label = (cat: string) => (lang === "ka" ? cat : (CATEGORY_INFO[cat]?.en ?? cat));
 
   if (isLoading) return null;
 
@@ -43,14 +43,22 @@ export default function Gallery() {
       <div className="shell">
         <div className="section-head gallery-head">
           <div className="grid gap-4">
-            <p className="eyebrow" data-reveal="rise">{t("ნამუშევრები", "Portfolio")}</p>
+            <p className="eyebrow" data-reveal="rise">
+              {t("ნამუშევრები", "Portfolio")}
+            </p>
             <h2 id="gallery-title" className="display section-title" data-reveal="mask">
               <span>{t("გალერეა", "Gallery")}</span>
             </h2>
           </div>
 
           {categories.length > 1 && (
-            <div className="text-tabs" role="group" aria-label={t("კატეგორია", "Category")} data-reveal="rise" style={stagger(2)}>
+            <div
+              className="text-tabs"
+              role="group"
+              aria-label={t("კატეგორია", "Category")}
+              data-reveal="rise"
+              style={stagger(2)}
+            >
               <button
                 type="button"
                 className="text-tab"
@@ -86,7 +94,7 @@ export default function Gallery() {
             <p className="lead">
               {t(
                 "ახალი ნამუშევრები მალე გამოჩნდება. მანამდე გვნახეთ Instagram-ზე.",
-                "New work is on its way. Until then, find us on Instagram."
+                "New work is on its way. Until then, find us on Instagram.",
               )}
             </p>
             <div className="flex flex-wrap items-center gap-x-7 gap-y-3">
@@ -137,13 +145,7 @@ export default function Gallery() {
       </div>
 
       {open !== null && shown[open] && (
-        <Lightbox
-          images={shown}
-          index={open}
-          onIndex={setOpen}
-          onClose={() => setOpen(null)}
-          label={label}
-        />
+        <Lightbox images={shown} index={open} onIndex={setOpen} onClose={() => setOpen(null)} label={label} />
       )}
     </section>
   );
@@ -215,7 +217,14 @@ function Lightbox({
         <span className="lightbox-count tabular-nums">
           {index + 1} / {images.length}
         </span>
-        <button ref={closeRef} type="button" onClick={onClose} className="lightbox-btn" aria-label={t("დახურვა", "Close")} data-testid="button-close-lightbox">
+        <button
+          ref={closeRef}
+          type="button"
+          onClick={onClose}
+          className="lightbox-btn"
+          aria-label={t("დახურვა", "Close")}
+          data-testid="button-close-lightbox"
+        >
           <X className="h-5 w-5" strokeWidth={1.5} />
         </button>
       </div>
@@ -244,14 +253,28 @@ function Lightbox({
       </figure>
 
       <div className="lightbox-nav">
-        <button type="button" onClick={prev} disabled={index === 0} className="lightbox-btn" aria-label={t("წინა", "Previous")} data-testid="button-previous-image">
+        <button
+          type="button"
+          onClick={prev}
+          disabled={index === 0}
+          className="lightbox-btn"
+          aria-label={t("წინა", "Previous")}
+          data-testid="button-previous-image"
+        >
           <ArrowLeft className="h-5 w-5" strokeWidth={1.5} />
         </button>
-        <button type="button" onClick={next} disabled={index === images.length - 1} className="lightbox-btn" aria-label={t("შემდეგი", "Next")} data-testid="button-next-image">
+        <button
+          type="button"
+          onClick={next}
+          disabled={index === images.length - 1}
+          className="lightbox-btn"
+          aria-label={t("შემდეგი", "Next")}
+          data-testid="button-next-image"
+        >
           <ArrowRight className="h-5 w-5" strokeWidth={1.5} />
         </button>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }

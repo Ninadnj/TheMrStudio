@@ -1,48 +1,48 @@
-import { useState, useMemo, useRef, useEffect, useLayoutEffect, type CSSProperties } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import type { Staff } from "@shared/schema";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { addDays, format, isBefore, isSameDay, isToday, setHours, setMinutes, startOfToday } from "date-fns";
+import { ka } from "date-fns/locale";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useLenis } from "lenis/react";
-import { Drawer as DrawerPrimitive } from "vaul";
 import {
   ArrowLeft,
   ArrowRight,
-  Check,
   CalendarIcon,
   CalendarPlus,
+  Check,
   Loader2,
-  ShieldCheck,
-  PencilLine,
-  MessageSquarePlus,
-  X,
   type LucideIcon,
+  MessageSquarePlus,
+  PencilLine,
+  ShieldCheck,
+  X,
 } from "lucide-react";
-import { addDays, format, isBefore, isSameDay, isToday, setHours, setMinutes, startOfToday } from "date-fns";
-import { ka } from "date-fns/locale";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { useToast } from "@/hooks/use-toast";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import Wordmark from "@/components/Wordmark";
+import { type CSSProperties, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { Drawer as DrawerPrimitive } from "vaul";
 import InstallPrompt from "@/components/InstallPrompt";
 import QuietStatus from "@/components/QuietStatus";
-import { hapticTap, hapticSuccess, hapticWarning } from "@/lib/haptics";
-import { useLang } from "@/lib/i18n";
+import { BeamIcon, DropIcon, LotusIcon, PolishIcon, type StudioIconProps } from "@/components/StudioIcons";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import Wordmark from "@/components/Wordmark";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useStudio, type Studio } from "@/lib/studio";
-import { confirmationPromise } from "@/lib/studioFacts";
+import { useToast } from "@/hooks/use-toast";
+import { hapticSuccess, hapticTap, hapticWarning } from "@/lib/haptics";
+import { useLang } from "@/lib/i18n";
 import { scrollBehavior } from "@/lib/motion";
-import { PolishIcon, LotusIcon, BeamIcon, DropIcon, type StudioIconProps } from "@/components/StudioIcons";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import {
   BOOKING_REQUEST_EVENT,
-  bookingCategories,
-  bookingRef,
-  treatmentsFor,
-  usePriceMenu,
   type BookingCategory,
   type BookingRequest,
+  bookingCategories,
+  bookingRef,
   type Treatment,
+  treatmentsFor,
+  usePriceMenu,
 } from "@/lib/serviceMenu";
-import type { Staff } from "@shared/schema";
+import { type Studio, useStudio } from "@/lib/studio";
+import { confirmationPromise } from "@/lib/studioFacts";
 
 type Aftercare = {
   titleKa: string;
@@ -79,9 +79,24 @@ const aftercareByCategory: Record<string, Aftercare> = {
 };
 
 const timeSlots = [
-  "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30",
-  "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30",
-  "18:00", "18:30",
+  "10:00",
+  "10:30",
+  "11:00",
+  "11:30",
+  "12:00",
+  "12:30",
+  "13:00",
+  "13:30",
+  "14:00",
+  "14:30",
+  "15:00",
+  "15:30",
+  "16:00",
+  "16:30",
+  "17:00",
+  "17:30",
+  "18:00",
+  "18:30",
 ];
 
 const dayPeriods = [
@@ -244,9 +259,7 @@ function useBookingFlow() {
   const { data: availabilityData } = useQuery<{ bookedTimes: string[] }>({
     queryKey: ["/api/bookings/availability", formattedDate, staffId],
     queryFn: async () => {
-      const response = await fetch(
-        `/api/bookings/availability?date=${formattedDate}&staffId=${staffId}`
-      );
+      const response = await fetch(`/api/bookings/availability?date=${formattedDate}&staffId=${staffId}`);
       if (!response.ok) throw new Error("Failed to fetch availability");
       return response.json();
     },
@@ -287,8 +300,7 @@ function useBookingFlow() {
   const dateLocale = lang === "ka" ? ka : undefined;
   const dateLabel = format(date, "EEEE, d MMMM", { locale: dateLocale });
 
-  const canContinue =
-    step === 1 ? !!category && picked.length > 0 && !!staffId : step === 2 ? !!time : true;
+  const canContinue = step === 1 ? !!category && picked.length > 0 && !!staffId : step === 2 ? !!time : true;
 
   const errors = validateContact(contact);
   const showError = (field: ContactField) => !!errors[field] && (!!touched[field] || submitAttempted);
@@ -384,8 +396,7 @@ function useBookingFlow() {
   };
 
   const createBookingMutation = useMutation({
-    mutationFn: async (bookingData: Record<string, unknown>) =>
-      apiRequest("POST", "/api/bookings", bookingData),
+    mutationFn: async (bookingData: Record<string, unknown>) => apiRequest("POST", "/api/bookings", bookingData),
     onSuccess: async (booking: { id?: string }) => {
       setSubmitted({
         firstName: contact.fullName.trim().split(/\s+/)[0] || "",
@@ -420,7 +431,7 @@ function useBookingFlow() {
         title: t("დაჯავშნა ვერ მოხერხდა", "Booking failed"),
         description: t(
           "გთხოვთ სცადოთ ხელახლა ან მოგვწერეთ WhatsApp-ზე.",
-          "Please try again, or message us on WhatsApp."
+          "Please try again, or message us on WhatsApp.",
         ),
         variant: "destructive",
       });
@@ -466,10 +477,7 @@ function useBookingFlow() {
     }
   };
 
-  const priceTotal = pickedTreatments.reduce(
-    (sum, tr) => sum + (typeof tr.price === "number" ? tr.price : 0),
-    0
-  );
+  const priceTotal = pickedTreatments.reduce((sum, tr) => sum + (typeof tr.price === "number" ? tr.price : 0), 0);
   const priceLabel = wantsConsult
     ? t("კონსულტაციის შემდეგ", "After consultation")
     : pickedTreatments.length
@@ -630,13 +638,7 @@ export default function BookingSheet({
   const showCard = side === "right" && !flow.submitted;
 
   return (
-    <DrawerPrimitive.Root
-      open={open}
-      onOpenChange={setOpen}
-      direction={side}
-      shouldScaleBackground={false}
-      autoFocus
-    >
+    <DrawerPrimitive.Root open={open} onOpenChange={setOpen} direction={side} shouldScaleBackground={false} autoFocus>
       <DrawerPrimitive.Portal>
         <DrawerPrimitive.Overlay className="booking-sheet-overlay" />
         <DrawerPrimitive.Content
@@ -665,16 +667,14 @@ export default function BookingSheet({
             <DrawerPrimitive.Description className="sr-only">
               {t(
                 "აირჩიეთ სერვისი და დრო, შემდეგ დაგვიტოვეთ საკონტაქტო მონაცემები.",
-                "Choose a service and a time, then leave your contact details."
+                "Choose a service and a time, then leave your contact details.",
               )}
             </DrawerPrimitive.Description>
           </div>
 
           <div className="booking-sheet-columns">
             <div className="booking-sheet-flow">
-              {!flow.submitted && (
-                <BookingStepper t={t} labels={flow.stepLabels} step={flow.step} onJump={flow.goTo} />
-              )}
+              {!flow.submitted && <BookingStepper t={t} labels={flow.stepLabels} step={flow.step} onJump={flow.goTo} />}
 
               <div ref={bodyRef} className="booking-sheet-body" data-lenis-prevent onFocus={keepFieldInView}>
                 <BookingFlowBody flow={flow} onDone={() => setOpen(false)} />
@@ -752,7 +752,7 @@ function noPrepaymentLine(t: T) {
   const when = confirmationPromise;
   return t(
     `წინასწარი გადახდა არ არის საჭირო. დადასტურებას ${when ? `${when.ka} ` : ""}ელ. ფოსტით მიიღებთ.`,
-    `No prepayment. We'll confirm by email${when ? ` ${when.en}` : ""}.`
+    `No prepayment. We'll confirm by email${when ? ` ${when.en}` : ""}.`,
   );
 }
 
@@ -956,12 +956,8 @@ function BookingStepper({
 function StepHeading({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
     <div className="mb-4">
-      <h3 className="text-[18px] font-semibold text-[var(--theme-text)] tracking-[-0.01em]">
-        {title}
-      </h3>
-      {subtitle && (
-        <p className="text-[13px] text-[var(--theme-muted1)] mt-0.5">{subtitle}</p>
-      )}
+      <h3 className="text-[18px] font-semibold text-[var(--theme-text)] tracking-[-0.01em]">{title}</h3>
+      {subtitle && <p className="text-[13px] text-[var(--theme-muted1)] mt-0.5">{subtitle}</p>}
     </div>
   );
 }
@@ -1063,9 +1059,7 @@ function StepService({
               {groups.map((group) => (
                 <div key={group[0].groupId} className="contents">
                   {multiGroup && (
-                    <div className="booking-group-label">
-                      {lang === "ka" ? group[0].groupKa : group[0].groupEn}
-                    </div>
+                    <div className="booking-group-label">{lang === "ka" ? group[0].groupKa : group[0].groupEn}</div>
                   )}
                   {group.map((tr) => (
                     <TreatmentRow
@@ -1096,7 +1090,7 @@ function StepService({
                 <QuietStatus
                   label={t(
                     "ამ სერვისზე თავისუფალი სპეციალისტი ახლა არ გვყავს — მოგვწერეთ WhatsApp-ზე.",
-                    "No specialist is free for this service — message us on WhatsApp."
+                    "No specialist is free for this service — message us on WhatsApp.",
                   )}
                   className="!py-4"
                 />
@@ -1177,13 +1171,9 @@ function TreatmentRow({
         {active && <Check className="h-3 w-3" strokeWidth={3} />}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block text-[14.5px] font-medium text-[var(--theme-text)] leading-snug">
-          {title}
-        </span>
+        <span className="block text-[14.5px] font-medium text-[var(--theme-text)] leading-snug">{title}</span>
         {subtitle && (
-          <span className="block text-[11.5px] text-[var(--theme-muted1)]/85 mt-0.5 leading-snug">
-            {subtitle}
-          </span>
+          <span className="block text-[11.5px] text-[var(--theme-muted1)]/85 mt-0.5 leading-snug">{subtitle}</span>
         )}
       </span>
       {price !== undefined && (
@@ -1323,9 +1313,7 @@ function StepTime({
           <QuietStatus label={t("კალენდრის ჩატვირთვა…", "Reading the calendar…")} className="!py-6" />
         ) : slots.length === 0 || allBooked ? (
           <div className="booking-day-full">
-            <p>
-              {t("ეს დღე სრულად დაკავებულია.", "This day is fully booked.")}
-            </p>
+            <p>{t("ეს დღე სრულად დაკავებულია.", "This day is fully booked.")}</p>
             <button
               type="button"
               onClick={() => onSelectDate(addDays(date, 1))}
@@ -1357,9 +1345,7 @@ function StepTime({
                           className="booking-time-chip press-tap"
                           data-active={isActive}
                           aria-pressed={isActive}
-                          aria-label={
-                            slot.booked ? `${slot.time} — ${t("დაკავებულია", "booked")}` : slot.time
-                          }
+                          aria-label={slot.booked ? `${slot.time} — ${t("დაკავებულია", "booked")}` : slot.time}
                           data-testid={`time-${slot.time}`}
                         >
                           {slot.time}
@@ -1422,7 +1408,10 @@ function StepDetails({
     <div data-testid="step-details">
       <StepHeading
         title={t("თითქმის მზადაა", "Almost there")}
-        subtitle={t("გადაამოწმეთ ვიზიტი და დაგვიტოვეთ საკონტაქტო მონაცემები", "Check your visit and leave your contact")}
+        subtitle={t(
+          "გადაამოწმეთ ვიზიტი და დაგვიტოვეთ საკონტაქტო მონაცემები",
+          "Check your visit and leave your contact",
+        )}
       />
 
       <div className="booking-review" data-testid="booking-review">
@@ -1447,7 +1436,7 @@ function StepDetails({
           <span>
             {t(
               `გამარჯობა, ${savedName.split(" ")[0]}! მონაცემები უკვე შევსებულია.`,
-              `Welcome back, ${savedName.split(" ")[0]} — your details are filled in.`
+              `Welcome back, ${savedName.split(" ")[0]} — your details are filled in.`,
             )}
           </span>
           <button type="button" onClick={onForgetSaved} className="booking-welcome-reset">
@@ -1504,7 +1493,11 @@ function StepDetails({
         <FloatingField
           id={contactFieldIds.email}
           label={t("ელ. ფოსტა (დადასტურებისთვის)", "Email · for your confirmation")}
-          error={showError("email") ? t("შეამოწმეთ ელ. ფოსტის მისამართი.", "That email doesn't look complete yet.") : undefined}
+          error={
+            showError("email")
+              ? t("შეამოწმეთ ელ. ფოსტის მისამართი.", "That email doesn't look complete yet.")
+              : undefined
+          }
         >
           <input
             id={contactFieldIds.email}
@@ -1581,9 +1574,7 @@ function ReviewRow({
         <span className="block text-[14px] font-semibold text-[var(--theme-text)] leading-snug first-letter:uppercase">
           {title}
         </span>
-        {detail && (
-          <span className="block text-[12.5px] text-[var(--theme-muted1)] mt-0.5 leading-snug">{detail}</span>
-        )}
+        {detail && <span className="block text-[12.5px] text-[var(--theme-muted1)] mt-0.5 leading-snug">{detail}</span>}
       </span>
       <button
         type="button"
@@ -1716,12 +1707,14 @@ function InvitationCard({
       </article>
 
       <section className="invitation-expect" aria-labelledby="expect-title">
-        <p id="expect-title" className="eyebrow">{t("შემდეგი ნაბიჯები", "What to expect")}</p>
+        <p id="expect-title" className="eyebrow">
+          {t("შემდეგი ნაბიჯები", "What to expect")}
+        </p>
         <ul>
           <li>
             {t(
               `ვიზიტის დადასტურებას ${promise ? `${promise.ka} ` : ""}ელ. ფოსტით მიიღებთ.`,
-              `You'll get the confirmation by email${promise ? ` ${promise.en}` : ""}.`
+              `You'll get the confirmation by email${promise ? ` ${promise.en}` : ""}.`,
             )}
           </li>
           <li>{t("გადახდა ვიზიტის შემდეგ.", "You pay after your visit.")}</li>
@@ -1731,8 +1724,8 @@ function InvitationCard({
               href={studio.whatsappLink(
                 t(
                   `გამარჯობა! ჯავშანი #${data.confirmationCode} — მინდა შევცვალო.`,
-                  `Hi, I'd like to change booking #${data.confirmationCode}.`
-                )
+                  `Hi, I'd like to change booking #${data.confirmationCode}.`,
+                ),
               )}
               target="_blank"
               rel="noopener noreferrer"
@@ -1816,7 +1809,7 @@ function buildIcs(data: SubmittedData, address: string): string {
       data.confirmationCode && `Reference: ${data.confirmationCode}`,
     ]
       .filter(Boolean)
-      .join("\n")
+      .join("\n"),
   );
   const location = escapeIcsText(address);
 

@@ -1,8 +1,8 @@
 import { hapticTap } from "@/lib/haptics";
 import { useLang } from "@/lib/i18n";
-import { bookingCategories, requestBooking, type BookingRequest } from "@/lib/serviceMenu";
-import { useStudio } from "@/lib/studio";
 import { stagger } from "@/lib/reveal";
+import { type BookingRequest, bookingCategories, requestBooking } from "@/lib/serviceMenu";
+import { useStudio } from "@/lib/studio";
 
 /** The booking invitation on the page. The sheet itself loads on demand (BookingLauncher). */
 export default function BookingSection() {
@@ -12,7 +12,10 @@ export default function BookingSection() {
   const steps: { title: string; text?: string }[] = [
     { title: t("სერვისი", "Service"), text: t("აირჩიეთ პროცედურა მენიუდან", "Pick a treatment from the menu") },
     { title: t("დრო", "Time") },
-    { title: t("დადასტურება", "Confirm"), text: t("დადასტურებას ელ. ფოსტით მიიღებთ", "We confirm your visit by email") },
+    {
+      title: t("დადასტურება", "Confirm"),
+      text: t("დადასტურებას ელ. ფოსტით მიიღებთ", "We confirm your visit by email"),
+    },
   ];
 
   const open = (request?: BookingRequest) => {
@@ -21,10 +24,16 @@ export default function BookingSection() {
   };
 
   return (
-    <section id="booking" className="section booking-stage scroll-mt-20 md:scroll-mt-24" aria-labelledby="booking-title">
+    <section
+      id="booking"
+      className="section booking-stage scroll-mt-20 md:scroll-mt-24"
+      aria-labelledby="booking-title"
+    >
       <div className="shell booking-intro">
         <div className="booking-intro-head">
-          <p className="eyebrow" data-reveal="rise">{t("ჯავშანი", "Booking")}</p>
+          <p className="eyebrow" data-reveal="rise">
+            {t("ჯავშანი", "Booking")}
+          </p>
           <h2 id="booking-title" className="display booking-intro-title" data-reveal="mask">
             <span>{t("ვიზიტის დაჯავშნა", "Book your visit")}</span>
           </h2>

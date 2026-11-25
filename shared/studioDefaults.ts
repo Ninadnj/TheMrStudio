@@ -14,5 +14,5 @@ export const defaultStudioInfo = {
   hoursKa: "",
   hoursEn: "",
   instagram: "https://www.instagram.com/studiomariamisnail?igsh=N3RvYTE3dXBnZ29v&utm_source=qr",
-  facebook: "https://www.facebook.com/profile.php?id=61566420489825"
+  facebook: "https://www.facebook.com/profile.php?id=61566420489825",
 } satisfies Required<InsertStudioInfo>;

@@ -1,31 +1,59 @@
-import { useMemo, useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
-import { Check, X, Edit, Clock, Trash2, Phone, MessageCircle, Mail, RefreshCw } from "lucide-react";
+import type { Booking } from "@shared/schema";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { ka } from "date-fns/locale";
-import type { Booking } from "@shared/schema";
+import { Check, Clock, Edit, Mail, MessageCircle, Phone, RefreshCw, Trash2, X } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { bookingRef } from "@/lib/serviceMenu";
 
 /** New requests show up on their own: the list refreshes this often (and when the tab regains focus). */
 export const BOOKINGS_REFRESH_MS = 30_000;
 
 const TIME_OPTIONS = [
-  "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30",
-  "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30",
-  "18:00", "18:30",
+  "10:00",
+  "10:30",
+  "11:00",
+  "11:30",
+  "12:00",
+  "12:30",
+  "13:00",
+  "13:30",
+  "14:00",
+  "14:30",
+  "15:00",
+  "15:30",
+  "16:00",
+  "16:30",
+  "17:00",
+  "17:30",
+  "18:00",
+  "18:30",
 ];
 
 const DURATION_OPTIONS = [
-  ["30", "30 წუთი"], ["60", "1 საათი"], ["90", "1,5 საათი"], ["120", "2 საათი"],
-  ["150", "2,5 საათი"], ["180", "3 საათი"], ["210", "3,5 საათი"], ["240", "4 საათი"],
+  ["30", "30 წუთი"],
+  ["60", "1 საათი"],
+  ["90", "1,5 საათი"],
+  ["120", "2 საათი"],
+  ["150", "2,5 საათი"],
+  ["180", "3 საათი"],
+  ["210", "3,5 საათი"],
+  ["240", "4 საათი"],
 ];
 
 const byDateTime = (a: Booking, b: Booking) => `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`);
@@ -77,11 +105,13 @@ export function BookingsEditor() {
           ? { title: "ჯავშანი დადასტურდა", description: "დაემატა სპეციალისტის Google Calendar-ში." }
           : {
               title: "ჯავშანი დადასტურდა",
-              description: "Google Calendar-ში ვერ დაემატა — შეამოწმეთ სპეციალისტის კალენდრის ID „სპეციალისტების“ გვერდზე.",
-            }
+              description:
+                "Google Calendar-ში ვერ დაემატა — შეამოწმეთ სპეციალისტის კალენდრის ID „სპეციალისტების“ გვერდზე.",
+            },
       );
     },
-    onError: () => toast({ title: "ვერ დადასტურდა", description: "არაფერი შეცვლილა. სცადეთ ხელახლა.", variant: "destructive" }),
+    onError: () =>
+      toast({ title: "ვერ დადასტურდა", description: "არაფერი შეცვლილა. სცადეთ ხელახლა.", variant: "destructive" }),
   });
 
   const rejectMutation = useMutation({
@@ -93,7 +123,12 @@ export function BookingsEditor() {
       setRejectBooking(null);
       setRejectionReason("");
     },
-    onError: () => toast({ title: "უარყოფა ვერ მოხერხდა", description: "არაფერი შეცვლილა. სცადეთ ხელახლა.", variant: "destructive" }),
+    onError: () =>
+      toast({
+        title: "უარყოფა ვერ მოხერხდა",
+        description: "არაფერი შეცვლილა. სცადეთ ხელახლა.",
+        variant: "destructive",
+      }),
   });
 
   const modifyMutation = useMutation({
@@ -121,7 +156,7 @@ export function BookingsEditor() {
     const id = modifyBooking.id;
     modifyMutation.mutate(
       { id, time: modifyTime || undefined, duration: modifyDuration || undefined },
-      { onSuccess: () => andApprove && approveMutation.mutate(id) }
+      { onSuccess: () => andApprove && approveMutation.mutate(id) },
     );
   };
 
@@ -242,7 +277,11 @@ export function BookingsEditor() {
                 variant="ghost"
                 className="text-destructive hover:text-destructive"
                 onClick={() => {
-                  if (confirm(`წაიშალოს ჯავშანი — ${booking.fullName}, ${visitDate(booking)}? Google Calendar-იდანაც წაიშლება.`)) {
+                  if (
+                    confirm(
+                      `წაიშალოს ჯავშანი — ${booking.fullName}, ${visitDate(booking)}? Google Calendar-იდანაც წაიშლება.`,
+                    )
+                  ) {
                     deleteMutation.mutate(booking.id);
                   }
                 }}
@@ -355,7 +394,9 @@ export function BookingsEditor() {
                 </SelectTrigger>
                 <SelectContent>
                   {TIME_OPTIONS.map((time) => (
-                    <SelectItem key={time} value={time}>{time}</SelectItem>
+                    <SelectItem key={time} value={time}>
+                      {time}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -368,7 +409,9 @@ export function BookingsEditor() {
                 </SelectTrigger>
                 <SelectContent>
                   {DURATION_OPTIONS.map(([value, label]) => (
-                    <SelectItem key={value} value={value}>{label}</SelectItem>
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -424,7 +467,9 @@ export function BookingsEditor() {
             </Button>
             <Button
               variant="destructive"
-              onClick={() => rejectBooking && rejectMutation.mutate({ id: rejectBooking.id, reason: rejectionReason || undefined })}
+              onClick={() =>
+                rejectBooking && rejectMutation.mutate({ id: rejectBooking.id, reason: rejectionReason || undefined })
+              }
               disabled={rejectMutation.isPending}
               data-testid="button-confirm-reject"
             >

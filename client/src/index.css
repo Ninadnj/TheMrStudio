@@ -3,12 +3,13 @@
 @import "tailwindcss/utilities";
 
 @font-face {
-  font-family: 'BPG Nino Mtavruli';
+  font-family: "BPG Nino Mtavruli";
   font-style: normal;
   font-weight: 400 900;
   font-display: swap;
-  src: local('BPG Nino Mtavruli'),
-       url('/fonts/bpg_nino_mtavruli.woff') format('woff');
+  src:
+    local("BPG Nino Mtavruli"),
+    url("/fonts/bpg_nino_mtavruli.woff") format("woff");
   unicode-range: U+10A0-10FF, U+1C90-1CBF, U+2D00-2D2F;
 }
 
@@ -16,66 +17,71 @@
 /* The Lari sign (₾) — Geist has no glyph for it, so it comes from Noto Sans Georgian.
    U+20BE is left out of the latin-ext ranges below so those files aren't fetched for it. */
 @font-face {
-  font-family: 'Noto Sans Georgian';
+  font-family: "Noto Sans Georgian";
   font-style: normal;
   font-weight: 300 700;
   font-display: swap;
-  src: url('/fonts/noto-sans-georgian-lari.woff2') format('woff2');
+  src: url("/fonts/noto-sans-georgian-lari.woff2") format("woff2");
   unicode-range: U+20BE;
 }
 
 @font-face {
-  font-family: 'Geist';
+  font-family: "Geist";
   font-style: normal;
   font-weight: 300 700;
   font-display: swap;
-  src: url('/fonts/geist-latin-ext.woff2') format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20BD, U+20BF-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  src: url("/fonts/geist-latin-ext.woff2") format("woff2");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20BD, U+20BF-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
 @font-face {
-  font-family: 'Geist';
+  font-family: "Geist";
   font-style: normal;
   font-weight: 300 700;
   font-display: swap;
-  src: url('/fonts/geist-latin.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  src: url("/fonts/geist-latin.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
-  font-family: 'Instrument Serif';
+  font-family: "Instrument Serif";
   font-style: italic;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/instrument-serif-italic-latin.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  src: url("/fonts/instrument-serif-italic-latin.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
-  font-family: 'Instrument Serif';
+  font-family: "Instrument Serif";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/instrument-serif-latin.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  src: url("/fonts/instrument-serif-latin.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
-  font-family: 'Noto Sans Georgian';
+  font-family: "Noto Sans Georgian";
   font-style: normal;
   font-weight: 300 700;
   font-display: swap;
-  src: url('/fonts/noto-sans-georgian-georgian.woff2') format('woff2');
+  src: url("/fonts/noto-sans-georgian-georgian.woff2") format("woff2");
   unicode-range: U+0589, U+10A0-10FF, U+1C90-1CBA, U+1CBD-1CBF, U+205A, U+2D00-2D2F, U+2E31;
 }
 
 @font-face {
-  font-family: 'Noto Sans Georgian';
+  font-family: "Noto Sans Georgian";
   font-style: normal;
   font-weight: 300 700;
   font-display: swap;
-  src: url('/fonts/noto-sans-georgian-latin-ext.woff2') format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20BD, U+20BF-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  src: url("/fonts/noto-sans-georgian-latin-ext.woff2") format("woff2");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20BD, U+20BF-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
 /* ==========================================================================
@@ -97,20 +103,20 @@
   --text-eyebrow: 0.75rem;
 
   /* Colour */
-  --theme-bg: #F5F1EB;
-  --theme-surface: #FDFBF8;
-  --theme-surface-muted: #ECE6DD;
-  --theme-text: #1F1A17;
-  --theme-muted1: #6B625A;
-  --theme-muted2: #A69B90;
-  --theme-line: #E0D7CB;
-  --theme-accent: #2B2420;
-  --theme-accent-hover: #17120F;
-  --theme-on-accent: #FAF6F0;
-  --theme-champagne: #E3D3BC;
-  --theme-gold: #A8875A;
-  --theme-gold-text: #7D603A;
-  --theme-danger: #A4462A;
+  --theme-bg: #f5f1eb;
+  --theme-surface: #fdfbf8;
+  --theme-surface-muted: #ece6dd;
+  --theme-text: #1f1a17;
+  --theme-muted1: #6b625a;
+  --theme-muted2: #a69b90;
+  --theme-line: #e0d7cb;
+  --theme-accent: #2b2420;
+  --theme-accent-hover: #17120f;
+  --theme-on-accent: #faf6f0;
+  --theme-champagne: #e3d3bc;
+  --theme-gold: #a8875a;
+  --theme-gold-text: #7d603a;
+  --theme-danger: #a4462a;
   --icon-accent: var(--theme-gold);
 
   /* Space */
@@ -166,19 +172,19 @@
 /* Dark mode: espresso night, ivory type, warm gold detail. */
 .dark {
   --theme-bg: #141110;
-  --theme-surface: #1C1816;
-  --theme-surface-muted: #26211E;
-  --theme-text: #F3ECE2;
-  --theme-muted1: #CBBFB1;
-  --theme-muted2: #8C8075;
-  --theme-line: #3A322C;
-  --theme-accent: #EADFCF;
-  --theme-accent-hover: #F7EFE3;
-  --theme-on-accent: #1A1512;
-  --theme-champagne: #D9C3A3;
-  --theme-gold: #C4A273;
-  --theme-gold-text: #CDAE80;
-  --theme-danger: #F2A07B;
+  --theme-surface: #1c1816;
+  --theme-surface-muted: #26211e;
+  --theme-text: #f3ece2;
+  --theme-muted1: #cbbfb1;
+  --theme-muted2: #8c8075;
+  --theme-line: #3a322c;
+  --theme-accent: #eadfcf;
+  --theme-accent-hover: #f7efe3;
+  --theme-on-accent: #1a1512;
+  --theme-champagne: #d9c3a3;
+  --theme-gold: #c4a273;
+  --theme-gold-text: #cdae80;
+  --theme-danger: #f2a07b;
 
   --shadow-overlay: 0 1px 2px rgba(0, 0, 0, 0.3), 0 30px 80px -40px rgba(0, 0, 0, 0.7);
 
@@ -259,7 +265,6 @@
 }
 
 @layer utilities {
-
   .bg-theme-muted\/10 {
     background-color: color-mix(in srgb, var(--theme-muted1) 10%, transparent);
   }
@@ -390,7 +395,9 @@
     font-size: 0.875rem;
     font-weight: 500;
     background: transparent;
-    transition: border-color var(--dur-ui) var(--ease), background-color var(--dur-ui) var(--ease);
+    transition:
+      border-color var(--dur-ui) var(--ease),
+      background-color var(--dur-ui) var(--ease);
   }
   .btn-quiet:hover {
     border-color: var(--theme-accent);
@@ -410,7 +417,9 @@
     transition: background-size var(--dur-reveal) var(--ease);
   }
   .link-line:hover {
-    background-size: 100% 1px, 100% 1px;
+    background-size:
+      100% 1px,
+      100% 1px;
   }
   .link-line svg {
     transition: transform var(--dur-ui) var(--ease);
@@ -572,10 +581,17 @@
     letter-spacing: 0.01em;
     color: var(--theme-on-accent);
     background: var(--theme-accent);
-    transition: background-color var(--dur-ui) var(--ease), transform var(--dur-ui) var(--ease), opacity var(--dur-ui) var(--ease);
+    transition:
+      background-color var(--dur-ui) var(--ease),
+      transform var(--dur-ui) var(--ease),
+      opacity var(--dur-ui) var(--ease);
   }
-  .pill-primary:hover { background: var(--theme-accent-hover); }
-  .pill-primary:active { transform: scale(0.98); }
+  .pill-primary:hover {
+    background: var(--theme-accent-hover);
+  }
+  .pill-primary:active {
+    transform: scale(0.98);
+  }
   .pill-primary:disabled {
     opacity: 0.4;
     cursor: not-allowed;
@@ -594,18 +610,17 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      var(--theme-accent) 50%,
-      transparent
-    );
+    background: linear-gradient(90deg, transparent, var(--theme-accent) 50%, transparent);
     transform: translateX(-100%);
     animation: shimmerSlide 1.6s ease-in-out infinite;
   }
   @keyframes shimmerSlide {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
   }
 
   /* Quiet status block (loading/empty) — small text + shimmer */
@@ -666,13 +681,19 @@
     scroll-snap-align: start;
     border-radius: var(--radius-s);
     border: 1px solid color-mix(in srgb, var(--theme-line) 72%, transparent);
-    background:
-      linear-gradient(180deg, color-mix(in srgb, var(--theme-surface) 90%, transparent), color-mix(in srgb, var(--theme-surface) 98%, var(--theme-bg)));
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--theme-surface) 90%, transparent),
+      color-mix(in srgb, var(--theme-surface) 98%, var(--theme-bg))
+    );
     color: var(--theme-text);
     text-align: left;
     padding: 0.65rem;
     box-shadow: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.2s ease;
   }
 
   .booking-date-chip span,
@@ -820,7 +841,10 @@
     text-align: left;
     border: 1px solid color-mix(in srgb, var(--theme-line) 72%, transparent);
     background: var(--theme-surface);
-    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease,
+      box-shadow 0.2s ease;
   }
 
   .booking-category:hover {
@@ -842,12 +866,19 @@
     height: 2.4rem;
     border-radius: var(--radius-full);
     color: var(--theme-text);
-    background: linear-gradient(150deg, var(--theme-surface), color-mix(in srgb, var(--theme-champagne) 42%, var(--theme-surface)));
+    background: linear-gradient(
+      150deg,
+      var(--theme-surface),
+      color-mix(in srgb, var(--theme-champagne) 42%, var(--theme-surface))
+    );
     border: 1px solid color-mix(in srgb, var(--theme-gold) 55%, transparent);
     box-shadow:
       0 0 0 3px color-mix(in srgb, var(--theme-surface) 60%, transparent),
       0 0 0 4px color-mix(in srgb, var(--theme-gold) 16%, transparent);
-    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease,
+      border-color 0.25s ease;
   }
 
   .studio-seal svg {
@@ -859,7 +890,7 @@
     color: var(--theme-on-accent);
     background: var(--theme-accent);
     border-color: var(--theme-accent);
-    --icon-accent: #D8BE8C;
+    --icon-accent: #d8be8c;
   }
 
   /* Step 1 — treatment checklist */
@@ -896,7 +927,10 @@
     border-radius: var(--radius-xs);
     border: 1.5px solid color-mix(in srgb, var(--theme-muted1) 45%, transparent);
     color: var(--theme-on-accent);
-    transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+    transition:
+      background-color 0.18s ease,
+      border-color 0.18s ease,
+      transform 0.18s ease;
   }
 
   .booking-treatment[data-active="true"] .booking-check {
@@ -958,7 +992,9 @@
     color: var(--theme-text);
     font-size: 0.875rem;
     font-weight: 600;
-    transition: border-color 0.2s ease, background-color 0.2s ease;
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease;
   }
 
   .booking-staff-chip[data-active="true"] {
@@ -986,7 +1022,9 @@
     color: var(--theme-text);
     font-size: 0.8rem;
     font-weight: 600;
-    transition: border-color 0.2s ease, background-color 0.2s ease;
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease;
   }
 
   .booking-calendar-button svg {
@@ -1021,7 +1059,10 @@
     font-size: 0.82rem;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
-    transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease,
+      color 0.2s ease;
   }
 
   .booking-time-chip:hover:not(:disabled) {
@@ -1126,7 +1167,9 @@
     border: 1px solid var(--theme-line);
     border-radius: var(--radius-s);
     background: var(--theme-surface);
-    transition: border-color var(--dur-ui) var(--ease), box-shadow var(--dur-ui) var(--ease);
+    transition:
+      border-color var(--dur-ui) var(--ease),
+      box-shadow var(--dur-ui) var(--ease);
   }
   .float-field:focus-within {
     border-color: var(--theme-accent);
@@ -1173,7 +1216,9 @@
     text-overflow: ellipsis;
     pointer-events: none;
     transform-origin: left top;
-    transition: transform var(--dur-ui) var(--ease), color var(--dur-ui) var(--ease);
+    transition:
+      transform var(--dur-ui) var(--ease),
+      color var(--dur-ui) var(--ease);
   }
   .float-input:focus + .float-label,
   .float-input:not(:placeholder-shown) + .float-label {
@@ -1204,7 +1249,9 @@
     color: var(--theme-muted1);
     font-size: 0.82rem;
     font-weight: 500;
-    transition: color 0.18s ease, border-color 0.18s ease;
+    transition:
+      color 0.18s ease,
+      border-color 0.18s ease;
   }
 
   .booking-add-note:hover {
@@ -1243,7 +1290,7 @@
     position: fixed;
     inset: 0;
     z-index: 90;
-    background: color-mix(in srgb, #140F0C 40%, transparent);
+    background: color-mix(in srgb, #140f0c 40%, transparent);
     backdrop-filter: blur(6px) saturate(120%);
     -webkit-backdrop-filter: blur(6px) saturate(120%);
   }
@@ -1255,7 +1302,11 @@
     flex-direction: column;
     color: var(--theme-text);
     background:
-      radial-gradient(ellipse 80% 38% at 100% 0%, color-mix(in srgb, var(--theme-champagne) 34%, transparent), transparent 70%),
+      radial-gradient(
+        ellipse 80% 38% at 100% 0%,
+        color-mix(in srgb, var(--theme-champagne) 34%, transparent),
+        transparent 70%
+      ),
       var(--theme-bg);
     outline: none;
   }
@@ -1268,7 +1319,12 @@
     right: 12%;
     height: 1px;
     pointer-events: none;
-    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--theme-gold) 75%, transparent), transparent);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--theme-gold) 75%, transparent),
+      transparent
+    );
   }
 
   .booking-sheet[data-side="bottom"] {
@@ -1392,8 +1448,14 @@
     animation: none;
   }
   @keyframes appointmentFill {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
   .appointment-foot {
     display: grid;
@@ -1604,8 +1666,14 @@
     animation: invitationLine 1100ms var(--ease) 150ms both;
   }
   @keyframes invitationLine {
-    from { transform: scaleX(0); opacity: 0; }
-    to { transform: scaleX(1); opacity: 1; }
+    from {
+      transform: scaleX(0);
+      opacity: 0;
+    }
+    to {
+      transform: scaleX(1);
+      opacity: 1;
+    }
   }
   .invitation-wordmark {
     margin-top: 0.75rem;
@@ -1779,16 +1847,16 @@
       display: grid;
       gap: 0.75rem;
       padding: 0 var(--gutter) 1.5rem;
-      color: #FDFBF8;
+      color: #fdfbf8;
     }
     .hero-head .wordmark {
-      color: #FDFBF8;
+      color: #fdfbf8;
     }
     .hero-head .wordmark-the {
-      color: #E3D3BC;
+      color: #e3d3bc;
     }
     .hero-head .hero-eyebrow {
-      color: #E3D3BC;
+      color: #e3d3bc;
     }
     .hero-media::after {
       content: "";
@@ -1858,16 +1926,26 @@
     animation: heroLine 760ms var(--ease) both;
   }
   @keyframes heroLine {
-    from { transform: translateY(105%); }
-    to { transform: translateY(0); }
+    from {
+      transform: translateY(105%);
+    }
+    to {
+      transform: translateY(0);
+    }
   }
 
   .hero-rise {
     animation: heroRise 640ms var(--ease) both;
   }
   @keyframes heroRise {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .hero-actions {
@@ -1901,8 +1979,12 @@
     }
   }
   @keyframes heroUnveil {
-    from { clip-path: inset(0 0 100% 0); }
-    to { clip-path: inset(0 0 0 0); }
+    from {
+      clip-path: inset(0 0 100% 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
   }
   .hero-media-el {
     width: 100%;
@@ -1912,8 +1994,12 @@
     animation: heroSettle 1600ms var(--ease) both;
   }
   @keyframes heroSettle {
-    from { transform: scale(1.06); }
-    to { transform: scale(1); }
+    from {
+      transform: scale(1.06);
+    }
+    to {
+      transform: scale(1);
+    }
   }
 
   /* Mobile tab bar — the only floating element on phones */
@@ -2128,7 +2214,9 @@
     border-radius: var(--radius-xs);
     background: var(--theme-surface-muted);
     opacity: 0;
-    transition: opacity 400ms var(--ease), transform 650ms var(--ease);
+    transition:
+      opacity 400ms var(--ease),
+      transform 650ms var(--ease);
     will-change: transform;
   }
   .service-float[data-visible] {
@@ -2139,8 +2227,12 @@
     animation: floatImage 900ms var(--ease) both;
   }
   @keyframes floatImage {
-    from { transform: scale(1.08); }
-    to { transform: scale(1); }
+    from {
+      transform: scale(1.08);
+    }
+    to {
+      transform: scale(1);
+    }
   }
 
   /* ---------- Services: photo tiles (phones, tablets) ---------- */
@@ -2199,7 +2291,7 @@
     color: var(--theme-text);
   }
   .service-tile[data-photo] .service-tile-text {
-    color: #FDFBF8;
+    color: #fdfbf8;
   }
   .service-tile-num {
     font-family: "Instrument Serif", Georgia, serif;
@@ -2280,7 +2372,9 @@
     text-transform: uppercase;
     opacity: 0;
     transform: translateY(4px);
-    transition: opacity var(--dur-ui) var(--ease), transform var(--dur-ui) var(--ease);
+    transition:
+      opacity var(--dur-ui) var(--ease),
+      transform var(--dur-ui) var(--ease);
   }
   .gallery-tile:hover .gallery-tile-tag,
   .gallery-tile:focus-visible .gallery-tile-tag {
@@ -2304,7 +2398,7 @@
     gap: 1rem;
     padding: calc(1rem + env(safe-area-inset-top)) var(--gutter) calc(1rem + env(safe-area-inset-bottom));
     background: rgba(20, 15, 12, 0.985);
-    color: #F3ECE2;
+    color: #f3ece2;
     animation: heroRise 300ms var(--ease) both;
   }
   .lightbox-bar,
@@ -2367,7 +2461,7 @@
     letter-spacing: 0.06em;
   }
   .lightbox-book {
-    color: #F3ECE2;
+    color: #f3ece2;
     background:
       linear-gradient(currentColor, currentColor) 0 100% / 0% 1px no-repeat,
       linear-gradient(rgba(243, 236, 226, 0.35), rgba(243, 236, 226, 0.35)) 0 100% / 100% 1px no-repeat;
@@ -2454,7 +2548,9 @@
     pointer-events: none;
     filter: grayscale(1) contrast(0.92);
     opacity: 0.9;
-    transition: filter var(--dur-reveal) var(--ease), opacity var(--dur-reveal) var(--ease);
+    transition:
+      filter var(--dur-reveal) var(--ease),
+      opacity var(--dur-reveal) var(--ease);
   }
   .footer-map:hover iframe {
     filter: none;
@@ -2661,7 +2757,9 @@
     font-size: 0.8125rem;
     font-weight: 500;
     text-align: right;
-    transition: opacity var(--dur-ui) var(--ease), transform var(--dur-ui) var(--ease);
+    transition:
+      opacity var(--dur-ui) var(--ease),
+      transform var(--dur-ui) var(--ease);
   }
   @media (hover: hover) {
     .menu-row-book {
@@ -2702,7 +2800,6 @@
     color: var(--theme-muted1);
     font-size: var(--text-small);
   }
-
 }
 
 /**
@@ -2726,7 +2823,6 @@
  * need to be distinguished from eachother visually.
  */
 @layer utilities {
-
   /* Hide ugly search cancel button in Chrome until we can style it properly */
   input[type="search"]::-webkit-search-cancel-button {
     display: none;
@@ -2810,7 +2906,6 @@
   .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
     inset: -1px;
   }
-
 }
 
 /* ==========================================================================
@@ -2922,11 +3017,17 @@
       heroSettle 1600ms var(--ease) both,
       heroDrift linear forwards;
     animation-timeline: auto, --hero;
-    animation-range: normal, exit 0% exit 100%;
+    animation-range:
+      normal,
+      exit 0% exit 100%;
   }
   @keyframes heroDrift {
-    from { transform: scale(1) translateY(0); }
-    to { transform: scale(1.08) translateY(6%); }
+    from {
+      transform: scale(1) translateY(0);
+    }
+    to {
+      transform: scale(1.08) translateY(6%);
+    }
   }
 }
 

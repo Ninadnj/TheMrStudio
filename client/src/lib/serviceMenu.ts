@@ -2,8 +2,9 @@
  * The studio menu. The owner edits it in the admin (Prices); the price list,
  * the services index and the booking sheet all read it from /api/price-menu.
  */
-import { useQuery } from "@tanstack/react-query";
+
 import type { PriceItem, PriceMenuGroup } from "@shared/schema";
+import { useQuery } from "@tanstack/react-query";
 
 export type BookingCategory = "Manicure" | "Pedicure" | "Epilation" | "Cosmetology";
 
@@ -36,7 +37,7 @@ export function treatmentsFor(menu: MenuGroup[], category: string): Treatment[] 
   return menu.flatMap((group) =>
     group.items
       .filter((item) => item.booking === category)
-      .map((item) => ({ ...item, key: item.id, name: item.nameEn, groupKa: group.shortKa, groupEn: group.shortEn }))
+      .map((item) => ({ ...item, key: item.id, name: item.nameEn, groupKa: group.shortKa, groupEn: group.shortEn })),
   );
 }
 

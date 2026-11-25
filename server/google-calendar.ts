@@ -1,4 +1,4 @@
-import { google } from 'googleapis';
+import { google } from "googleapis";
 
 let calendarClient: ReturnType<typeof google.calendar> | null = null;
 
@@ -10,23 +10,26 @@ export async function getGoogleCalendarClient() {
   // Use a Service Account JSON for server-to-server auth without expiration.
   // The JSON file contents should be base64 encoded into process.env.GOOGLE_CALENDAR_SERVICE_ACCOUNT
   if (!process.env.GOOGLE_CALENDAR_SERVICE_ACCOUNT) {
-    throw new Error('Google Calendar not configured: Missing GOOGLE_CALENDAR_SERVICE_ACCOUNT in .env');
+    throw new Error("Google Calendar not configured: Missing GOOGLE_CALENDAR_SERVICE_ACCOUNT in .env");
   }
 
   try {
     // Decode base64 to JSON string
-    const decodedKey = Buffer.from(process.env.GOOGLE_CALENDAR_SERVICE_ACCOUNT, 'base64').toString('utf-8');
+    const decodedKey = Buffer.from(process.env.GOOGLE_CALENDAR_SERVICE_ACCOUNT, "base64").toString("utf-8");
     const credentials = JSON.parse(decodedKey);
 
     const auth = new google.auth.GoogleAuth({
       credentials,
-      scopes: ['https://www.googleapis.com/auth/calendar'],
+      scopes: ["https://www.googleapis.com/auth/calendar"],
     });
 
-    calendarClient = google.calendar({ version: 'v3', auth });
+    calendarClient = google.calendar({ version: "v3", auth });
     return calendarClient;
   } catch (err) {
-    console.error("Failed to parse GOOGLE_CALENDAR_SERVICE_ACCOUNT. Make sure it's a valid Base64 string of the JSON key", err);
+    console.error(
+      "Failed to parse GOOGLE_CALENDAR_SERVICE_ACCOUNT. Make sure it's a valid Base64 string of the JSON key",
+      err,
+    );
     throw new Error("Invalid Google Calendar credentials configuration");
   }
 }
@@ -38,7 +41,7 @@ export async function createCalendarEvent(
   description: string,
   startTime: string,
   endTime: string,
-  attendeeEmail?: string
+  attendeeEmail?: string,
 ) {
   try {
     const calendar = await getGoogleCalendarClient();
@@ -48,18 +51,18 @@ export async function createCalendarEvent(
       description,
       start: {
         dateTime: startTime,
-        timeZone: 'Asia/Tbilisi',
+        timeZone: "Asia/Tbilisi",
       },
       end: {
         dateTime: endTime,
-        timeZone: 'Asia/Tbilisi',
+        timeZone: "Asia/Tbilisi",
       },
       // Removed attendees to avoid 'Domain-Wide Delegation of Authority' Errors for Service Accounts
       reminders: {
         useDefault: false,
         overrides: [
-          { method: 'email', minutes: 24 * 60 }, // 1 day before
-          { method: 'popup', minutes: 60 }, // 1 hour before
+          { method: "email", minutes: 24 * 60 }, // 1 day before
+          { method: "popup", minutes: 60 }, // 1 hour before
         ],
       },
     };
@@ -72,16 +75,13 @@ export async function createCalendarEvent(
 
     return response.data;
   } catch (error) {
-    console.error('Error creating calendar event:', error);
+    console.error("Error creating calendar event:", error);
     throw error;
   }
 }
 
 // Delete a calendar event
-export async function deleteCalendarEvent(
-  calendarId: string,
-  eventId: string
-) {
+export async function deleteCalendarEvent(calendarId: string, eventId: string) {
   try {
     const calendar = await getGoogleCalendarClient();
 
@@ -93,16 +93,13 @@ export async function deleteCalendarEvent(
 
     console.log(`Deleted calendar event ${eventId} from calendar ${calendarId}`);
   } catch (error) {
-    console.error('Error deleting calendar event:', error);
+    console.error("Error deleting calendar event:", error);
     throw error;
   }
 }
 
 // Check availability for a specific calendar on a given date
-export async function checkCalendarAvailability(
-  calendarId: string,
-  date: string
-) {
+export async function checkCalendarAvailability(calendarId: string, date: string) {
   try {
     const calendar = await getGoogleCalendarClient();
 
@@ -114,12 +111,12 @@ export async function checkCalendarAvailability(
       timeMin,
       timeMax,
       singleEvents: true,
-      orderBy: 'startTime',
+      orderBy: "startTime",
     });
 
     return response.data.items || [];
   } catch (error) {
-    console.error('Error checking calendar availability:', error);
+    console.error("Error checking calendar availability:", error);
     throw error;
   }
 }
@@ -132,16 +129,13 @@ export async function listCalendars() {
     const response = await calendar.calendarList.list();
     return response.data.items || [];
   } catch (error) {
-    console.error('Error listing calendars:', error);
+    console.error("Error listing calendars:", error);
     throw error;
   }
 }
 
 // Get busy time slots from Google Calendar for multiple calendars
-export async function getCalendarBusySlots(
-  calendarIds: string[],
-  date: string
-): Promise<Set<string>> {
+export async function getCalendarBusySlots(calendarIds: string[], date: string): Promise<Set<string>> {
   try {
     if (!calendarIds || calendarIds.length === 0) {
       return new Set<string>();
@@ -157,7 +151,7 @@ export async function getCalendarBusySlots(
       requestBody: {
         timeMin,
         timeMax,
-        items: calendarIds.map(id => ({ id })),
+        items: calendarIds.map((id) => ({ id })),
       },
     });
 
@@ -179,14 +173,14 @@ export async function getCalendarBusySlots(
             const durationMinutes = Math.floor(durationMs / (60 * 1000));
 
             // Get start hour and minute in Tbilisi timezone
-            const tbilisiTimeStr = startTime.toLocaleString('en-US', {
-              timeZone: 'Asia/Tbilisi',
-              hour: '2-digit',
-              minute: '2-digit',
-              hour12: false
+            const tbilisiTimeStr = startTime.toLocaleString("en-US", {
+              timeZone: "Asia/Tbilisi",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
             });
 
-            const [startHours, startMinutes] = tbilisiTimeStr.split(':').map(Number);
+            const [startHours, startMinutes] = tbilisiTimeStr.split(":").map(Number);
 
             // Calculate which 30-minute slots this busy period overlaps
             const startMinutesFromMidnight = startHours * 60 + startMinutes;
@@ -203,12 +197,14 @@ export async function getCalendarBusySlots(
             for (let slotMinutes = firstSlotMinutes; slotMinutes < lastSlotMinutes; slotMinutes += 30) {
               const slotHours = Math.floor(slotMinutes / 60);
               const slotMins = slotMinutes % 60;
-              const slotTime = `${slotHours.toString().padStart(2, '0')}:${slotMins.toString().padStart(2, '0')}`;
+              const slotTime = `${slotHours.toString().padStart(2, "0")}:${slotMins.toString().padStart(2, "0")}`;
               busySlots.add(slotTime);
               blockedSlots.push(slotTime);
             }
 
-            console.log(`Calendar busy slot: ${busyPeriod.start} to Tbilisi ${tbilisiTimeStr}; blocking slots: ${blockedSlots.join(', ')}`);
+            console.log(
+              `Calendar busy slot: ${busyPeriod.start} to Tbilisi ${tbilisiTimeStr}; blocking slots: ${blockedSlots.join(", ")}`,
+            );
           }
         }
       }
@@ -216,14 +212,16 @@ export async function getCalendarBusySlots(
 
     return busySlots;
   } catch (error) {
-    console.error('Error getting calendar busy slots:', error);
+    console.error("Error getting calendar busy slots:", error);
     // Return empty set on error to prevent blocking all bookings
     return new Set<string>();
   }
 }
 
 // Test if the service account can access a specific calendar
-export async function testCalendarAccess(calendarId: string): Promise<{ success: boolean; error?: string; calendarSummary?: string }> {
+export async function testCalendarAccess(
+  calendarId: string,
+): Promise<{ success: boolean; error?: string; calendarSummary?: string }> {
   try {
     const calendar = await getGoogleCalendarClient();
 
@@ -235,7 +233,7 @@ export async function testCalendarAccess(calendarId: string): Promise<{ success:
 
     return {
       success: true,
-      calendarSummary: response.data.summary || 'No summary',
+      calendarSummary: response.data.summary || "No summary",
     };
   } catch (error: any) {
     const errorMessage = error?.message || String(error);
@@ -243,7 +241,7 @@ export async function testCalendarAccess(calendarId: string): Promise<{ success:
 
     return {
       success: false,
-      error: `[${statusCode || 'UNKNOWN'}] ${errorMessage}`,
+      error: `[${statusCode || "UNKNOWN"}] ${errorMessage}`,
     };
   }
 }

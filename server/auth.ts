@@ -1,6 +1,6 @@
-import { storage } from "./storage";
-import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcryptjs";
+import type { NextFunction, Request, Response } from "express";
+import { storage } from "./storage";
 
 export async function initializeAdmin() {
   const adminUsername = "admin";
@@ -50,8 +50,8 @@ export async function loginHandler(req: Request, res: Response) {
       user: {
         id: user.id,
         username: user.username,
-        isAdmin: user.username === "admin"
-      }
+        isAdmin: user.username === "admin",
+      },
     });
   } catch (error) {
     console.error("Login error:", error);
@@ -77,8 +77,8 @@ export async function checkAuthHandler(req: Request, res: Response) {
         user: {
           id: user.id,
           username: user.username,
-          isAdmin: true
-        }
+          isAdmin: true,
+        },
       });
     }
   }

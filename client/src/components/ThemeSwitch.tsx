@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
 import { Moon, Sun } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
 export default function ThemeSwitch() {
@@ -19,7 +19,7 @@ export default function ThemeSwitch() {
   const toggleTheme = () => {
     const newMode = !isDark;
     setIsDark(newMode);
-    
+
     if (newMode) {
       document.documentElement.classList.add("dark");
       localStorage.setItem("theme-mode", "dark");

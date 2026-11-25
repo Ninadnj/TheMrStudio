@@ -1,43 +1,39 @@
-import type { Express } from "express";
-import { createServer, type Server } from "http";
-import { storage } from "./storage";
 import {
-  insertBookingSchema,
   chatRequestSchema,
-  insertHeroContentSchema,
-  insertServiceSchema,
-  insertSiteSettingsSchema,
-  insertStaffSchema,
+  insertBookingSchema,
   insertGalleryImageSchema,
-  insertServicesSectionSchema,
-  insertSpecialOfferSchema,
-  insertTrendSchema,
-  insertTrendsSectionSchema,
+  insertHeroContentSchema,
   insertPriceGroupSchema,
   insertPriceItemSchema,
+  insertServiceSchema,
+  insertServicesSectionSchema,
+  insertSiteSettingsSchema,
+  insertSpecialOfferSchema,
+  insertStaffSchema,
   insertStudioInfoSchema,
+  insertTrendSchema,
+  insertTrendsSectionSchema,
 } from "@shared/schema";
+import { v2 as cloudinary } from "cloudinary";
+import type { Express } from "express";
+import fs from "fs";
+import { createServer, type Server } from "http";
+import multer from "multer";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+import path from "path";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
-import { chatWithGemini } from "./gemini-chat";
-import multer from "multer";
-import path from "path";
-import fs from "fs";
-import { v2 as cloudinary } from "cloudinary";
-import { CloudinaryStorage } from "multer-storage-cloudinary";
+import { checkAuthHandler, loginHandler, logoutHandler, requireAuth } from "./auth";
 import {
-  loginHandler,
-  logoutHandler,
-  checkAuthHandler,
-  requireAuth
-} from "./auth";
-import { createCalendarEvent, testCalendarAccess, listCalendars, getGoogleCalendarClient } from "./google-calendar";
-import {
-  sendNewBookingNotification,
   sendBookingConfirmationToClient,
-  sendBookingRejectionToClient
+  sendBookingRejectionToClient,
+  sendNewBookingNotification,
 } from "./email-notifications";
+import { chatWithGemini } from "./gemini-chat";
+import { createCalendarEvent, getGoogleCalendarClient, listCalendars, testCalendarAccess } from "./google-calendar";
 import { ObjectPermission } from "./objectAcl";
+import { storage } from "./storage";
+
 // Define uploadDir globally so the static file handler can access it
 const uploadDir = process.env.PRIVATE_OBJECT_DIR || ".local/storage/uploads";
 
@@ -59,7 +55,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         cloudinary.config({
           api_key: urlMatches[1],
           api_secret: urlMatches[2],
-          cloud_name: urlMatches[3]
+          cloud_name: urlMatches[3],
         });
         console.log("[Upload Config] Configured Cloudinary explicitly.");
       } else {
@@ -73,10 +69,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     storageConfig = new CloudinaryStorage({
       cloudinary: cloudinary,
       params: {
-        folder: 'the-mr-studio-uploads', // The folder name in your Cloudinary account
-        allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'heic', 'mp4', 'mov', 'webm', 'mkv'],
-        resource_type: 'auto',
-        public_id: (req: any, file: any) => Date.now() + '-' + Math.round(Math.random() * 1E9),
+        folder: "the-mr-studio-uploads", // The folder name in your Cloudinary account
+        allowed_formats: ["jpg", "png", "jpeg", "webp", "heic", "mp4", "mov", "webm", "mkv"],
+        resource_type: "auto",
+        public_id: (req: any, file: any) => Date.now() + "-" + Math.round(Math.random() * 1e9),
       } as any, // Cast to any to handle type mismatch in @types
     });
   } else {
@@ -87,13 +83,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     storageConfig = multer.diskStorage({
-      destination: function (req, file, cb) {
+      destination: (req, file, cb) => {
         cb(null, uploadDir);
       },
-      filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
         cb(null, uniqueSuffix + path.extname(file.originalname));
-      }
+      },
     });
   }
 
@@ -132,7 +128,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const validationError = fromZodError(error);
         res.status(400).json({ error: validationError.message });
       } else {
-        console.error('Booking creation error:', error);
+        console.error("Booking creation error:", error);
         res.status(500).json({ error: "Failed to create booking" });
       }
     }
@@ -148,7 +144,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const bookings = await storage.getBookingsByDate(date);
-      console.log(`[Availability] Date: ${date}, StaffId: ${staffId || 'none'}, Total bookings for date: ${bookings.length}`);
+      console.log(
+        `[Availability] Date: ${date}, StaffId: ${staffId || "none"}, Total bookings for date: ${bookings.length}`,
+      );
 
       // Calculate all blocked time slots based on booking duration
       const bookedTimesSet = new Set<string>();
@@ -164,11 +162,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } else if (selectedStaff?.calendarId) {
           // Find all staff with the same calendar ID
           const allStaff = await storage.getAllStaff();
-          staffIdsWithSameCalendar = allStaff
-            .filter(s => s.calendarId === selectedStaff.calendarId)
-            .map(s => s.id);
+          staffIdsWithSameCalendar = allStaff.filter((s) => s.calendarId === selectedStaff.calendarId).map((s) => s.id);
 
-          console.log(`[Availability] Staff ${selectedStaff.name} (calendarId: ${selectedStaff.calendarId}) shares calendar with ${staffIdsWithSameCalendar.length} staff member(s)`);
+          console.log(
+            `[Availability] Staff ${selectedStaff.name} (calendarId: ${selectedStaff.calendarId}) shares calendar with ${staffIdsWithSameCalendar.length} staff member(s)`,
+          );
         } else {
           console.warn(`[Availability] Staff ${selectedStaff.name} has NO calendarId configured`);
           staffIdsWithSameCalendar = [staffId];
@@ -178,22 +176,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // IMPORTANT: Only count PENDING and CONFIRMED bookings from database
       // This ensures if Google Calendar isn't synced, the local system still works perfectly
       // (The Set data structure automatically prevents duplicate double-counting if Google Calendar is active)
-      const relevantBookings = bookings.filter(b => {
-        const isBlocking = b.status === 'pending' || b.status === 'confirmed';
-        const matchesStaff = staffId && typeof staffId === "string"
-          ? staffIdsWithSameCalendar.includes(b.staffId ?? '')
-          : true;
+      const relevantBookings = bookings.filter((b) => {
+        const isBlocking = b.status === "pending" || b.status === "confirmed";
+        const matchesStaff =
+          staffId && typeof staffId === "string" ? staffIdsWithSameCalendar.includes(b.staffId ?? "") : true;
         return isBlocking && matchesStaff;
       });
 
       console.log(`[Availability] Relevant bookings (pending/confirmed matching staff): ${relevantBookings.length}`);
       for (const b of relevantBookings) {
-        console.log(`  - Booking ${b.id}: time=${b.time}, duration=${b.duration}, status=${b.status}, staffId=${b.staffId}`);
+        console.log(
+          `  - Booking ${b.id}: time=${b.time}, duration=${b.duration}, status=${b.status}, staffId=${b.staffId}`,
+        );
       }
 
       for (const booking of relevantBookings) {
         try {
-          const [hours, minutes] = booking.time.split(':').map(Number);
+          const [hours, minutes] = booking.time.split(":").map(Number);
           const durationMinutes = parseInt(booking.duration);
 
           // Validate duration is a valid number
@@ -215,20 +214,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
           for (let slotMinutes = firstSlotMinutes; slotMinutes < lastSlotMinutes; slotMinutes += 30) {
             const slotHours = Math.floor(slotMinutes / 60);
             const slotMins = slotMinutes % 60;
-            const slotTime = `${slotHours.toString().padStart(2, '0')}:${slotMins.toString().padStart(2, '0')}`;
+            const slotTime = `${slotHours.toString().padStart(2, "0")}:${slotMins.toString().padStart(2, "0")}`;
             bookedTimesSet.add(slotTime);
           }
         } catch (bookingError) {
           console.error(`Error processing booking ${booking.id}:`, bookingError);
-          continue;
         }
       }
-
 
       // Check Google Calendar - only for the selected staff member if provided
       let calendarIds: string[] = [];
       try {
-
         if (staffId && typeof staffId === "string") {
           // Only check the selected staff member's calendar
           const selectedStaff = await storage.getStaffById(staffId);
@@ -241,33 +237,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } else {
           // No staff selected - check all calendars (fallback for compatibility)
           const staff = await storage.getAllStaff();
-          calendarIds = staff
-            .filter(s => s.calendarId)
-            .map(s => s.calendarId as string);
+          calendarIds = staff.filter((s) => s.calendarId).map((s) => s.calendarId as string);
           console.log(`[Availability] No staffId provided, checking all ${calendarIds.length} calendars`);
         }
 
         if (calendarIds.length > 0) {
-          const { getCalendarBusySlots } = await import('./google-calendar.js');
+          const { getCalendarBusySlots } = await import("./google-calendar.js");
           const calendarBusySlots = await getCalendarBusySlots(calendarIds, date);
 
           // Merge calendar busy slots with database bookings
-          calendarBusySlots.forEach(slot => bookedTimesSet.add(slot));
+          calendarBusySlots.forEach((slot) => bookedTimesSet.add(slot));
 
           console.log(`Checked ${calendarIds.length} Google Calendars, found ${calendarBusySlots.size} busy slots`);
         }
       } catch (calendarError) {
         // Log error but don't fail the request - fallback to database bookings only
-        console.error('[Availability] ERROR checking Google Calendar:', calendarError);
-        console.error('[Availability] Calendar IDs attempted:', calendarIds);
+        console.error("[Availability] ERROR checking Google Calendar:", calendarError);
+        console.error("[Availability] Calendar IDs attempted:", calendarIds);
       }
 
       const bookedTimes = Array.from(bookedTimesSet);
-      console.log(`[Availability] Final blocked times: [${bookedTimes.join(', ')}]`);
+      console.log(`[Availability] Final blocked times: [${bookedTimes.join(", ")}]`);
 
       res.json({ bookedTimes });
     } catch (error) {
-      console.error('Availability endpoint error:', error);
+      console.error("Availability endpoint error:", error);
       res.status(500).json({ error: "Failed to fetch availability" });
     }
   });
@@ -304,7 +298,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Calendar diagnostic endpoint
   app.get("/api/admin/calendar-diagnostic", requireAuth, async (req, res) => {
     try {
-      const { listCalendars, testCalendarAccess } = await import('./google-calendar.js');
+      const { listCalendars, testCalendarAccess } = await import("./google-calendar.js");
       const results: any = {
         timestamp: new Date().toISOString(),
         serviceAccountConfigured: !!process.env.GOOGLE_CALENDAR_SERVICE_ACCOUNT,
@@ -318,7 +312,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const calendars = await listCalendars();
         results.calendarApiTest = {
           success: true,
-          visibleCalendars: calendars.map(c => ({ id: c.id, summary: c.summary })),
+          visibleCalendars: calendars.map((c) => ({ id: c.id, summary: c.summary })),
         };
       } catch (error: any) {
         results.calendarApiTest = {
@@ -341,7 +335,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (s.calendarId) {
           staffInfo.calendarAccess = await testCalendarAccess(s.calendarId);
         } else {
-          staffInfo.calendarAccess = { success: false, error: 'No calendarId configured' };
+          staffInfo.calendarAccess = { success: false, error: "No calendarId configured" };
         }
 
         results.staff.push(staffInfo);
@@ -352,7 +346,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       results.recentBookings = allBookings
         .sort((a, b) => b.date.localeCompare(a.date))
         .slice(0, 10)
-        .map(b => ({
+        .map((b) => ({
           id: b.id,
           date: b.date,
           time: b.time,
@@ -366,19 +360,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       results.summary = {
         totalStaff: allStaff.length,
-        staffWithCalendarId: allStaff.filter(s => s.calendarId).length,
-        staffWithoutCalendarId: allStaff.filter(s => !s.calendarId).length,
+        staffWithCalendarId: allStaff.filter((s) => s.calendarId).length,
+        staffWithoutCalendarId: allStaff.filter((s) => !s.calendarId).length,
         totalBookings: allBookings.length,
-        pendingBookings: allBookings.filter(b => b.status === 'pending').length,
-        confirmedBookings: allBookings.filter(b => b.status === 'confirmed').length,
-        confirmedWithCalendarEvent: allBookings.filter(b => b.status === 'confirmed' && b.calendarEventId).length,
-        confirmedWithoutCalendarEvent: allBookings.filter(b => b.status === 'confirmed' && !b.calendarEventId).length,
+        pendingBookings: allBookings.filter((b) => b.status === "pending").length,
+        confirmedBookings: allBookings.filter((b) => b.status === "confirmed").length,
+        confirmedWithCalendarEvent: allBookings.filter((b) => b.status === "confirmed" && b.calendarEventId).length,
+        confirmedWithoutCalendarEvent: allBookings.filter((b) => b.status === "confirmed" && !b.calendarEventId).length,
       };
 
       res.json(results);
     } catch (error: any) {
-      console.error('Calendar diagnostic error:', error);
-      res.status(500).json({ error: error?.message || 'Diagnostic failed' });
+      console.error("Calendar diagnostic error:", error);
+      res.status(500).json({ error: error?.message || "Diagnostic failed" });
     }
   });
 
@@ -397,27 +391,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create Google Calendar event before approving
       if (existingBooking.staffId) {
         const staff = await storage.getStaffById(existingBooking.staffId);
-        console.log(`[Approve] Booking ${id}: staff=${staff?.name}, calendarId="${staff?.calendarId}", date=${existingBooking.date}, time=${existingBooking.time}`);
+        console.log(
+          `[Approve] Booking ${id}: staff=${staff?.name}, calendarId="${staff?.calendarId}", date=${existingBooking.date}, time=${existingBooking.time}`,
+        );
 
         if (!staff) {
           console.error(`[Approve] WARNING: Staff not found for ID: ${existingBooking.staffId}`);
         } else if (!staff.calendarId) {
-          console.error(`[Approve] WARNING: Staff ${staff.name} has NO calendarId - calendar event will NOT be created`);
+          console.error(
+            `[Approve] WARNING: Staff ${staff.name} has NO calendarId - calendar event will NOT be created`,
+          );
         }
 
         if (staff?.calendarId) {
           try {
-            const [year, month, day] = existingBooking.date.split('-');
-            const [hours, minutes] = existingBooking.time.split(':');
+            const [year, month, day] = existingBooking.date.split("-");
+            const [hours, minutes] = existingBooking.time.split(":");
 
             const offsetMinutes = 4 * 60;
-            const startUtc = Date.UTC(
-              parseInt(year),
-              parseInt(month) - 1,
-              parseInt(day),
-              parseInt(hours),
-              parseInt(minutes)
-            ) - offsetMinutes * 60 * 1000;
+            const startUtc =
+              Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hours), parseInt(minutes)) -
+              offsetMinutes * 60 * 1000;
 
             const durationMs = parseInt(existingBooking.duration) * 60 * 1000;
             const endUtc = startUtc + durationMs;
@@ -434,7 +428,7 @@ Email: ${existingBooking.email}
 Service: ${existingBooking.service}
 Staff: ${existingBooking.staffName}
 Duration: ${existingBooking.duration} minutes
-${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
+${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ""}
             `.trim();
 
             const calendarEvent = await createCalendarEvent(
@@ -443,7 +437,7 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
               description,
               startDateTime,
               endDateTime,
-              existingBooking.email
+              existingBooking.email,
             );
 
             if (calendarEvent?.id) {
@@ -452,7 +446,10 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
 
             console.log(`Calendar event ${calendarEventId} created for approved booking ${id}`);
           } catch (calendarError: any) {
-            console.error(`[Approve] FAILED to create calendar event for booking ${id}:`, calendarError?.message || calendarError);
+            console.error(
+              `[Approve] FAILED to create calendar event for booking ${id}:`,
+              calendarError?.message || calendarError,
+            );
             console.error(`[Approve] CalendarId used: ${staff.calendarId}`);
           }
         }
@@ -473,7 +470,7 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
 
       res.json(booking);
     } catch (error) {
-      console.error('Approve booking error:', error);
+      console.error("Approve booking error:", error);
       res.status(500).json({ error: "Failed to approve booking" });
     }
   });
@@ -530,15 +527,15 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
       }
 
       // If booking is confirmed, delete the calendar event
-      if (booking.status === 'confirmed' && booking.calendarEventId && booking.staffId) {
+      if (booking.status === "confirmed" && booking.calendarEventId && booking.staffId) {
         const staff = await storage.getStaffById(booking.staffId);
         if (staff?.calendarId) {
           try {
-            const { deleteCalendarEvent } = await import('./google-calendar.js');
+            const { deleteCalendarEvent } = await import("./google-calendar.js");
             await deleteCalendarEvent(staff.calendarId, booking.calendarEventId);
             console.log(`Deleted calendar event ${booking.calendarEventId} for booking ${id}`);
           } catch (calendarError) {
-            console.error('Failed to delete calendar event:', calendarError);
+            console.error("Failed to delete calendar event:", calendarError);
             // Continue with booking deletion even if calendar deletion fails
           }
         }
@@ -552,7 +549,7 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
 
       res.json({ success: true, message: "Booking deleted successfully" });
     } catch (error) {
-      console.error('Delete booking error:', error);
+      console.error("Delete booking error:", error);
       res.status(500).json({ error: "Failed to delete booking" });
     }
   });
@@ -638,7 +635,9 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
 
   app.delete("/api/admin/price-groups/:id", requireAuth, async (req, res) => {
     try {
-      (await storage.deletePriceGroup(req.params.id)) ? res.json({ ok: true }) : res.status(404).json({ error: "Not found" });
+      (await storage.deletePriceGroup(req.params.id))
+        ? res.json({ ok: true })
+        : res.status(404).json({ error: "Not found" });
     } catch (error) {
       sendValidationError(res, error);
     }
@@ -672,7 +671,9 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
 
   app.delete("/api/admin/price-items/:id", requireAuth, async (req, res) => {
     try {
-      (await storage.deletePriceItem(req.params.id)) ? res.json({ ok: true }) : res.status(404).json({ error: "Not found" });
+      (await storage.deletePriceItem(req.params.id))
+        ? res.json({ ok: true })
+        : res.status(404).json({ error: "Not found" });
     } catch (error) {
       sendValidationError(res, error);
     }
@@ -1148,7 +1149,7 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
   // Handle direct file uploads from admin
   // Wrap multer in error handler to catch Cloudinary SDK crashes gracefully
   app.post("/api/objects/upload", requireAuth, (req, res) => {
-    upload.single('file')(req, res, async (multerError) => {
+    upload.single("file")(req, res, async (multerError) => {
       try {
         if (multerError) {
           console.error("[Upload] Multer/Cloudinary error:", multerError);
@@ -1164,7 +1165,7 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ''}
 
         // Cloudinary returns the full absolute URL in req.file.path
         // Local multer returns the absolute disk path in req.file.path and just the filename in req.file.filename
-        if (req.file.path && req.file.path.startsWith('http')) {
+        if (req.file.path && req.file.path.startsWith("http")) {
           objectPath = req.file.path;
         } else {
           const objectId = req.file.filename;

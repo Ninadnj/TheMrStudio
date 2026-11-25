@@ -1,7 +1,7 @@
-import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
 import type { InsertStudioInfo } from "@shared/schema";
 import { defaultStudioInfo } from "@shared/studioDefaults";
+import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 
 /** Studio contact details as the site uses them — the owner edits them in the admin (Settings). */
 export type Studio = ReturnType<typeof toStudio>;

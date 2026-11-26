@@ -7,6 +7,8 @@ Quality gates in place (branch `chore/claude-quality-gates`); next, pick the fir
 improvement from "Next".
 
 ## Done
+- 2026-11-26 Deployed PRs #1–#7 (main a44c438) with Recipe A in docs/DEPLOY.md
+  (image built locally); rollback tag `rollback-63b72cb` on the droplet.
 - 2026-11-26 Home page redesign (mockup D): editorial hero + service panels with starting
   prices. Mockups: https://claude.ai/artifact/JTczvwJSxMeZM9mcm74x6W (private canvas).
 - 2026-11-26 Accessibility: all 39 lint errors cleared, LEGACY DEBT list deleted. Fixes:

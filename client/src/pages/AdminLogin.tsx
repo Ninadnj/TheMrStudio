@@ -1,14 +1,14 @@
+import { useQuery } from "@tanstack/react-query";
+import { Lock } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
-import { Lock } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { queryClient } from "@/lib/queryClient";
 import Wordmark from "@/components/Wordmark";
+import { useToast } from "@/hooks/use-toast";
+import { queryClient } from "@/lib/queryClient";
 
 export default function AdminLogin() {
   const [, setLocation] = useLocation();
@@ -17,7 +17,7 @@ export default function AdminLogin() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(() =>
-    new URLSearchParams(window.location.search).has("expired") ? "სესია დასრულდა. გთხოვთ, ხელახლა შეხვიდეთ." : ""
+    new URLSearchParams(window.location.search).has("expired") ? "სესია დასრულდა. გთხოვთ, ხელახლა შეხვიდეთ." : "",
   );
 
   // Already logged in (e.g. opened from a bookmark): go straight to the dashboard
@@ -45,7 +45,8 @@ export default function AdminLogin() {
         await queryClient.invalidateQueries({ queryKey: ["/api/admin/check"] });
         setLocation("/admin/dashboard");
       } else {
-        const errorMessage = response.status === 401 ? "მომხმარებელი ან პაროლი არასწორია." : "შესვლა ვერ მოხერხდა. სცადეთ ხელახლა.";
+        const errorMessage =
+          response.status === 401 ? "მომხმარებელი ან პაროლი არასწორია." : "შესვლა ვერ მოხერხდა. სცადეთ ხელახლა.";
         setError(errorMessage);
         toast({
           title: "შესვლა ვერ მოხერხდა",
@@ -76,9 +77,7 @@ export default function AdminLogin() {
           <CardTitle className="text-2xl font-light tracking-normal">
             <Wordmark />
           </CardTitle>
-          <CardDescription className="tracking-normal uppercase text-xs">
-            მართვის პანელი
-          </CardDescription>
+          <CardDescription className="tracking-normal uppercase text-xs">მართვის პანელი</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -113,12 +112,7 @@ export default function AdminLogin() {
                 data-testid="input-password"
               />
             </div>
-            <Button
-              type="submit"
-              className="w-full bg-theme-accent"
-              disabled={isLoading}
-              data-testid="button-login"
-            >
+            <Button type="submit" className="w-full bg-theme-accent" disabled={isLoading} data-testid="button-login">
               {isLoading ? "შესვლა…" : "შესვლა"}
             </Button>
           </form>

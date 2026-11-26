@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, date, boolean, integer } from "drizzle-orm/pg-core";
+import { boolean, date, integer, pgTable, text, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -236,7 +236,10 @@ export const insertPriceItemSchema = createInsertSchema(priceItems, {
   groupId: requiredText("აირჩიეთ ჯგუფი"),
   nameKa: requiredText("ჩაწერეთ სახელი ქართულად"),
   nameEn: requiredText("ჩაწერეთ სახელი ინგლისურად"),
-  price: z.number({ invalid_type_error: "ჩაწერეთ ფასი" }).int("ფასი მთელი რიცხვი უნდა იყოს").min(0, "ფასი არ შეიძლება იყოს უარყოფითი"),
+  price: z
+    .number({ invalid_type_error: "ჩაწერეთ ფასი" })
+    .int("ფასი მთელი რიცხვი უნდა იყოს")
+    .min(0, "ფასი არ შეიძლება იყოს უარყოფითი"),
   durationMin: z.number().int().positive().nullable().optional(),
   booking: z.enum(BOOKING_CATEGORIES, { errorMap: () => ({ message: "აირჩიეთ სერვისი" }) }),
   position: z.number().int().min(0).optional(),

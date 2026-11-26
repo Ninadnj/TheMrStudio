@@ -1,9 +1,10 @@
 // Reference: javascript_object_storage blueprint
-import { useState } from "react";
-import type { ReactNode } from "react";
+
 import Uppy from "@uppy/core";
 import { DashboardModal } from "@uppy/react";
 import XHRUpload from "@uppy/xhr-upload";
+import type { ReactNode } from "react";
+import { useState } from "react";
 // Admin-only styles: loaded with the uploader, not on the public page.
 import "@uppy/core/css/style.min.css";
 import "@uppy/dashboard/css/style.min.css";
@@ -52,9 +53,7 @@ const georgian = {
 interface ObjectUploaderProps {
   maxNumberOfFiles?: number;
   maxFileSize?: number;
-  onComplete?: (
-    result: UploadResult<Record<string, unknown>, Record<string, unknown>>
-  ) => void;
+  onComplete?: (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => void;
   buttonClassName?: string;
   children: ReactNode;
 }
@@ -77,7 +76,7 @@ export function ObjectUploader({
       restrictions: {
         maxNumberOfFiles,
         maxFileSize: 104857600, // 100MB to allow for videos
-        allowedFileTypes: ['image/*', 'video/*'],
+        allowedFileTypes: ["image/*", "video/*"],
       },
       autoProceed: false,
     })
@@ -90,7 +89,7 @@ export function ObjectUploader({
       .on("complete", (result: any) => {
         onComplete?.(result);
         setShowModal(false);
-      })
+      }),
   );
 
   return (

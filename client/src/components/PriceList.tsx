@@ -1,15 +1,12 @@
-import { useState, useMemo } from "react";
 import { ArrowRight, Search, X } from "lucide-react";
+import { useMemo, useState } from "react";
 import { hapticTap } from "@/lib/haptics";
 import { useLang } from "@/lib/i18n";
-import { requestBooking, usePriceMenu, type BookingCategory, type MenuGroup } from "@/lib/serviceMenu";
 import { stagger } from "@/lib/reveal";
+import { type BookingCategory, type MenuGroup, requestBooking, usePriceMenu } from "@/lib/serviceMenu";
 
 function priceFromOf(group: MenuGroup): number {
-  return group.items.reduce(
-    (min, it) => (typeof it.price === "number" && it.price < min ? it.price : min),
-    Infinity
-  );
+  return group.items.reduce((min, it) => (typeof it.price === "number" && it.price < min ? it.price : min), Infinity);
 }
 
 /** Prices as a menu: name, hairline leader, tabular price, a quiet "Book" on every row. */
@@ -28,10 +25,10 @@ export default function PriceList() {
           ? {
               ...group,
               items: group.items.filter(
-                (it) => it.nameEn.toLowerCase().includes(q) || it.nameKa.toLowerCase().includes(q)
+                (it) => it.nameEn.toLowerCase().includes(q) || it.nameKa.toLowerCase().includes(q),
               ),
             }
-          : group
+          : group,
       )
       .filter((group) => group.items.length > 0);
   }, [menu, activeFilter, search]);
@@ -47,7 +44,9 @@ export default function PriceList() {
     <section id="prices" className="section scroll-mt-20 md:scroll-mt-24" aria-labelledby="prices-title">
       <div className="shell prices-grid">
         <div className="prices-head">
-          <p className="eyebrow" data-reveal="rise">{t("მენიუ", "Menu")}</p>
+          <p className="eyebrow" data-reveal="rise">
+            {t("მენიუ", "Menu")}
+          </p>
           <h2 id="prices-title" className="display prices-title" data-reveal="mask">
             <span>{t("ფასები", "Prices")}</span>
           </h2>
@@ -75,7 +74,13 @@ export default function PriceList() {
             )}
           </div>
 
-          <div className="text-tabs" role="group" aria-label={t("კატეგორია", "Category")} data-reveal="rise" style={stagger(2)}>
+          <div
+            className="text-tabs"
+            role="group"
+            aria-label={t("კატეგორია", "Category")}
+            data-reveal="rise"
+            style={stagger(2)}
+          >
             {filters.map((f) => (
               <button
                 key={f.id}
@@ -97,9 +102,7 @@ export default function PriceList() {
 
         <div className="prices-menu">
           {filtered.length === 0 && search && (
-            <p className="prices-empty">
-              {t(`„${search}“ ვერ მოიძებნა.`, `Nothing matches “${search}”.`)}
-            </p>
+            <p className="prices-empty">{t(`„${search}“ ვერ მოიძებნა.`, `Nothing matches “${search}”.`)}</p>
           )}
 
           {filtered.map((group) => (
@@ -159,7 +162,7 @@ export default function PriceList() {
           <p className="prices-note">
             {t(
               "ფასები მითითებულია ლარში (₾) და შეიძლება შეიცვალოს.",
-              "Prices are in Georgian lari (₾) and may change."
+              "Prices are in Georgian lari (₾) and may change.",
             )}
           </p>
         </div>

@@ -1,13 +1,12 @@
+import type { HeroContent } from "@shared/schema";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
-import type { HeroContent } from "@shared/schema";
-
-import { isVideoUrl } from "@/lib/videoUtils";
 import { hapticTap } from "@/lib/haptics";
 import { useLang } from "@/lib/i18n";
-import { requestBooking } from "@/lib/serviceMenu";
 import { scrollBehavior } from "@/lib/motion";
+import { requestBooking } from "@/lib/serviceMenu";
 import { useStudio } from "@/lib/studio";
+import { isVideoUrl } from "@/lib/videoUtils";
 
 /** Default hero art, pre-sized as WebP and preloaded in index.html. Admin uploads override it. */
 const DEFAULT_HERO = {

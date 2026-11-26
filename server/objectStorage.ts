@@ -1,12 +1,12 @@
 // Reference: javascript_object_storage blueprint
-import { Storage, File } from "@google-cloud/storage";
-import { Response } from "express";
+import { type File, Storage } from "@google-cloud/storage";
 import { randomUUID } from "crypto";
+import type { Response } from "express";
 import {
-  ObjectAclPolicy,
-  ObjectPermission,
   canAccessObject,
   getObjectAclPolicy,
+  type ObjectAclPolicy,
+  ObjectPermission,
   setObjectAclPolicy,
 } from "./objectAcl";
 
@@ -42,7 +42,7 @@ export class ObjectNotFoundError extends Error {
 
 // The object storage service is used to interact with the object storage service.
 export class ObjectStorageService {
-  constructor() { }
+  constructor() {}
 
   // Gets the public object search paths.
   getPublicObjectSearchPaths(): Array<string> {
@@ -52,13 +52,13 @@ export class ObjectStorageService {
         pathsStr
           .split(",")
           .map((path) => path.trim())
-          .filter((path) => path.length > 0)
-      )
+          .filter((path) => path.length > 0),
+      ),
     );
     if (paths.length === 0) {
       throw new Error(
         "PUBLIC_OBJECT_SEARCH_PATHS not set. Create a bucket in 'Object Storage' " +
-        "tool and set PUBLIC_OBJECT_SEARCH_PATHS env var (comma-separated paths)."
+          "tool and set PUBLIC_OBJECT_SEARCH_PATHS env var (comma-separated paths).",
       );
     }
     return paths;
@@ -69,8 +69,7 @@ export class ObjectStorageService {
     const dir = process.env.PRIVATE_OBJECT_DIR || "";
     if (!dir) {
       throw new Error(
-        "PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' " +
-        "tool and set PRIVATE_OBJECT_DIR env var."
+        "PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' " + "tool and set PRIVATE_OBJECT_DIR env var.",
       );
     }
     return dir;
@@ -108,8 +107,7 @@ export class ObjectStorageService {
       res.set({
         "Content-Type": metadata.contentType || "application/octet-stream",
         "Content-Length": metadata.size,
-        "Cache-Control": `${isPublic ? "public" : "private"
-          }, max-age=${cacheTtlSec}`,
+        "Cache-Control": `${isPublic ? "public" : "private"}, max-age=${cacheTtlSec}`,
       });
 
       // Stream the file to the response
@@ -136,8 +134,7 @@ export class ObjectStorageService {
     const privateObjectDir = this.getPrivateObjectDir();
     if (!privateObjectDir) {
       throw new Error(
-        "PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' " +
-        "tool and set PRIVATE_OBJECT_DIR env var."
+        "PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' " + "tool and set PRIVATE_OBJECT_DIR env var.",
       );
     }
 
@@ -182,9 +179,7 @@ export class ObjectStorageService {
     return objectFile;
   }
 
-  normalizeObjectEntityPath(
-    rawPath: string,
-  ): string {
+  normalizeObjectEntityPath(rawPath: string): string {
     if (!rawPath.startsWith("https://storage.googleapis.com/")) {
       return rawPath;
     }
@@ -208,10 +203,7 @@ export class ObjectStorageService {
   }
 
   // Tries to set the ACL policy for the object entity and return the normalized path.
-  async trySetObjectEntityAclPolicy(
-    rawPath: string,
-    aclPolicy: ObjectAclPolicy
-  ): Promise<string> {
+  async trySetObjectEntityAclPolicy(rawPath: string, aclPolicy: ObjectAclPolicy): Promise<string> {
     const normalizedPath = this.normalizeObjectEntityPath(rawPath);
     if (!normalizedPath.startsWith("/")) {
       return normalizedPath;
@@ -278,20 +270,16 @@ async function signObjectURL({
     method,
     expires_at: new Date(Date.now() + ttlSec * 1000).toISOString(),
   };
-  const response = await fetch(
-    `${REPLIT_SIDECAR_ENDPOINT}/object-storage/signed-object-url`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(request),
-    }
-  );
+  const response = await fetch(`${REPLIT_SIDECAR_ENDPOINT}/object-storage/signed-object-url`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(request),
+  });
   if (!response.ok) {
     throw new Error(
-      `Failed to sign object URL, errorcode: ${response.status}, ` +
-      `make sure you're running on Replit`
+      `Failed to sign object URL, errorcode: ${response.status}, ` + `make sure you're running on Replit`,
     );
   }
 

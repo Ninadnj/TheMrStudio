@@ -1,20 +1,20 @@
+import type { Booking } from "@shared/schema";
+import { useQuery } from "@tanstack/react-query";
+import { ExternalLink, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
-import { useQuery } from "@tanstack/react-query";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { BOOKINGS_REFRESH_MS, BookingsEditor } from "@/components/admin/BookingsEditor";
+import GalleryEditor from "@/components/admin/GalleryEditor";
+import HeroContentEditor from "@/components/admin/HeroContentEditor";
+import PricesEditor from "@/components/admin/PricesEditor";
+import SiteSettingsEditor from "@/components/admin/SiteSettingsEditor";
+import SpecialOffersEditor from "@/components/admin/SpecialOffersEditor";
+import { StaffEditor } from "@/components/admin/StaffEditor";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, LogOut } from "lucide-react";
-import type { Booking } from "@shared/schema";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Wordmark from "@/components/Wordmark";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
-import Wordmark from "@/components/Wordmark";
-import HeroContentEditor from "@/components/admin/HeroContentEditor";
-import SiteSettingsEditor from "@/components/admin/SiteSettingsEditor";
-import { StaffEditor } from "@/components/admin/StaffEditor";
-import GalleryEditor from "@/components/admin/GalleryEditor";
-import SpecialOffersEditor from "@/components/admin/SpecialOffersEditor";
-import { BookingsEditor, BOOKINGS_REFRESH_MS } from "@/components/admin/BookingsEditor";
-import PricesEditor from "@/components/admin/PricesEditor";
 
 const TABS = [
   { value: "bookings", label: "ჯავშნები" },
@@ -69,7 +69,11 @@ export default function AdminDashboard() {
       queryClient.setQueryData(["/api/admin/check"], { authenticated: false });
       setLocation("/admin/login");
     } catch {
-      toast({ title: "გასვლა ვერ მოხერხდა", description: "შეამოწმეთ ინტერნეტი და სცადეთ ხელახლა.", variant: "destructive" });
+      toast({
+        title: "გასვლა ვერ მოხერხდა",
+        description: "შეამოწმეთ ინტერნეტი და სცადეთ ხელახლა.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -95,7 +99,13 @@ export default function AdminDashboard() {
           </div>
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" asChild>
-              <a href="/" target="_blank" rel="noopener noreferrer" aria-label="საიტის ნახვა" data-testid="link-view-site">
+              <a
+                href="/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="საიტის ნახვა"
+                data-testid="link-view-site"
+              >
                 <ExternalLink className="w-4 h-4 sm:mr-2" />
                 <span className="hidden sm:inline">საიტის ნახვა</span>
               </a>

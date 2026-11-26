@@ -1,14 +1,14 @@
-import { useMemo, useRef, useState, type ReactNode } from "react";
-import { ArrowRight } from "lucide-react";
 import type { GalleryImage } from "@shared/schema";
-import { PolishIcon, BeamIcon, DropIcon } from "@/components/StudioIcons";
+import { ArrowRight } from "lucide-react";
+import { type ReactNode, useMemo, useRef, useState } from "react";
+import { BeamIcon, DropIcon, PolishIcon } from "@/components/StudioIcons";
+import { useGalleryImages } from "@/hooks/use-gallery";
 import { hapticTap } from "@/lib/haptics";
-import { isVideoUrl } from "@/lib/videoUtils";
 import { useLang } from "@/lib/i18n";
-import { usePriceMenu, type BookingCategory, type MenuGroup } from "@/lib/serviceMenu";
 import { scrollBehavior } from "@/lib/motion";
 import { stagger } from "@/lib/reveal";
-import { useGalleryImages } from "@/hooks/use-gallery";
+import { type BookingCategory, type MenuGroup, usePriceMenu } from "@/lib/serviceMenu";
+import { isVideoUrl } from "@/lib/videoUtils";
 
 type Category = {
   id: string;
@@ -63,7 +63,8 @@ const categories: Category[] = [
   },
 ];
 
-const inCategory = (cat: Category) => (item: { booking: string }) => cat.bookings.includes(item.booking as BookingCategory);
+const inCategory = (cat: Category) => (item: { booking: string }) =>
+  cat.bookings.includes(item.booking as BookingCategory);
 
 function treatmentCount(menu: MenuGroup[], cat: Category) {
   return menu.reduce((sum, group) => sum + group.items.filter(inCategory(cat)).length, 0);
@@ -95,7 +96,7 @@ export default function Services() {
     const map = new Map<string, GalleryImage>();
     for (const cat of categories) {
       const match = galleryImages.find((img) =>
-        cat.matchKeywords.some((kw) => img.category.toLowerCase().includes(kw.toLowerCase()))
+        cat.matchKeywords.some((kw) => img.category.toLowerCase().includes(kw.toLowerCase())),
       );
       if (match) map.set(cat.id, match);
     }
@@ -108,7 +109,9 @@ export default function Services() {
     <section id="services" className="section scroll-mt-20 md:scroll-mt-24" aria-labelledby="services-title">
       <div className="shell">
         <div className="section-head">
-          <p className="eyebrow" data-reveal="rise">{t("სტუდია", "The studio")}</p>
+          <p className="eyebrow" data-reveal="rise">
+            {t("სტუდია", "The studio")}
+          </p>
           <h2 id="services-title" className="display section-title" data-reveal="mask">
             <span>{t("სერვისები", "Services")}</span>
           </h2>
@@ -184,7 +187,11 @@ export default function Services() {
                 data-testid={`service-tile-${cat.id}`}
               >
                 <span className="service-tile-media" aria-hidden>
-                  {image ? <Media image={image} alt="" /> : <span className="studio-seal service-tile-seal">{cat.icon}</span>}
+                  {image ? (
+                    <Media image={image} alt="" />
+                  ) : (
+                    <span className="studio-seal service-tile-seal">{cat.icon}</span>
+                  )}
                 </span>
                 <span className="service-tile-text">
                   <span className="service-tile-num">0{i + 1}</span>

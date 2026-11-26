@@ -1,36 +1,50 @@
 import {
-  type User, type InsertUser,
-  type Booking, type InsertBooking,
-  type HeroContent, type InsertHeroContent,
-  type Service, type InsertService,
-  type SiteSettings, type InsertSiteSettings,
-  type Staff, type InsertStaff,
-  type GalleryImage, type InsertGalleryImage,
-  type ServicesSection, type InsertServicesSection,
-  type SpecialOffer, type InsertSpecialOffer,
-  type Trend, type InsertTrend,
-  type TrendsSection, type InsertTrendsSection,
-  type PriceGroup, type InsertPriceGroup,
-  type PriceItem, type InsertPriceItem,
-  type PriceMenuGroup,
-  type StudioInfo, type InsertStudioInfo,
-  users as usersTable,
-  staff as staffTable,
+  type Booking,
   bookings as bookingsTable,
-  heroContent as heroContentTable,
-  services as servicesTable,
-  siteSettings as siteSettingsTable,
-  servicesSection as servicesSectionTable,
-  specialOffers as specialOffersTable,
+  type GalleryImage,
   galleryImages as galleryImagesTable,
-  trends as trendsTable,
-  trendsSection as trendsSectionTable,
+  type HeroContent,
+  heroContent as heroContentTable,
+  type InsertBooking,
+  type InsertGalleryImage,
+  type InsertHeroContent,
+  type InsertPriceGroup,
+  type InsertPriceItem,
+  type InsertService,
+  type InsertServicesSection,
+  type InsertSiteSettings,
+  type InsertSpecialOffer,
+  type InsertStaff,
+  type InsertStudioInfo,
+  type InsertTrend,
+  type InsertTrendsSection,
+  type InsertUser,
+  type PriceGroup,
+  type PriceItem,
+  type PriceMenuGroup,
   priceGroups as priceGroupsTable,
   priceItems as priceItemsTable,
+  type Service,
+  type ServicesSection,
+  type SiteSettings,
+  type SpecialOffer,
+  type Staff,
+  type StudioInfo,
+  servicesSection as servicesSectionTable,
+  services as servicesTable,
+  siteSettings as siteSettingsTable,
+  specialOffers as specialOffersTable,
+  staff as staffTable,
   studioInfo as studioInfoTable,
+  type Trend,
+  type TrendsSection,
+  trendsSection as trendsSectionTable,
+  trends as trendsTable,
+  type User,
+  users as usersTable,
 } from "@shared/schema";
-import { db } from "./db";
 import { eq, sql } from "drizzle-orm";
+import { db } from "./db";
 import { seedPriceMenu, seedStudioInfo } from "./seed-content";
 
 /** Nest items under their groups, both in display order. */
@@ -86,7 +100,10 @@ export interface IStorage {
   getAllGalleryImages(): Promise<GalleryImage[]>;
   getGalleryImagesByCategory(category: string): Promise<GalleryImage[]>;
   createGalleryImage(image: InsertGalleryImage): Promise<GalleryImage>;
-  updateGalleryImage(id: string, updates: Partial<InsertGalleryImage>): Partial<GalleryImage | undefined> | Promise<GalleryImage | undefined>;
+  updateGalleryImage(
+    id: string,
+    updates: Partial<InsertGalleryImage>,
+  ): Partial<GalleryImage | undefined> | Promise<GalleryImage | undefined>;
   deleteGalleryImage(id: string): Promise<boolean>;
 
   getServicesSection(): Promise<ServicesSection | undefined>;
@@ -169,15 +186,13 @@ export class DatabaseStorage implements IStorage {
     if (calendarEventId) {
       updateData.calendarEventId = calendarEventId;
     }
-    const [updated] = await db.update(bookingsTable)
-      .set(updateData)
-      .where(eq(bookingsTable.id, id))
-      .returning();
+    const [updated] = await db.update(bookingsTable).set(updateData).where(eq(bookingsTable.id, id)).returning();
     return updated;
   }
 
   async rejectBooking(id: string, reason?: string): Promise<Booking | undefined> {
-    const [updated] = await db.update(bookingsTable)
+    const [updated] = await db
+      .update(bookingsTable)
       .set({ status: "rejected", rejectionReason: reason ?? null })
       .where(eq(bookingsTable.id, id))
       .returning();
@@ -189,10 +204,7 @@ export class DatabaseStorage implements IStorage {
     if (updates.time !== undefined) updateData.time = updates.time;
     if (updates.duration !== undefined) updateData.duration = updates.duration;
 
-    const [updated] = await db.update(bookingsTable)
-      .set(updateData)
-      .where(eq(bookingsTable.id, id))
-      .returning();
+    const [updated] = await db.update(bookingsTable).set(updateData).where(eq(bookingsTable.id, id)).returning();
     return updated;
   }
 
@@ -209,13 +221,17 @@ export class DatabaseStorage implements IStorage {
   async updateHeroContent(content: Partial<InsertHeroContent>): Promise<HeroContent> {
     const existing = await this.getHeroContent();
     if (existing) {
-      const [updated] = await db.update(heroContentTable)
+      const [updated] = await db
+        .update(heroContentTable)
         .set(content)
         .where(eq(heroContentTable.id, existing.id))
         .returning();
       return updated;
     } else {
-      const [created] = await db.insert(heroContentTable).values(content as InsertHeroContent).returning();
+      const [created] = await db
+        .insert(heroContentTable)
+        .values(content as InsertHeroContent)
+        .returning();
       return created;
     }
   }
@@ -231,10 +247,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateService(id: string, updates: Partial<InsertService>): Promise<Service | undefined> {
-    const [updated] = await db.update(servicesTable)
-      .set(updates)
-      .where(eq(servicesTable.id, id))
-      .returning();
+    const [updated] = await db.update(servicesTable).set(updates).where(eq(servicesTable.id, id)).returning();
     return updated;
   }
 
@@ -251,7 +264,8 @@ export class DatabaseStorage implements IStorage {
   async updateSiteSettings(settings: InsertSiteSettings): Promise<SiteSettings> {
     const existing = await this.getSiteSettings();
     if (existing) {
-      const [updated] = await db.update(siteSettingsTable)
+      const [updated] = await db
+        .update(siteSettingsTable)
         .set(settings)
         .where(eq(siteSettingsTable.id, existing.id))
         .returning();
@@ -283,10 +297,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateStaff(id: string, updates: Partial<InsertStaff>): Promise<Staff | undefined> {
-    const [updated] = await db.update(staffTable)
-      .set(updates)
-      .where(eq(staffTable.id, id))
-      .returning();
+    const [updated] = await db.update(staffTable).set(updates).where(eq(staffTable.id, id)).returning();
     return updated;
   }
 
@@ -311,10 +322,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateGalleryImage(id: string, updates: Partial<InsertGalleryImage>): Promise<GalleryImage | undefined> {
-    const [updated] = await db.update(galleryImagesTable)
-      .set(updates)
-      .where(eq(galleryImagesTable.id, id))
-      .returning();
+    const [updated] = await db.update(galleryImagesTable).set(updates).where(eq(galleryImagesTable.id, id)).returning();
     return updated;
   }
 
@@ -331,7 +339,8 @@ export class DatabaseStorage implements IStorage {
   async updateServicesSection(content: InsertServicesSection): Promise<ServicesSection> {
     const existing = await this.getServicesSection();
     if (existing) {
-      const [updated] = await db.update(servicesSectionTable)
+      const [updated] = await db
+        .update(servicesSectionTable)
         .set(content)
         .where(eq(servicesSectionTable.id, existing.id))
         .returning();
@@ -357,10 +366,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateSpecialOffer(id: string, updates: Partial<InsertSpecialOffer>): Promise<SpecialOffer | undefined> {
-    const [updated] = await db.update(specialOffersTable)
-      .set(updates)
-      .where(eq(specialOffersTable.id, id))
-      .returning();
+    const [updated] = await db.update(specialOffersTable).set(updates).where(eq(specialOffersTable.id, id)).returning();
     return updated;
   }
 
@@ -385,10 +391,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateTrend(id: string, updates: Partial<InsertTrend>): Promise<Trend | undefined> {
-    const [updated] = await db.update(trendsTable)
-      .set(updates)
-      .where(eq(trendsTable.id, id))
-      .returning();
+    const [updated] = await db.update(trendsTable).set(updates).where(eq(trendsTable.id, id)).returning();
     return updated;
   }
 
@@ -405,7 +408,8 @@ export class DatabaseStorage implements IStorage {
   async updateTrendsSection(content: InsertTrendsSection): Promise<TrendsSection> {
     const existing = await this.getTrendsSection();
     if (existing) {
-      const [updated] = await db.update(trendsSectionTable)
+      const [updated] = await db
+        .update(trendsSectionTable)
         .set(content)
         .where(eq(trendsSectionTable.id, existing.id))
         .returning();
@@ -463,7 +467,10 @@ export class DatabaseStorage implements IStorage {
 
   async createPriceGroup(group: InsertPriceGroup): Promise<PriceGroup> {
     const position = group.position ?? nextPosition(await db.select().from(priceGroupsTable));
-    const [created] = await db.insert(priceGroupsTable).values({ ...group, position }).returning();
+    const [created] = await db
+      .insert(priceGroupsTable)
+      .values({ ...group, position })
+      .returning();
     return created;
   }
 
@@ -479,12 +486,19 @@ export class DatabaseStorage implements IStorage {
   }
 
   async reorderPriceGroups(ids: string[]): Promise<void> {
-    await Promise.all(ids.map((id, position) => db.update(priceGroupsTable).set({ position }).where(eq(priceGroupsTable.id, id))));
+    await Promise.all(
+      ids.map((id, position) => db.update(priceGroupsTable).set({ position }).where(eq(priceGroupsTable.id, id))),
+    );
   }
 
   async createPriceItem(item: InsertPriceItem): Promise<PriceItem> {
-    const position = item.position ?? nextPosition(await db.select().from(priceItemsTable).where(eq(priceItemsTable.groupId, item.groupId)));
-    const [created] = await db.insert(priceItemsTable).values({ ...item, position }).returning();
+    const position =
+      item.position ??
+      nextPosition(await db.select().from(priceItemsTable).where(eq(priceItemsTable.groupId, item.groupId)));
+    const [created] = await db
+      .insert(priceItemsTable)
+      .values({ ...item, position })
+      .returning();
     return created;
   }
 
@@ -494,7 +508,9 @@ export class DatabaseStorage implements IStorage {
     const changes = { ...item };
     // Moved to another group: it goes to the end there
     if (item.groupId && item.groupId !== current.groupId && item.position === undefined) {
-      changes.position = nextPosition(await db.select().from(priceItemsTable).where(eq(priceItemsTable.groupId, item.groupId)));
+      changes.position = nextPosition(
+        await db.select().from(priceItemsTable).where(eq(priceItemsTable.groupId, item.groupId)),
+      );
     }
     const [updated] = await db.update(priceItemsTable).set(changes).where(eq(priceItemsTable.id, id)).returning();
     return updated;
@@ -506,18 +522,33 @@ export class DatabaseStorage implements IStorage {
   }
 
   async reorderPriceItems(ids: string[]): Promise<void> {
-    await Promise.all(ids.map((id, position) => db.update(priceItemsTable).set({ position }).where(eq(priceItemsTable.id, id))));
+    await Promise.all(
+      ids.map((id, position) => db.update(priceItemsTable).set({ position }).where(eq(priceItemsTable.id, id))),
+    );
   }
 
   async getStudioInfo(): Promise<StudioInfo> {
     const [info] = await db.select().from(studioInfoTable).limit(1);
-    return info ?? { id: "seed", ...seedStudioInfo, hoursKa: seedStudioInfo.hoursKa ?? "", hoursEn: seedStudioInfo.hoursEn ?? "", instagram: seedStudioInfo.instagram ?? "", facebook: seedStudioInfo.facebook ?? "" };
+    return (
+      info ?? {
+        id: "seed",
+        ...seedStudioInfo,
+        hoursKa: seedStudioInfo.hoursKa ?? "",
+        hoursEn: seedStudioInfo.hoursEn ?? "",
+        instagram: seedStudioInfo.instagram ?? "",
+        facebook: seedStudioInfo.facebook ?? "",
+      }
+    );
   }
 
   async updateStudioInfo(info: InsertStudioInfo): Promise<StudioInfo> {
     const [existing] = await db.select().from(studioInfoTable).limit(1);
     if (existing) {
-      const [updated] = await db.update(studioInfoTable).set(info).where(eq(studioInfoTable.id, existing.id)).returning();
+      const [updated] = await db
+        .update(studioInfoTable)
+        .set(info)
+        .where(eq(studioInfoTable.id, existing.id))
+        .returning();
       return updated;
     }
     const [created] = await db.insert(studioInfoTable).values(info).returning();
@@ -576,7 +607,7 @@ export class MemStorage implements IStorage {
       this.staff.set(id, { ...s, id, calendarId: s.calendarId ?? null });
     });
 
-    const servicesData: { category: string, name: string, price: string, order: string }[] = [
+    const servicesData: { category: string; name: string; price: string; order: string }[] = [
       // Manicure & Pedicure
       { category: "მანიკური / პედიკური", name: "გელ-ლაქი ნუნების მოწესრიგებით", price: "35 ₾", order: "A01" },
       { category: "მანიკური / პედიკური", name: "გელ-ლაქი ნუნების აწევით", price: "25 ₾", order: "A02" },
@@ -627,7 +658,7 @@ export class MemStorage implements IStorage {
         name: s.name,
         description: s.category,
         price: s.price,
-        order: s.order
+        order: s.order,
       });
     });
 
@@ -636,17 +667,26 @@ export class MemStorage implements IStorage {
       title: "ჩვენი სერვისები",
       subtitle: "Professional Services",
       categoryDescriptions: JSON.stringify({
-        "მანიკური / პედიკური": "პროფესიონალური ფრჩხილების მოვლა პრემიუმ გელ-ლაქებითა და თანამედროვე ტექნიკებით. ჩვენი მანიკური და პედიკური მოიცავს ფრჩხილების გამაგრებას, დაგრძელებას და მხატვრულ დიზაინებს. / Professional nail care using premium gel polishes and advanced techniques. Our manicure and pedicure services include nail strengthening, extensions, and artistic designs.",
-        "ლაზერული ეპილაცია - ქალი": "განვითარებული ლაზერული ეპილაციის ტექნოლოგია უსაფრთხო და ეფექტური პროცედურებით ქალბატონებისთვის. / Advanced laser hair removal technology with safe and effective treatments for women.",
-        "ლაზერული ეპილაცია - კაცი": "განვითარებული ლაზერული ეპილაციის ტექნოლოგია უსაფრთხო და ეფექტური პროცედურებით მამაკაცებისთვის. / Advanced laser hair removal technology with safe and effective treatments for men.",
-        "ეკონომ პაკეტები": "სპეციალური ფასები და ეკონომიური შეთავაზებები კომპლექსურ ზონებზე. / Special prices and economy offers for combined treatment zones.",
-        "კოსმეტოლოგია": "პროფესიონალური კანის მოვლა და სილამაზის პროცედურები თანამედროვე ტექნიკებითა და მაღალი ხარისხის პროდუქტებით. / Professional skincare and beauty treatments using modern techniques and high-quality products."
-      })
+        "მანიკური / პედიკური":
+          "პროფესიონალური ფრჩხილების მოვლა პრემიუმ გელ-ლაქებითა და თანამედროვე ტექნიკებით. ჩვენი მანიკური და პედიკური მოიცავს ფრჩხილების გამაგრებას, დაგრძელებას და მხატვრულ დიზაინებს. / Professional nail care using premium gel polishes and advanced techniques. Our manicure and pedicure services include nail strengthening, extensions, and artistic designs.",
+        "ლაზერული ეპილაცია - ქალი":
+          "განვითარებული ლაზერული ეპილაციის ტექნოლოგია უსაფრთხო და ეფექტური პროცედურებით ქალბატონებისთვის. / Advanced laser hair removal technology with safe and effective treatments for women.",
+        "ლაზერული ეპილაცია - კაცი":
+          "განვითარებული ლაზერული ეპილაციის ტექნოლოგია უსაფრთხო და ეფექტური პროცედურებით მამაკაცებისთვის. / Advanced laser hair removal technology with safe and effective treatments for men.",
+        "ეკონომ პაკეტები":
+          "სპეციალური ფასები და ეკონომიური შეთავაზებები კომპლექსურ ზონებზე. / Special prices and economy offers for combined treatment zones.",
+        კოსმეტოლოგია:
+          "პროფესიონალური კანის მოვლა და სილამაზის პროცედურები თანამედროვე ტექნიკებითა და მაღალი ხარისხის პროდუქტებით. / Professional skincare and beauty treatments using modern techniques and high-quality products.",
+      }),
     };
   }
 
-  async getUser(id: string) { return this.users.get(id); }
-  async getUserByUsername(username: string) { return Array.from(this.users.values()).find(u => u.username === username); }
+  async getUser(id: string) {
+    return this.users.get(id);
+  }
+  async getUserByUsername(username: string) {
+    return Array.from(this.users.values()).find((u) => u.username === username);
+  }
   async createUser(u: InsertUser) {
     const id = Math.random().toString(36).substr(2, 9);
     const user = { ...u, id };
@@ -664,16 +704,26 @@ export class MemStorage implements IStorage {
       staffName: b.staffName ?? null,
       notes: b.notes ?? null,
       calendarEventId: null,
-      rejectionReason: null
+      rejectionReason: null,
     };
     this.bookings.set(id, booking);
     return booking;
   }
-  async getBookingsByDate(date: string) { return Array.from(this.bookings.values()).filter(b => b.date === date); }
-  async getAllBookings() { return Array.from(this.bookings.values()); }
-  async getBookingById(id: string) { return this.bookings.get(id); }
-  async getPendingBookings() { return Array.from(this.bookings.values()).filter(b => b.status === "pending"); }
-  async getConfirmedBookings() { return Array.from(this.bookings.values()).filter(b => b.status === "confirmed"); }
+  async getBookingsByDate(date: string) {
+    return Array.from(this.bookings.values()).filter((b) => b.date === date);
+  }
+  async getAllBookings() {
+    return Array.from(this.bookings.values());
+  }
+  async getBookingById(id: string) {
+    return this.bookings.get(id);
+  }
+  async getPendingBookings() {
+    return Array.from(this.bookings.values()).filter((b) => b.status === "pending");
+  }
+  async getConfirmedBookings() {
+    return Array.from(this.bookings.values()).filter((b) => b.status === "confirmed");
+  }
   async approveBooking(id: string, calendarEventId?: string) {
     const b = this.bookings.get(id);
     if (!b) return undefined;
@@ -695,13 +745,19 @@ export class MemStorage implements IStorage {
     if (updates.duration) b.duration = updates.duration;
     return b;
   }
-  async deleteBooking(id: string) { return this.bookings.delete(id); }
-  async getHeroContent() { return this.heroContent; }
+  async deleteBooking(id: string) {
+    return this.bookings.delete(id);
+  }
+  async getHeroContent() {
+    return this.heroContent;
+  }
   async updateHeroContent(c: Partial<InsertHeroContent>) {
     this.heroContent = { ...this.heroContent, ...c } as HeroContent;
     return this.heroContent;
   }
-  async getAllServices() { return Array.from(this.services.values()).sort((a, b) => a.order.localeCompare(b.order)); }
+  async getAllServices() {
+    return Array.from(this.services.values()).sort((a, b) => a.order.localeCompare(b.order));
+  }
   async createService(s: InsertService) {
     const id = Math.random().toString(36).substr(2, 9);
     const service = { ...s, id };
@@ -715,15 +771,27 @@ export class MemStorage implements IStorage {
     this.services.set(id, updated);
     return updated;
   }
-  async deleteService(id: string) { return this.services.delete(id); }
-  async getSiteSettings() { return this.siteSettings; }
+  async deleteService(id: string) {
+    return this.services.delete(id);
+  }
+  async getSiteSettings() {
+    return this.siteSettings;
+  }
   async updateSiteSettings(s: InsertSiteSettings) {
     this.siteSettings = { ...this.siteSettings, ...s } as SiteSettings;
     return this.siteSettings;
   }
-  async getAllStaff() { return Array.from(this.staff.values()).sort((a, b) => a.order.localeCompare(b.order)); }
-  async getStaffById(id: string) { return this.staff.get(id); }
-  async getStaffByCategory(c: string) { return Array.from(this.staff.values()).filter(s => s.serviceCategory === c).sort((a, b) => a.order.localeCompare(b.order)); }
+  async getAllStaff() {
+    return Array.from(this.staff.values()).sort((a, b) => a.order.localeCompare(b.order));
+  }
+  async getStaffById(id: string) {
+    return this.staff.get(id);
+  }
+  async getStaffByCategory(c: string) {
+    return Array.from(this.staff.values())
+      .filter((s) => s.serviceCategory === c)
+      .sort((a, b) => a.order.localeCompare(b.order));
+  }
   async createStaff(s: InsertStaff) {
     const id = Math.random().toString(36).substr(2, 9);
     const staff = { ...s, id, calendarId: s.calendarId ?? null };
@@ -737,9 +805,17 @@ export class MemStorage implements IStorage {
     this.staff.set(id, updated as Staff);
     return updated as Staff;
   }
-  async deleteStaff(id: string) { return this.staff.delete(id); }
-  async getAllGalleryImages() { return Array.from(this.galleryImages.values()).sort((a, b) => a.order.localeCompare(b.order)); }
-  async getGalleryImagesByCategory(c: string) { return Array.from(this.galleryImages.values()).filter(i => i.category === c).sort((a, b) => a.order.localeCompare(b.order)); }
+  async deleteStaff(id: string) {
+    return this.staff.delete(id);
+  }
+  async getAllGalleryImages() {
+    return Array.from(this.galleryImages.values()).sort((a, b) => a.order.localeCompare(b.order));
+  }
+  async getGalleryImagesByCategory(c: string) {
+    return Array.from(this.galleryImages.values())
+      .filter((i) => i.category === c)
+      .sort((a, b) => a.order.localeCompare(b.order));
+  }
   async createGalleryImage(i: InsertGalleryImage) {
     const id = Math.random().toString(36).substr(2, 9);
     const image = { ...i, id };
@@ -753,14 +829,22 @@ export class MemStorage implements IStorage {
     this.galleryImages.set(id, updated);
     return updated;
   }
-  async deleteGalleryImage(id: string) { return this.galleryImages.delete(id); }
-  async getServicesSection() { return this.servicesSection; }
+  async deleteGalleryImage(id: string) {
+    return this.galleryImages.delete(id);
+  }
+  async getServicesSection() {
+    return this.servicesSection;
+  }
   async updateServicesSection(s: InsertServicesSection) {
     this.servicesSection = { ...this.servicesSection, ...s } as ServicesSection;
     return this.servicesSection;
   }
-  async getAllSpecialOffers() { return Array.from(this.specialOffers.values()); }
-  async getActiveSpecialOffer() { return Array.from(this.specialOffers.values()).find(o => o.isActive && offerIsRunning(o)); }
+  async getAllSpecialOffers() {
+    return Array.from(this.specialOffers.values());
+  }
+  async getActiveSpecialOffer() {
+    return Array.from(this.specialOffers.values()).find((o) => o.isActive && offerIsRunning(o));
+  }
   async createSpecialOffer(o: InsertSpecialOffer) {
     const id = Math.random().toString(36).substr(2, 9);
     const offer = { ...o, id, isActive: o.isActive ?? true };
@@ -774,9 +858,17 @@ export class MemStorage implements IStorage {
     this.specialOffers.set(id, updated as SpecialOffer);
     return updated as SpecialOffer;
   }
-  async deleteSpecialOffer(id: string) { return this.specialOffers.delete(id); }
-  async getAllTrends() { return Array.from(this.trends.values()).sort((a, b) => a.order.localeCompare(b.order)); }
-  async getTrendsByCategory(c: string) { return Array.from(this.trends.values()).filter(t => t.category === c).sort((a, b) => a.order.localeCompare(b.order)); }
+  async deleteSpecialOffer(id: string) {
+    return this.specialOffers.delete(id);
+  }
+  async getAllTrends() {
+    return Array.from(this.trends.values()).sort((a, b) => a.order.localeCompare(b.order));
+  }
+  async getTrendsByCategory(c: string) {
+    return Array.from(this.trends.values())
+      .filter((t) => t.category === c)
+      .sort((a, b) => a.order.localeCompare(b.order));
+  }
   async createTrend(t: InsertTrend) {
     const id = Math.random().toString(36).substr(2, 9);
     const trend = { ...t, id };
@@ -790,8 +882,12 @@ export class MemStorage implements IStorage {
     this.trends.set(id, updated);
     return updated;
   }
-  async deleteTrend(id: string) { return this.trends.delete(id); }
-  async getTrendsSection() { return this.trendsSection; }
+  async deleteTrend(id: string) {
+    return this.trends.delete(id);
+  }
+  async getTrendsSection() {
+    return this.trendsSection;
+  }
   async updateTrendsSection(t: InsertTrendsSection) {
     this.trendsSection = { ...this.trendsSection, ...t } as TrendsSection;
     return this.trendsSection;
@@ -805,7 +901,13 @@ export class MemStorage implements IStorage {
         this.priceGroups.set(group.id, { ...group, position: group.position ?? 0 } as PriceGroup);
         items.forEach((it) => {
           const id = Math.random().toString(36).slice(2, 11);
-          this.priceItems.set(id, { ...it, id, groupId: group.id, durationMin: it.durationMin ?? null, position: it.position ?? 0 } as PriceItem);
+          this.priceItems.set(id, {
+            ...it,
+            id,
+            groupId: group.id,
+            durationMin: it.durationMin ?? null,
+            position: it.position ?? 0,
+          } as PriceItem);
         });
       }
     }
@@ -816,7 +918,11 @@ export class MemStorage implements IStorage {
   }
   async createPriceGroup(g: InsertPriceGroup) {
     const id = Math.random().toString(36).slice(2, 11);
-    const group = { ...g, id, position: g.position ?? nextPosition(Array.from(this.priceGroups.values())) } as PriceGroup;
+    const group = {
+      ...g,
+      id,
+      position: g.position ?? nextPosition(Array.from(this.priceGroups.values())),
+    } as PriceGroup;
     this.priceGroups.set(id, group);
     return group;
   }
@@ -828,16 +934,26 @@ export class MemStorage implements IStorage {
     return updated;
   }
   async deletePriceGroup(id: string) {
-    Array.from(this.priceItems.values()).filter((it) => it.groupId === id).forEach((it) => this.priceItems.delete(it.id));
+    Array.from(this.priceItems.values())
+      .filter((it) => it.groupId === id)
+      .forEach((it) => this.priceItems.delete(it.id));
     return this.priceGroups.delete(id);
   }
   async reorderPriceGroups(ids: string[]) {
-    ids.forEach((id, position) => { const g = this.priceGroups.get(id); if (g) this.priceGroups.set(id, { ...g, position }); });
+    ids.forEach((id, position) => {
+      const g = this.priceGroups.get(id);
+      if (g) this.priceGroups.set(id, { ...g, position });
+    });
   }
   async createPriceItem(i: InsertPriceItem) {
     const id = Math.random().toString(36).slice(2, 11);
     const siblings = Array.from(this.priceItems.values()).filter((it) => it.groupId === i.groupId);
-    const item = { ...i, id, durationMin: i.durationMin ?? null, position: i.position ?? nextPosition(siblings) } as PriceItem;
+    const item = {
+      ...i,
+      id,
+      durationMin: i.durationMin ?? null,
+      position: i.position ?? nextPosition(siblings),
+    } as PriceItem;
     this.priceItems.set(id, item);
     return item;
   }
@@ -852,9 +968,14 @@ export class MemStorage implements IStorage {
     this.priceItems.set(id, updated);
     return updated;
   }
-  async deletePriceItem(id: string) { return this.priceItems.delete(id); }
+  async deletePriceItem(id: string) {
+    return this.priceItems.delete(id);
+  }
   async reorderPriceItems(ids: string[]) {
-    ids.forEach((id, position) => { const it = this.priceItems.get(id); if (it) this.priceItems.set(id, { ...it, position }); });
+    ids.forEach((id, position) => {
+      const it = this.priceItems.get(id);
+      if (it) this.priceItems.set(id, { ...it, position });
+    });
   }
   async getStudioInfo() {
     if (!this.studio) await this.ensureContent();

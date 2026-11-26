@@ -1,13 +1,13 @@
+import type { HeroContent } from "@shared/schema";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { UploadResult } from "@uppy/core";
 import { RotateCcw, Upload } from "lucide-react";
-import type { HeroContent } from "@shared/schema";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { queryClient, apiRequest } from "@/lib/queryClient";
-import { isVideoUrl } from "@/lib/videoUtils";
 import { ObjectUploader } from "@/components/ObjectUploader";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { isVideoUrl } from "@/lib/videoUtils";
 
 /** The site's own artwork, shown whenever no custom image is set. */
 const DEFAULT_HERO = "/images/hero-768.webp";
@@ -52,7 +52,12 @@ export default function HeroContentEditor() {
   const onUploaded = (result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
     const path = result.successful?.[0]?.response?.body?.uploadURL as string | undefined;
     if (path) setImage.mutate(path);
-    else toast({ title: "ატვირთვა ვერ მოხერხდა", description: "სცადეთ JPG ან PNG ფაილი, 10 MB-მდე.", variant: "destructive" });
+    else
+      toast({
+        title: "ატვირთვა ვერ მოხერხდა",
+        description: "სცადეთ JPG ან PNG ფაილი, 10 MB-მდე.",
+        variant: "destructive",
+      });
   };
 
   const custom = heroContent?.backgroundImage || null;
@@ -73,7 +78,12 @@ export default function HeroContentEditor() {
               (isVideoUrl(shown) ? (
                 <video src={shown} muted loop autoPlay playsInline className="h-full w-full object-cover" />
               ) : (
-                <img src={shown} alt="ამჟამინდელი მთავარი ფოტო" className="h-full w-full object-cover" data-testid="img-hero-preview" />
+                <img
+                  src={shown}
+                  alt="ამჟამინდელი მთავარი ფოტო"
+                  className="h-full w-full object-cover"
+                  data-testid="img-hero-preview"
+                />
               ))}
           </div>
 

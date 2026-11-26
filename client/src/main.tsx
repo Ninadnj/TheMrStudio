@@ -2,8 +2,8 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import { LangProvider } from "./lib/i18n";
 import "./lib/installPrompt";
-import { signConsole } from "./lib/signature";
 import { initReveals } from "./lib/reveal";
+import { signConsole } from "./lib/signature";
 import "./index.css";
 
 initReveals();
@@ -11,7 +11,7 @@ initReveals();
 createRoot(document.getElementById("root")!).render(
   <LangProvider>
     <App />
-  </LangProvider>
+  </LangProvider>,
 );
 
 signConsole();

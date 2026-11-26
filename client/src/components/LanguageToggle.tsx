@@ -1,5 +1,5 @@
-import { useLang } from "@/lib/i18n";
 import { hapticTap } from "@/lib/haptics";
+import { useLang } from "@/lib/i18n";
 
 export default function LanguageToggle() {
   const { lang, setLang } = useLang();

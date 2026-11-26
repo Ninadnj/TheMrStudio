@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
 import type { GalleryImage } from "@shared/schema";
+import { useQuery } from "@tanstack/react-query";
 
 /**
  * Local development runs on in-memory sample data with an empty gallery.

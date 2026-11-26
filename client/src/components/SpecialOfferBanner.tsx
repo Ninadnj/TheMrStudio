@@ -1,9 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
 import type { SpecialOffer } from "@shared/schema";
+import { useQuery } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { useState } from "react";
-import { stripDecorativeSymbols } from "@/lib/sanitizeText";
 import { scrollBehavior } from "@/lib/motion";
+import { stripDecorativeSymbols } from "@/lib/sanitizeText";
 
 export default function SpecialOfferBanner() {
   const [dismissed, setDismissed] = useState(false);
@@ -20,7 +20,7 @@ export default function SpecialOfferBanner() {
 
   const handleClick = () => {
     if (activeOffer.link) {
-      if (activeOffer.link.startsWith('#')) {
+      if (activeOffer.link.startsWith("#")) {
         const element = document.querySelector(activeOffer.link);
         element?.scrollIntoView({ behavior: scrollBehavior() });
       } else {

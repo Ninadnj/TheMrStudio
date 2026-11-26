@@ -1,18 +1,20 @@
-import { useState } from "react";
+import { insertPriceGroupSchema, insertPriceItemSchema, type PriceItem, type PriceMenuGroup } from "@shared/schema";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ArrowDown, ArrowUp, Pencil, Plus, Trash2 } from "lucide-react";
-import {
-  insertPriceGroupSchema,
-  insertPriceItemSchema,
-  type PriceItem,
-  type PriceMenuGroup,
-} from "@shared/schema";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { bookingCategories } from "@/lib/serviceMenu";
@@ -43,11 +45,14 @@ export default function PricesEditor() {
   const [problem, setProblem] = useState<string | null>(null);
 
   const refresh = () => queryClient.invalidateQueries({ queryKey: MENU_KEY });
-  const failed = (error: unknown) => toast({ title: "ვერ შეინახა", description: serverMessage(error), variant: "destructive" });
+  const failed = (error: unknown) =>
+    toast({ title: "ვერ შეინახა", description: serverMessage(error), variant: "destructive" });
 
   const saveGroup = useMutation({
     mutationFn: ({ id, ...data }: GroupForm) =>
-      id ? apiRequest("PUT", `/api/admin/price-groups/${id}`, data) : apiRequest("POST", "/api/admin/price-groups", data),
+      id
+        ? apiRequest("PUT", `/api/admin/price-groups/${id}`, data)
+        : apiRequest("POST", "/api/admin/price-groups", data),
     onSuccess: (_d, vars) => {
       refresh();
       setGroup(null);
@@ -145,7 +150,7 @@ export default function PricesEditor() {
             durationMin: "",
             // New treatments usually belong to the same service as their neighbours
             booking: groupOf.items[0]?.booking ?? "",
-          }
+          },
     );
   };
 
@@ -214,7 +219,13 @@ export default function PricesEditor() {
                 aria-label="ჯგუფის რედაქტირება"
                 onClick={() => {
                   setProblem(null);
-                  setGroup({ id: g.id, titleKa: g.titleKa, titleEn: g.titleEn, shortKa: g.shortKa, shortEn: g.shortEn });
+                  setGroup({
+                    id: g.id,
+                    titleKa: g.titleKa,
+                    titleEn: g.titleEn,
+                    shortKa: g.shortKa,
+                    shortEn: g.shortEn,
+                  });
                 }}
                 data-testid={`button-edit-group-${g.id}`}
               >
@@ -244,7 +255,11 @@ export default function PricesEditor() {
             ) : (
               <ul className="divide-y rounded-md border">
                 {g.items.map((it, ii) => (
-                  <li key={it.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2.5" data-testid={`price-item-${it.id}`}>
+                  <li
+                    key={it.id}
+                    className="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2.5"
+                    data-testid={`price-item-${it.id}`}
+                  >
                     <div className="min-w-0 flex-1 basis-48">
                       <p className="font-medium break-words">{it.nameKa}</p>
                       <p className="text-xs text-muted-foreground break-words">
@@ -252,7 +267,10 @@ export default function PricesEditor() {
                         {it.durationMin ? ` · ${it.durationMin} წთ` : ""}
                       </p>
                     </div>
-                    <span className="font-medium tabular-nums w-16 text-right" data-testid={`price-item-price-${it.id}`}>
+                    <span
+                      className="font-medium tabular-nums w-16 text-right"
+                      data-testid={`price-item-price-${it.id}`}
+                    >
                       {it.price} ₾
                     </span>
                     <div className="flex items-center">
@@ -320,12 +338,24 @@ export default function PricesEditor() {
         <DialogContent data-testid="dialog-price-group">
           <DialogHeader>
             <DialogTitle>{group?.id ? "ჯგუფის რედაქტირება" : "ახალი ჯგუფი"}</DialogTitle>
-            <DialogDescription>ჯგუფი აერთიანებს პროცედურებს ფასების სიაში, მაგ. „ლაზერი — ქალბატონები“.</DialogDescription>
+            <DialogDescription>
+              ჯგუფი აერთიანებს პროცედურებს ფასების სიაში, მაგ. „ლაზერი — ქალბატონები“.
+            </DialogDescription>
           </DialogHeader>
           {group && (
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="სათაური (ქართულად)" value={group.titleKa} onChange={(v) => setGroup({ ...group, titleKa: v })} testId="input-group-title-ka" />
-              <Field label="სათაური (ინგლისურად)" value={group.titleEn} onChange={(v) => setGroup({ ...group, titleEn: v })} testId="input-group-title-en" />
+              <Field
+                label="სათაური (ქართულად)"
+                value={group.titleKa}
+                onChange={(v) => setGroup({ ...group, titleKa: v })}
+                testId="input-group-title-ka"
+              />
+              <Field
+                label="სათაური (ინგლისურად)"
+                value={group.titleEn}
+                onChange={(v) => setGroup({ ...group, titleEn: v })}
+                testId="input-group-title-en"
+              />
               <Field
                 label="მოკლე სახელი (ქართულად)"
                 hint="ჩანს ფილტრში და დაჯავშნისას, მაგ. „ლაზერი · ქალი“"
@@ -342,7 +372,11 @@ export default function PricesEditor() {
               />
             </div>
           )}
-          {problem && <p className="text-sm text-destructive" role="alert">{problem}</p>}
+          {problem && (
+            <p className="text-sm text-destructive" role="alert">
+              {problem}
+            </p>
+          )}
           <DialogFooter className="gap-2 sm:gap-0">
             <Button variant="ghost" onClick={() => setGroup(null)}>
               გაუქმება
@@ -363,8 +397,18 @@ export default function PricesEditor() {
           </DialogHeader>
           {item && (
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="სახელი (ქართულად)" value={item.nameKa} onChange={(v) => setItem({ ...item, nameKa: v })} testId="input-item-name-ka" />
-              <Field label="სახელი (ინგლისურად)" value={item.nameEn} onChange={(v) => setItem({ ...item, nameEn: v })} testId="input-item-name-en" />
+              <Field
+                label="სახელი (ქართულად)"
+                value={item.nameKa}
+                onChange={(v) => setItem({ ...item, nameKa: v })}
+                testId="input-item-name-ka"
+              />
+              <Field
+                label="სახელი (ინგლისურად)"
+                value={item.nameEn}
+                onChange={(v) => setItem({ ...item, nameEn: v })}
+                testId="input-item-name-en"
+              />
               <Field
                 label="ფასი (₾)"
                 inputMode="numeric"
@@ -394,7 +438,9 @@ export default function PricesEditor() {
                     ))}
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-muted-foreground">განსაზღვრავს, რომელი სპეციალისტები ასრულებენ ამ პროცედურას.</p>
+                <p className="text-xs text-muted-foreground">
+                  განსაზღვრავს, რომელი სპეციალისტები ასრულებენ ამ პროცედურას.
+                </p>
               </div>
               <div className="space-y-2">
                 <Label>ჯგუფი</Label>
@@ -413,7 +459,11 @@ export default function PricesEditor() {
               </div>
             </div>
           )}
-          {problem && <p className="text-sm text-destructive" role="alert">{problem}</p>}
+          {problem && (
+            <p className="text-sm text-destructive" role="alert">
+              {problem}
+            </p>
+          )}
           <DialogFooter className="gap-2 sm:gap-0">
             <Button variant="ghost" onClick={() => setItem(null)}>
               გაუქმება
@@ -446,7 +496,13 @@ function Field({
   return (
     <div className="space-y-2">
       <Label htmlFor={testId}>{label}</Label>
-      <Input id={testId} value={value} inputMode={inputMode} onChange={(e) => onChange(e.target.value)} data-testid={testId} />
+      <Input
+        id={testId}
+        value={value}
+        inputMode={inputMode}
+        onChange={(e) => onChange(e.target.value)}
+        data-testid={testId}
+      />
       {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
     </div>
   );

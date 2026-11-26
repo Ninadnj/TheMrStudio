@@ -1,9 +1,9 @@
+import { CalendarCheck, Home, Image as ImageIcon, List, type LucideIcon, Phone } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Home, List, Image as ImageIcon, Phone, CalendarCheck, type LucideIcon } from "lucide-react";
 import { hapticTap } from "@/lib/haptics";
 import { useLang } from "@/lib/i18n";
-import { requestBooking } from "@/lib/serviceMenu";
 import { scrollBehavior } from "@/lib/motion";
+import { requestBooking } from "@/lib/serviceMenu";
 
 type SectionId = "home" | "services" | "gallery" | "booking" | "contact";
 

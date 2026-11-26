@@ -1,5 +1,5 @@
 // Reference: javascript_object_storage blueprint
-import { File } from "@google-cloud/storage";
+import type { File } from "@google-cloud/storage";
 
 const ACL_POLICY_METADATA_KEY = "custom:aclPolicy";
 
@@ -30,10 +30,7 @@ export interface ObjectAclPolicy {
 }
 
 // Check if the requested permission is allowed based on the granted permission.
-function isPermissionAllowed(
-  requested: ObjectPermission,
-  granted: ObjectPermission,
-): boolean {
+function isPermissionAllowed(requested: ObjectPermission, granted: ObjectPermission): boolean {
   // Users granted with read or write permissions can read the object.
   if (requested === ObjectPermission.READ) {
     return [ObjectPermission.READ, ObjectPermission.WRITE].includes(granted);
@@ -54,9 +51,7 @@ abstract class BaseObjectAccessGroup implements ObjectAccessGroup {
   public abstract hasMember(userId: string): Promise<boolean>;
 }
 
-function createObjectAccessGroup(
-  group: ObjectAccessGroup,
-): BaseObjectAccessGroup {
+function createObjectAccessGroup(group: ObjectAccessGroup): BaseObjectAccessGroup {
   switch (group.type) {
     default:
       throw new Error(`Unknown access group type: ${group.type}`);
@@ -64,10 +59,7 @@ function createObjectAccessGroup(
 }
 
 // Sets the ACL policy to the object metadata.
-export async function setObjectAclPolicy(
-  objectFile: File,
-  aclPolicy: ObjectAclPolicy,
-): Promise<void> {
+export async function setObjectAclPolicy(objectFile: File, aclPolicy: ObjectAclPolicy): Promise<void> {
   const [exists] = await objectFile.exists();
   if (!exists) {
     throw new Error(`Object not found: ${objectFile.name}`);
@@ -81,9 +73,7 @@ export async function setObjectAclPolicy(
 }
 
 // Gets the ACL policy from the object metadata.
-export async function getObjectAclPolicy(
-  objectFile: File,
-): Promise<ObjectAclPolicy | null> {
+export async function getObjectAclPolicy(objectFile: File): Promise<ObjectAclPolicy | null> {
   const [metadata] = await objectFile.getMetadata();
   const aclPolicy = metadata?.metadata?.[ACL_POLICY_METADATA_KEY];
   if (!aclPolicy) {
@@ -109,10 +99,7 @@ export async function canAccessObject({
   }
 
   // Public objects are always accessible for read.
-  if (
-    aclPolicy.visibility === "public" &&
-    requestedPermission === ObjectPermission.READ
-  ) {
+  if (aclPolicy.visibility === "public" && requestedPermission === ObjectPermission.READ) {
     return true;
   }
 
@@ -129,10 +116,7 @@ export async function canAccessObject({
   // Go through the ACL rules to check if the user has the required permission.
   for (const rule of aclPolicy.aclRules || []) {
     const accessGroup = createObjectAccessGroup(rule.group);
-    if (
-      (await accessGroup.hasMember(userId)) &&
-      isPermissionAllowed(requestedPermission, rule.permission)
-    ) {
+    if ((await accessGroup.hasMember(userId)) && isPermissionAllowed(requestedPermission, rule.permission)) {
       return true;
     }
   }

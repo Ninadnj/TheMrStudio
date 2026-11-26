@@ -20,7 +20,7 @@ export function initReveals() {
       }
     },
     // Start a little before the element is fully in, so it's moving as it arrives
-    { rootMargin: "0px 0px -6% 0px", threshold: 0 }
+    { rootMargin: "0px 0px -6% 0px", threshold: 0 },
   );
 
   const watch = (root: ParentNode) =>

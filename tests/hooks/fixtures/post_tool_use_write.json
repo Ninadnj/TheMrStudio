@@ -1,0 +1,11 @@
+{
+  "session_id": "test-session",
+  "transcript_path": "/tmp/transcript.jsonl",
+  "cwd": "/tmp/project",
+  "permission_mode": "default",
+  "hook_event_name": "PostToolUse",
+  "tool_name": "Write",
+  "tool_input": { "file_path": "/tmp/project/src/app/example.py", "content": "x = 1\n" },
+  "tool_response": { "filePath": "/tmp/project/src/app/example.py", "success": true },
+  "tool_use_id": "toolu_01TEST"
+}

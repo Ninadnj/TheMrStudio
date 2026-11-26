@@ -1,8 +1,8 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { useEffect, useState, useRef } from "react";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertGalleryImageSchema, type GalleryImage } from "@shared/schema";
+import { type GalleryImage, insertGalleryImageSchema } from "@shared/schema";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { isVideoUrl } from "@/lib/videoUtils";
 
@@ -12,16 +12,17 @@ const galleryFormSchema = insertGalleryImageSchema.extend({
   imageUrl: z.string().min(1, "ატვირთეთ ფოტო"),
   order: z.string().min(1, "შეიყვანეთ რიგითი ნომერი"),
 });
+
+import type { UploadResult } from "@uppy/core";
+import { Image as ImageIcon, Plus, Trash2, Upload } from "lucide-react";
+import { ObjectUploader } from "@/components/ObjectUploader";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { queryClient, apiRequest } from "@/lib/queryClient";
-import { Plus, Trash2, Image as ImageIcon, Upload } from "lucide-react";
-import { ObjectUploader } from "@/components/ObjectUploader";
-import type { UploadResult } from "@uppy/core";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 const GALLERY_CATEGORIES = [
   { value: "ფრჩხილები", label: "ფრჩხილები (Nails)" },
@@ -149,20 +150,25 @@ export default function GalleryEditor() {
     });
   };
 
-  const groupedImages = images.reduce((acc, image) => {
-    if (!acc[image.category]) {
-      acc[image.category] = [];
-    }
-    acc[image.category].push(image);
-    return acc;
-  }, {} as Record<string, GalleryImage[]>);
+  const groupedImages = images.reduce(
+    (acc, image) => {
+      if (!acc[image.category]) {
+        acc[image.category] = [];
+      }
+      acc[image.category].push(image);
+      return acc;
+    },
+    {} as Record<string, GalleryImage[]>,
+  );
 
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle>{editingId ? "ფოტოს რედაქტირება" : "ახალი ფოტო"}</CardTitle>
-          <CardDescription>ატვირთეთ ფოტო ან ვიდეო და აირჩიეთ კატეგორია — საიტის გალერეაში მაშინვე გამოჩნდება.</CardDescription>
+          <CardDescription>
+            ატვირთეთ ფოტო ან ვიდეო და აირჩიეთ კატეგორია — საიტის გალერეაში მაშინვე გამოჩნდება.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -235,13 +241,13 @@ export default function GalleryEditor() {
                               form.setValue("imageUrl", filePath as string, { shouldValidate: true });
                               toast({
                                 title: "ფოტო აიტვირთა",
-                                description: "შესანახად დააჭირეთ „დამატებას“."
+                                description: "შესანახად დააჭირეთ „დამატებას“.",
                               });
                             } else {
                               toast({
                                 title: "შეცდომა",
                                 description: "ფოტოს ლინკი ვერ მოიძებნა",
-                                variant: "destructive"
+                                variant: "destructive",
                               });
                             }
                           } else if (result.failed && result.failed.length > 0) {
@@ -249,7 +255,7 @@ export default function GalleryEditor() {
                             toast({
                               title: "შეცდომა",
                               description: "ფოტოს ატვირთვა ვერ მოხერხდა",
-                              variant: "destructive"
+                              variant: "destructive",
                             });
                           }
                         }}
@@ -270,21 +276,15 @@ export default function GalleryEditor() {
                     const isVideo = isVideoUrl(previewUrl);
                     const className = "w-full h-48 object-cover";
                     return isVideo ? (
-                      <video
-                        src={previewUrl}
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        className={className}
-                      />
+                      <video src={previewUrl} autoPlay loop muted playsInline className={className} />
                     ) : (
                       <img
                         src={previewUrl}
                         alt="ფოტოს გადახედვა"
                         className={className}
                         onError={(e) => {
-                          e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23ddd' width='100' height='100'/%3E%3C/svg%3E";
+                          e.currentTarget.src =
+                            "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23ddd' width='100' height='100'/%3E%3C/svg%3E";
                         }}
                       />
                     );
@@ -303,12 +303,7 @@ export default function GalleryEditor() {
                   {editingId ? "შენახვა" : "დამატება"}
                 </Button>
                 {editingId && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleCancelEdit}
-                    data-testid="button-cancel-edit"
-                  >
+                  <Button type="button" variant="outline" onClick={handleCancelEdit} data-testid="button-cancel-edit">
                     გაუქმება
                   </Button>
                 )}
@@ -343,20 +338,9 @@ export default function GalleryEditor() {
                                 const isVideo = isVideoUrl(image.imageUrl);
                                 const className = "w-full h-full object-cover";
                                 return isVideo ? (
-                                  <video
-                                    src={image.imageUrl}
-                                    autoPlay
-                                    loop
-                                    muted
-                                    playsInline
-                                    className={className}
-                                  />
+                                  <video src={image.imageUrl} autoPlay loop muted playsInline className={className} />
                                 ) : (
-                                  <img
-                                    src={image.imageUrl}
-                                    alt={`${cat.value} ${image.order}`}
-                                    className={className}
-                                  />
+                                  <img src={image.imageUrl} alt={`${cat.value} ${image.order}`} className={className} />
                                 );
                               })()}
                               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
@@ -371,7 +355,9 @@ export default function GalleryEditor() {
                                 <Button
                                   size="sm"
                                   variant="destructive"
-                                  onClick={() => confirm("წაიშალოს ეს ფოტო გალერეიდან?") && deleteMutation.mutate(image.id)}
+                                  onClick={() =>
+                                    confirm("წაიშალოს ეს ფოტო გალერეიდან?") && deleteMutation.mutate(image.id)
+                                  }
                                   aria-label="წაშლა"
                                   disabled={deleteMutation.isPending}
                                   data-testid={`button-delete-${image.id}`}

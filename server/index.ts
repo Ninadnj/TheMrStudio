@@ -1,13 +1,15 @@
 import { config } from "dotenv";
+
 config();
-import express, { type Request, Response, NextFunction } from "express";
-import session from "express-session";
+
+import { neonConfig, Pool } from "@neondatabase/serverless";
 import connectPgSimple from "connect-pg-simple";
-import { Pool, neonConfig } from "@neondatabase/serverless";
+import express, { type NextFunction, type Request, type Response } from "express";
+import session from "express-session";
 import ws from "ws";
-import { registerRoutes } from "./routes";
-import { setupVite, serveStatic, log } from "./vite";
 import { initializeAdmin } from "./auth";
+import { registerRoutes } from "./routes";
+import { log, serveStatic, setupVite } from "./vite";
 
 // Configure WebSocket for Neon serverless
 neonConfig.webSocketConstructor = ws;
@@ -46,7 +48,7 @@ app.use((req, res, next) => {
     "Content-Security-Policy",
     [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",      // Vite HMR needs unsafe-eval in dev
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // Vite HMR needs unsafe-eval in dev
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com https://fonts.cdnfonts.com",
       "img-src 'self' data: blob: https://storage.googleapis.com https://res.cloudinary.com",
@@ -54,7 +56,7 @@ app.use((req, res, next) => {
       // Allow the footer's live Google Maps iframe embed to render.
       "frame-src 'self' https://www.google.com https://maps.google.com",
       "frame-ancestors *", // Allow embedding from any origin (e.g. portfolio site)
-    ].join("; ")
+    ].join("; "),
   );
   next();
 });
@@ -65,10 +67,10 @@ let sessionStore: any;
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
+  let capturedJsonResponse: Record<string, any> | undefined;
 
   const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
+  res.json = (bodyJson, ...args) => {
     capturedJsonResponse = bodyJson;
     return originalResJson.apply(res, [bodyJson, ...args]);
   };
@@ -99,13 +101,13 @@ app.use((req, res, next) => {
     const pool = new Pool({ connectionString: process.env.DATABASE_URL });
     sessionStore = new PgSession({
       pool,
-      tableName: 'session',
+      tableName: "session",
       createTableIfMissing: true,
     });
   } else {
     const MemoryStore = (await import("memorystore")).default(session);
     sessionStore = new MemoryStore({
-      checkPeriod: 86400000 // prune expired entries every 24h
+      checkPeriod: 86400000, // prune expired entries every 24h
     });
   }
 
@@ -121,7 +123,7 @@ app.use((req, res, next) => {
         sameSite: "lax",
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
       },
-    })
+    }),
   );
 
   // Initialize admin user (works for both Database and MemStorage)
@@ -147,10 +149,13 @@ app.use((req, res, next) => {
 
   // Use PORT from environment for deployment platforms, default to 5002 (avoid MacOS AirPlay on 5000)
   const port = parseInt(process.env.PORT || "5002", 10);
-  server.listen({
-    port,
-    host: "0.0.0.0",  // Accept external connections
-  }, () => {
-    log(`serving on port ${port}`);
-  });
+  server.listen(
+    {
+      port,
+      host: "0.0.0.0", // Accept external connections
+    },
+    () => {
+      log(`serving on port ${port}`);
+    },
+  );
 })();

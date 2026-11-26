@@ -1,12 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 export type Lang = "ka" | "en";
 
@@ -58,9 +50,6 @@ export function useLang() {
   if (!ctx) {
     throw new Error("useLang must be used inside <LangProvider>");
   }
-  const t = useCallback(
-    (ka: string, en: string) => (ctx.lang === "ka" ? ka : en),
-    [ctx.lang]
-  );
+  const t = useCallback((ka: string, en: string) => (ctx.lang === "ka" ? ka : en), [ctx.lang]);
   return { lang: ctx.lang, setLang: ctx.setLang, t };
 }

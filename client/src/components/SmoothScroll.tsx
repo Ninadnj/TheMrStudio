@@ -1,5 +1,5 @@
 import { ReactLenis } from "lenis/react";
-import { useEffect, useState, type ReactNode } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 
 interface SmoothScrollProps {
   children: ReactNode;
@@ -8,7 +8,7 @@ interface SmoothScrollProps {
 /** Gentle wheel smoothing on desktop; native scrolling when reduced motion is preferred. */
 export default function SmoothScroll({ children }: SmoothScrollProps) {
   const [reduced, setReduced] = useState(
-    () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
 
   useEffect(() => {

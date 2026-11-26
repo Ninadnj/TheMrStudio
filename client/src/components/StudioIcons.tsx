@@ -77,7 +77,10 @@ export function DropIcon(props: StudioIconProps) {
     <Frame {...props}>
       <path d="M12 3c-3 3.9-5.6 7.1-5.6 10.4a5.6 5.6 0 0 0 11.2 0C17.6 10.1 15 6.9 12 3Z" />
       <path d="M9.4 14.2a2.7 2.7 0 0 0 2.4 2.7" style={accent} />
-      <path d="M18.6 4.2c.2 1 .6 1.4 1.6 1.6-1 .2-1.4.6-1.6 1.6-.2-1-.6-1.4-1.6-1.6 1-.2 1.4-.6 1.6-1.6Z" style={accentFill} />
+      <path
+        d="M18.6 4.2c.2 1 .6 1.4 1.6 1.6-1 .2-1.4.6-1.6 1.6-.2-1-.6-1.4-1.6-1.6 1-.2 1.4-.6 1.6-1.6Z"
+        style={accentFill}
+      />
     </Frame>
   );
 }

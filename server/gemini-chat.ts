@@ -7,13 +7,11 @@ export interface ChatMessage {
   content: string;
 }
 
-export async function chatWithGemini(
-  messages: ChatMessage[],
-  language: "ka" | "en" = "ka"
-): Promise<string> {
+export async function chatWithGemini(messages: ChatMessage[], language: "ka" | "en" = "ka"): Promise<string> {
   try {
-    const systemInstruction = language === "ka" 
-      ? `შენ ხარ THE MR Nail & Laser Studio-ს დახმარების ასისტენტი. მიეცი მომხმარებელს დახმარება სერვისების, ფასების და ბუკინგის შესახებ. ყოფილიყავი თავაზიანი და პროფესიონალი.
+    const systemInstruction =
+      language === "ka"
+        ? `შენ ხარ THE MR Nail & Laser Studio-ს დახმარების ასისტენტი. მიეცი მომხმარებელს დახმარება სერვისების, ფასების და ბუკინგის შესახებ. ყოფილიყავი თავაზიანი და პროფესიონალი.
 
 ჩვენი სერვისები:
 - ნეილ სერვისები: მანიკური, პედიკური, აკრილის ფრჩხილები, გელ პოლიში
@@ -24,7 +22,7 @@ export async function chatWithGemini(
 მისამართი: დიდი დიღომი ასმათის 8 თბილისი, საქართველო
 
 ბუკინგისთვის მომხმარებელს შეუძლია ვებსაიტზე ფორმის შევსება.`
-      : `You are a helpful assistant for THE MR Nail & Laser Studio. Help customers with service information, pricing, and bookings. Be polite and professional.
+        : `You are a helpful assistant for THE MR Nail & Laser Studio. Help customers with service information, pricing, and bookings. Be polite and professional.
 
 Our Services:
 - Nail Services: Manicure, Pedicure, Acrylic Nails, Gel Polish
@@ -36,9 +34,9 @@ Address: Didi Dighomi Asmati 8 Tbilisi, Georgia
 
 For booking, customers can fill out the form on the website.`;
 
-    const geminiMessages = messages.map(msg => ({
+    const geminiMessages = messages.map((msg) => ({
       role: msg.role === "assistant" ? "model" : "user",
-      parts: [{ text: msg.content }]
+      parts: [{ text: msg.content }],
     }));
 
     const response = await ai.models.generateContent({

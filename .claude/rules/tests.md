@@ -15,6 +15,8 @@ paths:
   owner-editable data paths (price menu, studio info) with defaults vs saved values.
 - `tests/unit/`: no network, no database, no real timers (`vi.useFakeTimers`). Mock
   `@tanstack/react-query` / `react` the way `tests/unit/hooks.test.ts` does.
+- `tests/integration/`: storage against real Postgres in-process (PGlite), see
+  `storage.pglite.test.ts`. Never point a test at the Neon/production database.
 - When a module gets tests, add it to `coverage.include` in `vitest.config.ts` (ratchet).
   Never remove one to make the gate pass.
 - A bug fix starts with a regression test that fails before the fix. Keep it.

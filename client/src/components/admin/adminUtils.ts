@@ -18,7 +18,7 @@ export function serverMessage(error: unknown, fallback = "ვერ მოხე
 /** First validation message for a form value, or null when it's valid. */
 export function firstProblem(schema: ZodTypeAny, value: unknown): string | null {
   const result = schema.safeParse(value);
-  return result.success ? null : (result.error.errors[0]?.message ?? "შეამოწმეთ ველები.");
+  return result.success ? null : (result.error.issues[0]?.message ?? "შეამოწმეთ ველები.");
 }
 
 /** Swap an item with its neighbour; returns the new id order, or null at the edge. */

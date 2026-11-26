@@ -10,7 +10,7 @@ export default defineConfig({
     },
   },
   test: {
-    include: ["tests/unit/**/*.test.ts"],
+    include: ["tests/unit/**/*.test.ts", "tests/integration/**/*.test.ts"],
     environment: "node",
     coverage: {
       provider: "v8",
@@ -21,6 +21,8 @@ export default defineConfig({
         "client/src/lib/serviceMenu.ts",
         "client/src/lib/studio.ts",
         "shared/studioDefaults.ts",
+        "client/src/components/admin/adminUtils.ts",
+        "server/validation.ts",
       ],
       thresholds: { lines: 80, functions: 80, branches: 80, statements: 80 },
       reporter: ["text", "json-summary", "lcov"],

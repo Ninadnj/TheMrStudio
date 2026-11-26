@@ -31,8 +31,8 @@ import {
 } from "./email-notifications";
 import { chatWithGemini } from "./gemini-chat";
 import { createCalendarEvent, getGoogleCalendarClient, listCalendars, testCalendarAccess } from "./google-calendar";
-import { ObjectPermission } from "./objectAcl";
 import { storage } from "./storage";
+import { firstValidationMessage } from "./validation";
 
 // Define uploadDir globally so the static file handler can access it
 const uploadDir = process.env.PRIVATE_OBJECT_DIR || ".local/storage/uploads";
@@ -575,8 +575,9 @@ ${existingBooking.notes ? `Notes: ${existingBooking.notes}` : ""}
 
   /** Turns a Zod error into the owner-facing (Georgian) message of its first problem. */
   const sendValidationError = (res: any, error: any) => {
-    if (error?.name === "ZodError") {
-      return res.status(400).json({ error: error.errors?.[0]?.message || fromZodError(error).message });
+    const message = firstValidationMessage(error);
+    if (message !== null) {
+      return res.status(400).json({ error: message });
     }
     console.error(error);
     return res.status(500).json({ error: "Server error" });

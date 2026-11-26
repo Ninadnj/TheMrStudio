@@ -26,10 +26,6 @@ new file, so the container still serves an older copy. Reloading from the host f
 from the container's copy give different sites. Edit the file **in place** (same inode) or
 recreate the container, and check every site it serves afterwards.
 
-Pending improvement (Lighthouse mobile ~72 → ~90): compression and long caching for
-hashed assets in the site's Caddy block:
-```
-encode zstd gzip
-@assets path /assets/*
-header @assets Cache-Control "public, max-age=31536000, immutable"
-```
+Compression and caching are done by the app itself since 2026-11-26 (`serveStatic` in
+`server/vite.ts`: brotli/gzip, immutable `/assets/*`, `no-cache` HTML), so the Caddy
+`encode` change is no longer needed. Caddy passes the compressed responses through.

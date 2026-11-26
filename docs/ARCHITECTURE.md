@@ -8,6 +8,7 @@ Browser (React SPA, wouter routes, React Query)
    │  /api/*  (JSON)                         public: price menu, studio info, hero, gallery,
    ▼                                           offers, booking request (POST)
 Express (server/index.ts → routes.ts)        admin (requireAuth, session): bookings, content
+   ├─ vite.ts      dev: Vite middleware · prod: serveStatic (compression, cache headers)
    ├─ storage.ts   DatabaseStorage (Drizzle → Postgres/Neon) or in-memory when no DATABASE_URL
    │               ensureContent(): creates + seeds content tables on start-up (no migrations)
    ├─ email-notifications.ts  nodemailer: owner alert on request, client email on Confirm

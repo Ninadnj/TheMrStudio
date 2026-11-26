@@ -1,3 +1,4 @@
+import compression from "compression";
 import express, { type Express } from "express";
 import fs from "fs";
 import type { Server } from "http";
@@ -61,17 +62,41 @@ export async function setupVite(app: Express, server: Server) {
   });
 }
 
-export function serveStatic(app: Express) {
-  const distPath = path.resolve(import.meta.dirname, "public");
+const YEAR = 31_536_000;
+const WEEK = 604_800;
 
+/**
+ * Production static files. Compression and caching live here (not only in Caddy), so the
+ * site is fast whatever the proxy does:
+ * - gzip/brotli for text (images and video are already compressed and are skipped);
+ * - hashed build files in /assets are immutable for a year;
+ * - HTML is always revalidated, so a deploy shows up on the next visit;
+ * - other public files (images, fonts, icons) are cached for a week.
+ */
+export function serveStatic(app: Express, distPath = path.resolve(import.meta.dirname, "public")) {
   if (!fs.existsSync(distPath)) {
     throw new Error(`Could not find the build directory: ${distPath}, make sure to build the client first`);
   }
 
-  app.use(express.static(distPath));
+  app.use(compression());
+  app.use(
+    express.static(distPath, {
+      setHeaders(res, filePath) {
+        const rel = path.relative(distPath, filePath).split(path.sep).join("/");
+        if (rel.startsWith("assets/")) {
+          res.setHeader("Cache-Control", `public, max-age=${YEAR}, immutable`);
+        } else if (rel.endsWith(".html")) {
+          res.setHeader("Cache-Control", "no-cache");
+        } else {
+          res.setHeader("Cache-Control", `public, max-age=${WEEK}`);
+        }
+      },
+    }),
+  );
 
   // fall through to index.html if the file doesn't exist
   app.use("*", (_req, res) => {
+    res.setHeader("Cache-Control", "no-cache");
     res.sendFile(path.resolve(distPath, "index.html"));
   });
 }

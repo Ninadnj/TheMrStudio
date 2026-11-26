@@ -20,6 +20,8 @@ improvement from "Next".
 - (nothing)
 
 ## Blocked (needs the owner / Nina)
+- A cosmetology photo: the Aesthetics services tile fills automatically once a gallery image
+  with category კოსმეტოლოგია exists (Admin → გალერეა).
 - Opening hours, booking confirmation time (`client/src/lib/studioFacts.ts`), per-treatment
   durations: no data yet.
 - Address says Vepkhistkaosani 22/24 but the map pin query is 20/22. Which is right?

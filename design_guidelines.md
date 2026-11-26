@@ -180,6 +180,9 @@ the list, the services index and the booking sheet all read `/api/price-menu`.
 ### Services (index)
 Desktop: large numbered rows (01 Nails, 02 Laser, 03 Aesthetics) with hairline dividers;
 hover reveals a floating image. Mobile: full-width image tiles, title over image.
+A tile takes the first gallery photo of its category. Until one exists it is a card, not
+an empty frame: linen ground, gold hairline inset 10px, the service seal top-right as a
+monogram, text block in the same place as on photo tiles.
 
 ### Gallery
 Strict grid with consistent ratios (4:5), category filter as text tabs with an animated
@@ -205,6 +208,8 @@ Chrome's own install banner is held from page load (`lib/installPrompt.ts`).
 - Desktop: full-bleed or `--radius-xs`. Mobile: `--radius-m` inside the app shell.
 - Always set `width`/`height` or `aspect-ratio` so nothing shifts.
 - Hero image is preloaded; everything below the fold is `loading="lazy"`.
+- Dark mode: the hero media is dimmed and warmed slightly (`brightness .8, sepia .12`) so a
+  light image never glares as a white block on the espresso page.
 - Alt text describes the work ("Almond gel manicure in nude"), not the file.
 
 ---

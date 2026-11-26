@@ -11,6 +11,7 @@ export default function LanguageToggle() {
   };
 
   return (
+    // biome-ignore lint/a11y/useSemanticElements: role="group" on a div is valid ARIA; a fieldset adds a required legend and default styling
     <div role="group" aria-label="Language / ენა" className="lang-toggle">
       <button
         type="button"

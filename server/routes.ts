@@ -42,7 +42,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   await storage.ensureContent();
 
   // Setup flexible local/cloud upload storage
-  let storageConfig;
+  let storageConfig: multer.StorageEngine;
 
   if (process.env.CLOUDINARY_URL) {
     // If Cloudinary URL is defined (e.g., on Render), save direct to cloud
@@ -246,7 +246,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const calendarBusySlots = await getCalendarBusySlots(calendarIds, date);
 
           // Merge calendar busy slots with database bookings
-          calendarBusySlots.forEach((slot) => bookedTimesSet.add(slot));
+          for (const slot of calendarBusySlots) bookedTimesSet.add(slot);
 
           console.log(`Checked ${calendarIds.length} Google Calendars, found ${calendarBusySlots.size} busy slots`);
         }

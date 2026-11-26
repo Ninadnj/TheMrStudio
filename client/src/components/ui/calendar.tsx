@@ -6,6 +6,15 @@ import { cn } from "@/lib/utils";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
+// Module-level so they keep one identity (inline arrow components remount on every render).
+function IconLeft({ className, ...props }: React.ComponentProps<"svg">) {
+  return <ChevronLeft className={cn("h-4 w-4", className)} {...props} />;
+}
+
+function IconRight({ className, ...props }: React.ComponentProps<"svg">) {
+  return <ChevronRight className={cn("h-4 w-4", className)} {...props} />;
+}
+
 /**
  * Calendar — tabular figures, espresso-filled selected day,
  * soft circles, hairline separators. Lives in the booking sheet's popover.
@@ -47,10 +56,7 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
         day_hidden: "invisible",
         ...classNames,
       }}
-      components={{
-        IconLeft: ({ className, ...props }) => <ChevronLeft className={cn("h-4 w-4", className)} {...props} />,
-        IconRight: ({ className, ...props }) => <ChevronRight className={cn("h-4 w-4", className)} {...props} />,
-      }}
+      components={{ IconLeft, IconRight }}
       {...props}
     />
   );

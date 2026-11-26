@@ -52,6 +52,7 @@ export default function Gallery() {
           </div>
 
           {categories.length > 1 && (
+            // biome-ignore lint/a11y/useSemanticElements: role="group" on a div is valid ARIA; a fieldset adds a required legend and default styling
             <div
               className="text-tabs"
               role="group"
@@ -199,6 +200,7 @@ function Lightbox({
   }, [onClose, prev, next]);
 
   return createPortal(
+    // biome-ignore lint/a11y/useKeyWithClickEvents: backdrop click is a mouse shortcut; keyboards use Esc (window keydown) and the close button
     <div
       className="lightbox"
       role="dialog"
@@ -231,7 +233,7 @@ function Lightbox({
 
       <figure className="lightbox-stage" key={image.id}>
         {isVideoUrl(image.imageUrl) ? (
-          <video src={image.imageUrl} controls autoPlay playsInline className="lightbox-media" />
+          <video src={image.imageUrl} controls autoPlay muted playsInline className="lightbox-media" />
         ) : (
           <img src={image.imageUrl} alt={label(image.category)} className="lightbox-media" />
         )}

@@ -23,8 +23,9 @@ export function initReveals() {
     { rootMargin: "0px 0px -6% 0px", threshold: 0 },
   );
 
-  const watch = (root: ParentNode) =>
-    root.querySelectorAll("[data-reveal]:not([data-revealed])").forEach((el) => io.observe(el));
+  const watch = (root: ParentNode) => {
+    for (const el of root.querySelectorAll("[data-reveal]:not([data-revealed])")) io.observe(el);
+  };
 
   watch(document);
   // React renders sections (and the fetched price list) after start-up: pick them up as they appear

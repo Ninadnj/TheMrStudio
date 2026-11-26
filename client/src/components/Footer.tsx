@@ -31,7 +31,7 @@ export default function Footer() {
   }, [showMap]);
 
   return (
-    <footer id="contact" className="site-footer scroll-mt-20 md:scroll-mt-24" aria-labelledby="contact-title">
+    <footer id="contact" className="site-footer scroll-mt-20 md:scroll-mt-24">
       <div className="shell footer-grid">
         <div className="footer-signoff">
           <h2 id="contact-title" className="eyebrow" data-reveal="rise">

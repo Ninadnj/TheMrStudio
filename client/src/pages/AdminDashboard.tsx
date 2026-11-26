@@ -129,10 +129,10 @@ export default function AdminDashboard() {
                   {value === "bookings" && pending.length > 0 && (
                     <span
                       className="ml-2 inline-flex min-w-5 h-5 items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-medium text-primary-foreground tabular-nums"
-                      aria-label={`${pending.length} ელოდება`}
                       data-testid="badge-pending-count"
                     >
-                      {pending.length}
+                      <span aria-hidden>{pending.length}</span>
+                      <span className="sr-only">{pending.length} ელოდება</span>
                     </span>
                   )}
                 </TabsTrigger>

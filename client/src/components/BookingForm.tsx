@@ -572,6 +572,7 @@ export default function BookingSheet({
   const flowRef = useRef(flow);
   flowRef.current = flow;
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: subscribe once on mount; handlers read the latest state via flowRef
   useEffect(() => {
     const onRequest = (event: Event) => {
       const detail = (event as CustomEvent<BookingRequest | undefined>).detail;
@@ -586,7 +587,7 @@ export default function BookingSheet({
       onRequest(new CustomEvent(BOOKING_REQUEST_EVENT, { detail: initialRequest }));
     }
     return () => window.removeEventListener(BOOKING_REQUEST_EVENT, onRequest);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   // The page shouldn't smooth-scroll underneath an open sheet.
   useEffect(() => {
@@ -596,11 +597,13 @@ export default function BookingSheet({
   }, [open, lenis]);
 
   // Each step starts at the top of the sheet.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: step and submitted are triggers, not inputs
   useEffect(() => {
     bodyRef.current?.scrollTo({ top: 0, behavior: scrollBehavior() });
   }, [flow.step, flow.submitted]);
 
   // After a "Book this" handoff, show the ticked treatment.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: re-run when the category's list has rendered
   useEffect(() => {
     if (!open || !revealKey.current) return;
     const timer = window.setTimeout(() => {
@@ -625,6 +628,7 @@ export default function BookingSheet({
       if (el && bodyRef.current?.contains(el) && el.matches("input, textarea")) revealField(el);
     }, 320);
   };
+  // biome-ignore lint/correctness/useExhaustiveDependencies: keepFieldInView only reads refs; re-subscribe on open/side changes only
   useEffect(() => {
     const vv = window.visualViewport;
     if (!open || !vv) return;
@@ -633,7 +637,6 @@ export default function BookingSheet({
       vv.removeEventListener("resize", keepFieldInView);
       window.clearTimeout(keyboardTimer.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, side]);
   const showCard = side === "right" && !flow.submitted;
 
@@ -676,6 +679,7 @@ export default function BookingSheet({
             <div className="booking-sheet-flow">
               {!flow.submitted && <BookingStepper t={t} labels={flow.stepLabels} step={flow.step} onJump={flow.goTo} />}
 
+              {/* biome-ignore lint/a11y/noStaticElementInteractions: focus delegation from the fields inside, to keep them above the phone keyboard */}
               <div ref={bodyRef} className="booking-sheet-body" data-lenis-prevent onFocus={keepFieldInView}>
                 <BookingFlowBody flow={flow} onDone={() => setOpen(false)} />
               </div>
@@ -1055,7 +1059,8 @@ function StepService({
               {t("პროცედურა", "Treatment")}
             </BlockLabel>
 
-            <div className="app-list booking-treatment-list" role="group">
+            {/* biome-ignore lint/a11y/useSemanticElements: role="group" on a div is valid ARIA; a fieldset adds a required legend and default styling */}
+            <div className="app-list booking-treatment-list" role="group" aria-label={t("პროცედურა", "Treatment")}>
               {groups.map((group) => (
                 <div key={group[0].groupId} className="contents">
                   {multiGroup && (
@@ -1219,6 +1224,7 @@ function StepTime({
   const railRef = useRef<HTMLDivElement>(null);
 
   // Keep the chosen day visible in the rail (e.g. after picking it from the calendar).
+  // biome-ignore lint/correctness/useExhaustiveDependencies: date is the trigger; the effect reads the rendered rail
   useEffect(() => {
     const rail = railRef.current;
     const active = rail?.querySelector<HTMLElement>('[data-active="true"]');
@@ -1267,7 +1273,8 @@ function StepTime({
         </Popover>
       </div>
 
-      <div ref={railRef} className="booking-date-rail scrollbar-hide" aria-label={t("თარიღები", "Dates")}>
+      {/* biome-ignore lint/a11y/useSemanticElements: role="group" on a div is valid ARIA; a fieldset adds a required legend and default styling */}
+      <div ref={railRef} className="booking-date-rail scrollbar-hide" role="group" aria-label={t("თარიღები", "Dates")}>
         {pickedFromCalendar && (
           <button
             type="button"

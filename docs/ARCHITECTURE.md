@@ -39,7 +39,7 @@ shared/schema.ts  tables + zod insert schemas, used by both client forms and ser
 | Gate and deploy config can't change silently | PreToolUse `pre_file_guard.py` → approval prompt |
 | Coverage ≥ 80% on tested modules (ratchet list), production build, secrets | `make check` in CI |
 | Known-vulnerable production deps | `make audit` (CI job) |
-| Lint debt only shrinks | LEGACY DEBT overrides in `biome.jsonc` (per file) |
+| No lint errors anywhere; exceptions are explicit | `biome ci` in `make lint`; `biome-ignore` lines carry their reason |
 
 ## External services (env vars in `.env.example`)
 Postgres (Neon) · Gmail SMTP · Google Calendar (service account) · Cloudinary · Gemini (unused).

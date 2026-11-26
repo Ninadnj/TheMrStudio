@@ -8,6 +8,8 @@ improvement from "Next".
 
 ## Done
 - 2026-10-03 Redesign + Georgian admin deployed (906d63a), booking note hotfix (63b72cb).
+- 2026-11-26 Admin buttons visible again (login, Offers add, Gallery add): the redesign
+  had removed `.bg-theme-accent`; a test now checks every `*-theme-*` utility exists.
 - 2026-11-26 Dependencies: 20 production vulnerabilities → 0 (branch fix/vulnerable-deps),
   zod 4 migration with tests guarding the Georgian validation messages, storage tested on
   real Postgres (PGlite).
@@ -24,14 +26,12 @@ improvement from "Next".
 - Caddy compression + cache headers (docs/DEPLOY.md): needs a careful server-side edit.
 
 ## Next (candidates, highest value first)
-1. Admin → აქციები: the "დამატება" (add offer) button text is invisible (ivory on a
-   transparent background; `bg-theme-accent` is not a defined colour). Pre-existing.
-2. Security/cost: `POST /api/chat` is public and calls Gemini, but the site no longer uses
+1. Security/cost: `POST /api/chat` is public and calls Gemini, but the site no longer uses
    it, its prompt has a stale address and services, and it calls the experimental
    model `gemini-2.0-flash-exp`. Remove it (or rate-limit and update it).
-3. Production image runs Node 20, end-of-life since April 2026: move the Dockerfile to Node 22.
-4. Burn down LEGACY DEBT in `biome.jsonc` (a11y + React hook deps first), with tests.
-5. Tests for the booking flow (server route validation, offer expiry in UTC+4).
+2. Production image runs Node 20, end-of-life since April 2026: move the Dockerfile to Node 22.
+3. Burn down LEGACY DEBT in `biome.jsonc` (a11y + React hook deps first), with tests.
+4. Tests for the booking flow (server route validation, offer expiry in UTC+4).
 
 ## Open questions
 - Should the AI chat come back? If yes, it needs evals, a rate limit and a current prompt.

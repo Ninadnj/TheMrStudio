@@ -83,6 +83,7 @@ export default function Hero() {
             >
               {t("დაჯავშნა", "Book appointment")}
             </button>
+            {/* biome-ignore lint/a11y/useValidAnchor: a real in-page link (works without JS); the handler only smooths the scroll */}
             <a
               href="#prices"
               onClick={(e) => {

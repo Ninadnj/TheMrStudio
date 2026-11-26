@@ -17,7 +17,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Production server compresses responses (brotli/gzip) and caches hashed assets for a
   year; HTML is always revalidated. First-load JS 269 → 87 KB, CSS 123 → 22 KB.
 
+### Accessibility
+- Booking sheet: the treatment list and date rail are named groups for screen readers.
+- Gallery lightbox videos are muted so phones autoplay them (controls can unmute).
+- Wordmark and the admin "pending" badge have real text for screen readers.
+- Admin booking cards keep their identity across the 30 s refresh (no remount).
+
 ### Fixed
+- Admin (phones): the "დადასტურება" button was clipped; Confirm now has its own row.
 - Services: the Aesthetics tile without a photo is a framed card with the seal as a monogram,
   not an empty box. Dark mode: the hero image no longer glares as a white block.
 - Admin login, Offers "დამატება" and Gallery "დამატება" buttons had invisible labels since
@@ -25,6 +32,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   a test that every `*-theme-*` colour utility used in `client/src` is defined.
 
 ### Removed
+- 28 unused shadcn/ui components and the 21 packages only they used.
 - Unused Replit object-storage code (`server/objectStorage.ts`, `objectAcl.ts`) and
   `@google-cloud/storage`.
 

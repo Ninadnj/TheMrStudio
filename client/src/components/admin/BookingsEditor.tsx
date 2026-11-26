@@ -160,12 +160,14 @@ export function BookingsEditor() {
     );
   };
 
-  const BookingCard = ({ booking, isPending }: { booking: Booking; isPending: boolean }) => {
+  // Render helpers, not components: a component defined inside this one would be a new type on
+  // every render (the list refreshes every 30 s), so React would remount every card.
+  const renderBookingCard = (booking: Booking, isPending: boolean) => {
     const busy =
       (approveMutation.isPending && approveMutation.variables === booking.id) ||
       (deleteMutation.isPending && deleteMutation.variables === booking.id);
     return (
-      <Card data-testid={`booking-card-${booking.id}`}>
+      <Card key={booking.id} data-testid={`booking-card-${booking.id}`}>
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
@@ -236,9 +238,10 @@ export function BookingsEditor() {
           </div>
 
           {isPending ? (
-            <div className="grid grid-cols-3 gap-2 border-t pt-4">
+            <div className="grid grid-cols-2 gap-2 border-t pt-4 sm:grid-cols-3">
               <Button
                 size="sm"
+                className="col-span-2 sm:col-span-1"
                 onClick={() => approveMutation.mutate(booking.id)}
                 disabled={busy}
                 data-testid={`button-approve-${booking.id}`}
@@ -298,7 +301,7 @@ export function BookingsEditor() {
     );
   };
 
-  const Section = ({
+  const renderSection = ({
     title,
     icon,
     loading,
@@ -324,11 +327,7 @@ export function BookingsEditor() {
       ) : items.length === 0 ? (
         <p className="text-muted-foreground">{empty}</p>
       ) : (
-        <div className="grid gap-4 lg:grid-cols-2">
-          {items.map((booking) => (
-            <BookingCard key={booking.id} booking={booking} isPending={isPending} />
-          ))}
-        </div>
+        <div className="grid gap-4 lg:grid-cols-2">{items.map((booking) => renderBookingCard(booking, isPending))}</div>
       )}
     </section>
   );
@@ -343,23 +342,23 @@ export function BookingsEditor() {
         </Button>
       </div>
 
-      <Section
-        title="დასადასტურებელი"
-        icon={<Clock className="w-5 h-5" />}
-        loading={pendingQuery.isLoading}
-        items={pending}
-        empty="ახალი მოთხოვნა არ არის."
-        isPending
-      />
+      {renderSection({
+        title: "დასადასტურებელი",
+        icon: <Clock className="w-5 h-5" />,
+        loading: pendingQuery.isLoading,
+        items: pending,
+        empty: "ახალი მოთხოვნა არ არის.",
+        isPending: true,
+      })}
 
-      <Section
-        title="მომავალი ვიზიტები"
-        icon={<Check className="w-5 h-5" />}
-        loading={confirmedQuery.isLoading}
-        items={upcoming}
-        empty="დადასტურებული ვიზიტი ჯერ არ არის."
-        isPending={false}
-      />
+      {renderSection({
+        title: "მომავალი ვიზიტები",
+        icon: <Check className="w-5 h-5" />,
+        loading: confirmedQuery.isLoading,
+        items: upcoming,
+        empty: "დადასტურებული ვიზიტი ჯერ არ არის.",
+        isPending: false,
+      })}
 
       {past.length > 0 && (
         <div>
@@ -368,9 +367,7 @@ export function BookingsEditor() {
           </Button>
           {showPast && (
             <div className="mt-4 grid gap-4 lg:grid-cols-2">
-              {past.map((booking) => (
-                <BookingCard key={booking.id} booking={booking} isPending={false} />
-              ))}
+              {past.map((booking) => renderBookingCard(booking, false))}
             </div>
           )}
         </div>

@@ -34,6 +34,7 @@ export default function Header() {
   return (
     <header className="site-header" data-scrolled={isScrolled}>
       <div className="shell site-header-row">
+        {/* biome-ignore lint/a11y/useValidAnchor: a real in-page link (works without JS); the handler only smooths the scroll */}
         <a
           href="#home"
           onClick={(e) => {

@@ -7,6 +7,11 @@ Quality gates in place (branch `chore/claude-quality-gates`); next, pick the fir
 improvement from "Next".
 
 ## Done
+- 2026-11-26 Accessibility: all 39 lint errors cleared, LEGACY DEBT list deleted. Fixes:
+  lightbox video muted (autoplay on phones), named groups in the booking sheet, wordmark and
+  admin badge readable by screen readers, admin booking cards no longer remount every 30 s,
+  admin Confirm button no longer clipped on phones. 28 unused shadcn components and 21 unused
+  packages removed. Intentional exceptions are one-line `biome-ignore`s with reasons.
 - 2026-11-26 Speed: the app compresses (JS 269→87 KB, CSS 123→22 KB) and caches hashed
   assets for a year; no Caddy edit needed. Measured locally on the production build:
   first paint 120 ms, largest paint (hero image) 140 ms, layout shift 0.
@@ -34,8 +39,11 @@ improvement from "Next".
    it, its prompt has a stale address and services, and it calls the experimental
    model `gemini-2.0-flash-exp`. Remove it (or rate-limit and update it).
 2. Production image runs Node 20, end-of-life since April 2026: move the Dockerfile to Node 22.
-3. Burn down LEGACY DEBT in `biome.jsonc` (a11y + React hook deps first), with tests.
-4. Tests for the booking flow (server route validation, offer expiry in UTC+4).
+3. Tests for the booking flow (server route validation, offer expiry in UTC+4).
+
+## Found, not fixed
+- Admin: the page CSP (`server/index.ts`) blocks a `blob:` web worker (likely the image
+  uploader's), logged on admin load. Pre-existing; check uploads still make thumbnails.
 
 ## Open questions
 - Should the AI chat come back? If yes, it needs evals, a rate limit and a current prompt.

@@ -166,6 +166,7 @@ function toast({ ...props }: Toast) {
 function useToast() {
   const [state, setState] = React.useState<State>(memoryState);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: shadcn's toast store; re-subscribing on state is upstream behaviour
   React.useEffect(() => {
     listeners.push(setState);
     return () => {

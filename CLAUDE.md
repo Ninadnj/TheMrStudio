@@ -24,7 +24,7 @@ Docker on a DigitalOcean droplet behind Caddy (manual deploy).
 | inner loop: lint + tsc + unit/hook tests | `make check-fast` |
 | everything CI runs (+ coverage, build, secrets) | `make check` |
 | known-vulnerable dependencies | `make audit` |
-| legacy lint warnings to burn down | `make lint-debt` |
+| lint warnings (not a gate) to burn down | `make lint-debt` |
 
 ## Architecture and sources of truth
 - `docs/ARCHITECTURE.md`: modules, data flow, external services.
@@ -68,8 +68,9 @@ Docker on a DigitalOcean droplet behind Caddy (manual deploy).
 - Read or write `.env*` (except `.env.example`) or `secrets/`.
 - Hand-edit `package-lock.json`; use `npm install` / `npm uninstall` (Nina approves).
 - Push to `main`, force-push, or use `--no-verify`.
-- Add rules to the LEGACY DEBT list in `biome.jsonc`, drop modules from
-  `coverage.include`, or skip/delete failing tests to get green.
+- Silence lint with file-wide overrides in `biome.jsonc`. A real exception is a one-line
+  `biome-ignore <rule>: <reason>` at the spot. Never drop modules from
+  `coverage.include` or skip/delete failing tests to get green.
 - Weaken `.claude/settings.json`, hooks, Makefile or CI to get unblocked. Ask instead.
 - Add dependencies, services or frameworks that weren't asked for.
 - Claim something works without running it. Paste the command and its output.

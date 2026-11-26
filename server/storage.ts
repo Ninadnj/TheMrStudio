@@ -936,7 +936,9 @@ export class MemStorage implements IStorage {
   async deletePriceGroup(id: string) {
     Array.from(this.priceItems.values())
       .filter((it) => it.groupId === id)
-      .forEach((it) => this.priceItems.delete(it.id));
+      .forEach((it) => {
+        this.priceItems.delete(it.id);
+      });
     return this.priceGroups.delete(id);
   }
   async reorderPriceGroups(ids: string[]) {

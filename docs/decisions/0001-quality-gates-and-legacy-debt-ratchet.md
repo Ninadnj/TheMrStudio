@@ -20,6 +20,10 @@ code, and ~100 files didn't match any one formatting style.
 ## Decision
 Option 3. It keeps every future diff clean and makes debt visible and finite.
 
+## Update 2026-11-26
+The debt list is gone: all 39 errors fixed or, where the code is intentionally right, marked
+with a one-line `biome-ignore` and its reason. The rules now apply to every file.
+
 ## Consequences
 - Good: CI, hooks and pre-commit all run one gate (`make check-fast` / `make check`).
 - Cost: hook tests need `uv` (Python) in a Node repo; CI installs it.

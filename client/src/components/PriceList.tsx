@@ -74,6 +74,7 @@ export default function PriceList() {
             )}
           </div>
 
+          {/* biome-ignore lint/a11y/useSemanticElements: role="group" on a div is valid ARIA; a fieldset adds a required legend and default styling */}
           <div
             className="text-tabs"
             role="group"

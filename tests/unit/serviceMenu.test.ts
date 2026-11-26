@@ -5,6 +5,7 @@ import {
   bookingRef,
   type MenuGroup,
   requestBooking,
+  serviceStats,
   treatmentsFor,
 } from "@/lib/serviceMenu";
 
@@ -105,5 +106,29 @@ describe("requestBooking", () => {
     const event = dispatchEvent.mock.calls[0]?.[0] as { type: string; init: { detail: unknown } };
     expect(event.type).toBe(BOOKING_REQUEST_EVENT);
     expect(event.init.detail).toEqual({ category: "Pedicure", treatmentKey: "b" });
+  });
+});
+
+describe("serviceStats (services panels: count and starting price)", () => {
+  const priced = (id: string, booking: string, price: number) => ({ ...item(id, booking), price });
+  const pricedMenu: MenuGroup[] = [
+    { ...menu[0], items: [priced("a", "Manicure", 35), priced("b", "Pedicure", 40), priced("e", "Manicure", 5)] },
+    { ...menu[1], items: [priced("c", "Epilation", 75), priced("d", "Epilation", 10)] },
+    { ...menu[1], id: "g3", items: [priced("f", "Epilation", 30)] },
+  ];
+
+  it("counts treatments across every group the service draws from", () => {
+    expect(serviceStats(pricedMenu, ["Manicure", "Pedicure"]).count).toBe(3);
+    expect(serviceStats(pricedMenu, ["Epilation"]).count).toBe(3);
+  });
+
+  it("starts at the lowest price in any of its groups", () => {
+    expect(serviceStats(pricedMenu, ["Manicure", "Pedicure"]).from).toBe(5);
+    expect(serviceStats(pricedMenu, ["Epilation"]).from).toBe(10);
+  });
+
+  it("has no starting price while the menu is empty or has no matching treatment", () => {
+    expect(serviceStats([], ["Manicure"])).toEqual({ count: 0, from: null });
+    expect(serviceStats(pricedMenu, ["Cosmetology"])).toEqual({ count: 0, from: null });
   });
 });

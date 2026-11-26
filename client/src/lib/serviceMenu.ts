@@ -41,6 +41,15 @@ export function treatmentsFor(menu: MenuGroup[], category: string): Treatment[] 
   );
 }
 
+/** How many treatments a service has, and its lowest price ("5 ₾-დან"); null while none exist. */
+export function serviceStats(menu: MenuGroup[], bookings: readonly string[]): { count: number; from: number | null } {
+  const items = menu.flatMap((group) => group.items.filter((item) => bookings.includes(item.booking)));
+  return {
+    count: items.length,
+    from: items.length ? Math.min(...items.map((item) => item.price)) : null,
+  };
+}
+
 /* ---------- "Book this" handoff from anywhere on the page ---------- */
 
 export const BOOKING_REQUEST_EVENT = "mr:book";

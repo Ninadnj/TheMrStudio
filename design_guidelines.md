@@ -143,6 +143,15 @@ Rules
 Wordmark left, section links centre (desktop), language + theme toggles right.
 Transparent over the hero, solid ivory with a hairline after 24px of scroll.
 
+### Hero (editorial)
+The studio's name is the headline, set large; the hero art sits beside it in its own frame.
+- Desktop: 12 columns. Left half: address eyebrow, the wordmark stacked THE / MR / Studio
+  (MR ≈ 168px at 1440), then Book + View prices. Right half: the hero art in a 4:5 frame,
+  near its real size so a 1024px illustration stays sharp.
+- Phones/tablets: address, the wordmark on one line, the art in a rounded frame
+  (`--radius-m`), then the actions. No text over the image.
+- The art is the default illustration until the owner uploads a hero (Admin → მთავარი ფოტო).
+
 ### Mobile bottom tab bar
 The only floating element on phones: Home · Services · Gallery · **Book** · Contact.
 "Book" opens the booking sheet. No other floating buttons on mobile.
@@ -178,8 +187,10 @@ The owner edits groups, treatments, prices and durations in the admin (ფას
 the list, the services index and the booking sheet all read `/api/price-menu`.
 
 ### Services (index)
-Desktop: large numbered rows (01 Nails, 02 Laser, 03 Aesthetics) with hairline dividers;
-hover reveals a floating image. Mobile: full-width image tiles, title over image.
+Desktop: three tall 3:4 panels under a heading with a hairline and an "All prices" link.
+Each panel: the photo, then gold numeral, name and starting price ("5 ₾-დან", the lowest
+price of its treatments in the owner's menu), then subtitle and treatment count. Photos
+scale to 1.03 on hover. Mobile/tablet: full-width image tiles, title over image.
 A tile takes the first gallery photo of its category. Until one exists it is a card, not
 an empty frame: linen ground, gold hairline inset 10px, the service seal top-right as a
 monogram, text block in the same place as on photo tiles.

@@ -237,11 +237,11 @@ export const insertPriceItemSchema = createInsertSchema(priceItems, {
   nameKa: requiredText("ჩაწერეთ სახელი ქართულად"),
   nameEn: requiredText("ჩაწერეთ სახელი ინგლისურად"),
   price: z
-    .number({ invalid_type_error: "ჩაწერეთ ფასი" })
+    .number({ error: "ჩაწერეთ ფასი" })
     .int("ფასი მთელი რიცხვი უნდა იყოს")
     .min(0, "ფასი არ შეიძლება იყოს უარყოფითი"),
   durationMin: z.number().int().positive().nullable().optional(),
-  booking: z.enum(BOOKING_CATEGORIES, { errorMap: () => ({ message: "აირჩიეთ სერვისი" }) }),
+  booking: z.enum(BOOKING_CATEGORIES, { error: "აირჩიეთ სერვისი" }),
   position: z.number().int().min(0).optional(),
 }).omit({ id: true });
 

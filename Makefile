@@ -40,7 +40,7 @@ lint-debt: ## Show legacy lint warnings (not a gate; fix them as you touch files
 typecheck: ## tsc (strict)
 	npm run check
 
-test-unit: ## Vitest unit tests
+test-unit: ## Vitest unit + integration tests (integration = real Postgres via PGlite)
 	$(VITEST) run
 
 test-hooks: ## Tests for the Claude Code hook scripts

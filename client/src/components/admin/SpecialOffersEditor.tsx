@@ -147,6 +147,7 @@ export default function SpecialOffersEditor() {
                           <FormControl>
                             <Input
                               {...field}
+                              value={field.value ?? ""}
                               placeholder="მაგ. #prices — ან დატოვეთ ცარიელი"
                               data-testid="input-offer-link"
                             />
@@ -163,7 +164,7 @@ export default function SpecialOffersEditor() {
                         <FormItem>
                           <FormLabel>ბოლო დღე (არასავალდებულო)</FormLabel>
                           <FormControl>
-                            <Input {...field} type="date" data-testid="input-offer-expiry" />
+                            <Input {...field} value={field.value ?? ""} type="date" data-testid="input-offer-expiry" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

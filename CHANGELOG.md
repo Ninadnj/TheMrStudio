@@ -14,6 +14,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   zod-validation-error 5.0.0); @google/genai 1.52.0.
 
 ### Fixed
+- Services: the Aesthetics tile without a photo is a framed card with the seal as a monogram,
+  not an empty box. Dark mode: the hero image no longer glares as a white block.
 - Admin login, Offers "დამატება" and Gallery "დამატება" buttons had invisible labels since
   the Oct 2026 redesign (the `.bg-theme-accent` utility was deleted). Restored it, plus
   a test that every `*-theme-*` colour utility used in `client/src` is defined.

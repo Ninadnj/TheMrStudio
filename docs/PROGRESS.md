@@ -7,6 +7,8 @@ Quality gates in place (branch `chore/claude-quality-gates`); next, pick the fir
 improvement from "Next".
 
 ## Done
+- 2026-11-26 Home page redesign (mockup D): editorial hero + service panels with starting
+  prices. Mockups: https://claude.ai/artifact/JTczvwJSxMeZM9mcm74x6W (private canvas).
 - 2026-11-26 Accessibility: all 39 lint errors cleared, LEGACY DEBT list deleted. Fixes:
   lightbox video muted (autoplay on phones), named groups in the booking sheet, wordmark and
   admin badge readable by screen readers, admin booking cards no longer remount every 30 s,
@@ -28,7 +30,8 @@ improvement from "Next".
 - (nothing)
 
 ## Blocked (needs the owner / Nina)
-- A cosmetology photo: the Aesthetics services tile fills automatically once a gallery image
+- Gallery photos without the watermark band (the nails panel and gallery show it).
+- A cosmetology photo: the Aesthetics tile/panel fills automatically once a gallery image
   with category კოსმეტოლოგია exists (Admin → გალერეა).
 - Opening hours, booking confirmation time (`client/src/lib/studioFacts.ts`), per-treatment
   durations: no data yet.

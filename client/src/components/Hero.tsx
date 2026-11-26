@@ -12,7 +12,7 @@ import { isVideoUrl } from "@/lib/videoUtils";
 const DEFAULT_HERO = {
   src: "/images/hero-1024.webp",
   srcSet: "/images/hero-512.webp 512w, /images/hero-768.webp 768w, /images/hero-1024.webp 1024w",
-  sizes: "(min-width: 1024px) 42vw, 100vw",
+  sizes: "(min-width: 1024px) 46vw, 90vw",
 };
 
 export default function Hero() {
@@ -31,26 +31,7 @@ export default function Hero() {
   return (
     <section id="hero" className="hero" aria-labelledby="hero-title">
       <div className="hero-grid shell">
-        <figure className="hero-media">
-          {isPending ? null : isVideo ? (
-            <video src={mediaSrc} autoPlay loop muted playsInline aria-hidden className="hero-media-el" />
-          ) : (
-            <img
-              src={mediaSrc}
-              srcSet={customMedia ? undefined : DEFAULT_HERO.srcSet}
-              sizes={customMedia ? undefined : DEFAULT_HERO.sizes}
-              alt={t("THE MR Studio — სტუდიის ესთეტიკა", "THE MR Studio — studio mood")}
-              className="hero-media-el"
-              width={1024}
-              height={1024}
-              // React 18 only passes the lowercase attribute through
-              {...{ fetchpriority: "high" }}
-              decoding="async"
-            />
-          )}
-        </figure>
-
-        {/* On phones this block sits over the image; on desktop it heads the copy column */}
+        {/* Editorial: the name set large first; the illustration beside it on desktop, below it on phones */}
         <div className="hero-head">
           <p className="eyebrow hero-eyebrow hero-rise" style={{ animationDelay: "120ms" }}>
             {lang === "ka" ? studio.address.ka : studio.address.en}
@@ -69,6 +50,25 @@ export default function Hero() {
             </span>
           </h1>
         </div>
+
+        <figure className="hero-media">
+          {isPending ? null : isVideo ? (
+            <video src={mediaSrc} autoPlay loop muted playsInline aria-hidden className="hero-media-el" />
+          ) : (
+            <img
+              src={mediaSrc}
+              srcSet={customMedia ? undefined : DEFAULT_HERO.srcSet}
+              sizes={customMedia ? undefined : DEFAULT_HERO.sizes}
+              alt={t("THE MR Studio — სტუდიის ესთეტიკა", "THE MR Studio — studio mood")}
+              className="hero-media-el"
+              width={1024}
+              height={1024}
+              // React 18 only passes the lowercase attribute through
+              {...{ fetchpriority: "high" }}
+              decoding="async"
+            />
+          )}
+        </figure>
 
         <div className="hero-body">
           <div className="hero-actions hero-rise" style={{ animationDelay: "320ms" }}>

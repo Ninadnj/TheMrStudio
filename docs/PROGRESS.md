@@ -7,6 +7,9 @@ Quality gates in place (branch `chore/claude-quality-gates`); next, pick the fir
 improvement from "Next".
 
 ## Done
+- 2026-11-26 Speed: the app compresses (JS 269→87 KB, CSS 123→22 KB) and caches hashed
+  assets for a year; no Caddy edit needed. Measured locally on the production build:
+  first paint 120 ms, largest paint (hero image) 140 ms, layout shift 0.
 - 2026-10-03 Redesign + Georgian admin deployed (906d63a), booking note hotfix (63b72cb).
 - 2026-11-26 Admin buttons visible again (login, Offers add, Gallery add): the redesign
   had removed `.bg-theme-accent`; a test now checks every `*-theme-*` utility exists.
@@ -25,7 +28,6 @@ improvement from "Next".
 - Opening hours, booking confirmation time (`client/src/lib/studioFacts.ts`), per-treatment
   durations: no data yet.
 - Address says Vepkhistkaosani 22/24 but the map pin query is 20/22. Which is right?
-- Caddy compression + cache headers (docs/DEPLOY.md): needs a careful server-side edit.
 
 ## Next (candidates, highest value first)
 1. Security/cost: `POST /api/chat` is public and calls Gemini, but the site no longer uses

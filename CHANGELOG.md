@@ -13,6 +13,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   nodemailer 10.5.0; zod 4.6.7 (+ drizzle-zod 0.8.3, @hookform/resolvers 5.9.2,
   zod-validation-error 5.0.0); @google/genai 1.52.0.
 
+### Performance
+- Production server compresses responses (brotli/gzip) and caches hashed assets for a
+  year; HTML is always revalidated. First-load JS 269 → 87 KB, CSS 123 → 22 KB.
+
 ### Fixed
 - Services: the Aesthetics tile without a photo is a framed card with the seal as a monogram,
   not an empty box. Dark mode: the hero image no longer glares as a white block.

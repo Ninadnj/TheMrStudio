@@ -13,6 +13,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   nodemailer 10.5.0; zod 4.6.7 (+ drizzle-zod 0.8.3, @hookform/resolvers 5.9.2,
   zod-validation-error 5.0.0); @google/genai 1.52.0.
 
+### Fixed
+- Admin login, Offers "დამატება" and Gallery "დამატება" buttons had invisible labels since
+  the Oct 2026 redesign (the `.bg-theme-accent` utility was deleted). Restored it, plus
+  a test that every `*-theme-*` colour utility used in `client/src` is defined.
+
 ### Removed
 - Unused Replit object-storage code (`server/objectStorage.ts`, `objectAcl.ts`) and
   `@google-cloud/storage`.

@@ -269,6 +269,17 @@
     background-color: color-mix(in srgb, var(--theme-muted1) 10%, transparent);
   }
 
+  /* The primary action colour (design_guidelines.md §2). Used by admin buttons; it must
+     exist, or tailwind-merge drops the Button's own bg and the label becomes invisible. */
+  .bg-theme-accent {
+    background-color: var(--theme-accent);
+    color: var(--theme-on-accent);
+  }
+
+  .bg-theme-accent\/10 {
+    background-color: color-mix(in srgb, var(--theme-accent) 10%, transparent);
+  }
+
   .text-theme-accent {
     color: var(--theme-accent);
   }
